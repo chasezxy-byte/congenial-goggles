@@ -423,9 +423,17 @@ function startAssessment(assessmentId){
   const prevSub=subs.find(s=>s.assessmentId===assessmentId&&s.studentId===currentStudent.id);
 
   if(prevSub){
-    // Show results again
-    showResults(ass,qs,prevSub.answers);
-    return;
+    if(prevSub.status === 'returned'){
+      // Allow retake — delete old submission from cache so student can redo
+      if(!confirm('Your teacher returned this assessment. Do you want to retake it?')) return;
+      // Remove from local cache so it feels fresh
+      CACHE.submissions = CACHE.submissions.filter(s=>s.id!==prevSub.id);
+      // Don't return — fall through to start the quiz
+    } else {
+      // Already submitted and not returned — just show results
+      showResults(ass,qs,prevSub.answers);
+      return;
+    }
   }
   if(!qs.length){
     alert('This assessment has no questions yet. Check back later!');
@@ -521,8 +529,11 @@ async function submitQuiz(){
     }
   });
   // Save submission to Firestore
-  const sub={id:DB.uid(),studentId:currentStudent.id,assessmentId:ass.id,answers:[...answers],score,maxScore:ass.maxScore,submittedAt:new Date().toISOString()};
-  try{ await dbSet('submissions',sub.id,sub); } catch(e){ console.warn('Save failed',e); }
+  // Check if retaking a returned submission — overwrite it
+  const existingSub = CACHE.submissions?.find(s=>s.assessmentId===ass.id&&s.studentId===currentStudent.id);
+  const subId = existingSub?.id || DB.uid();
+  const sub={id:subId,studentId:currentStudent.id,assessmentId:ass.id,answers:[...answers],score,maxScore:ass.maxScore,submittedAt:new Date().toISOString(),status:'submitted',returnNote:''};
+  try{ await dbSet('submissions',subId,sub); } catch(e){ console.warn('Save failed',e); }
   showResults(ass,currentQuestions,answers,score);
 }
 
