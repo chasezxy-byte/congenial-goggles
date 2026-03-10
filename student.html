@@ -166,8 +166,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-firestore-compat.min.js"></script>
-<!-- MathJax for math formulas -->
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<!-- MathJax config must be before the script loads -->
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['\\[','\\]'],['$$','$$']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 .ldg{position:fixed;inset:0;background:linear-gradient(160deg,#1a6b3c,#2e8b57);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff}
 .ldg-spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
@@ -491,7 +497,10 @@ function renderQuestion(){
     ${optHtml}
   </div>`;
   // Re-render MathJax after content is inserted
-  if(window.MathJax) MathJax.typesetPromise([body]).catch(e=>console.warn(e));
+  if(window.MathJax){
+    MathJax.typesetClear([body]);
+    MathJax.typesetPromise([body]).catch(e=>console.warn(e));
+  }
   const nav=document.getElementById('quiz-nav');
   const isLast=currentQ===total-1;
   nav.innerHTML=`
