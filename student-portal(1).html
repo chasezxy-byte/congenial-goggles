@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Student Portal – American Intercon School</title>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g-dark:#1a6b3c;--g-mid:#2e8b57;--g-light:#e6f4ed;--g-accent:#3dba76;
+  --bg:#f0f7f3;--white:#fff;--text:#1a1a2e;--muted:#8a94a6;
+  --border:#e2e8f0;--font:'Kantumruy Pro',sans-serif;
+  --r:14px;--shadow:0 4px 20px rgba(0,0,0,.08)
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── LOGIN ── */
+#s-login{background:linear-gradient(160deg,#1a6b3c 0%,#2e8b57 40%,#3dba76 100%);align-items:center;justify-content:center;padding:24px}
+.login-card{background:#fff;border-radius:24px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.school-logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:28px}
+.sl-icon{width:52px;height:52px;background:var(--g-dark);border-radius:14px;display:flex;align-items:center;justify-content:center}
+.sl-icon .material-icons{color:#fff;font-size:28px}
+.sl-text strong{display:block;font-size:16px;font-weight:800;color:var(--g-dark)}
+.sl-text span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.login-card h2{font-size:1.3rem;font-weight:800;text-align:center;margin-bottom:6px}
+.login-card p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:24px}
+.lf-group{margin-bottom:14px;position:relative}
+.lf-group label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.lf-group input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 16px 12px 44px;font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.lf-group input:focus{border-color:var(--g-mid);box-shadow:0 0 0 3px rgba(46,139,87,.12)}
+.lf-group .fi{position:absolute;left:14px;bottom:13px;color:var(--muted);font-size:20px}
+.btn-login{width:100%;background:var(--g-dark);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-login:hover{background:#155c2e}
+.btn-login:active{transform:scale(.98)}
+.err{color:#e53935;font-size:12px;text-align:center;margin-top:10px;display:none}
+.demo-hint{background:var(--g-light);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:12px;color:var(--g-dark)}
+.demo-hint strong{display:block;margin-bottom:4px}
+
+/* ── DASHBOARD ── */
+#s-dash{background:var(--bg)}
+.topbar{background:var(--g-dark);padding:0 20px;height:60px;display:flex;align-items:center;gap:12px;color:#fff}
+.tb-back{background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;padding:4px;border-radius:8px}
+.tb-back:hover{background:rgba(255,255,255,.15)}
+.tb-title{font-size:16px;font-weight:700;flex:1}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:var(--g-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.hero{background:linear-gradient(135deg,var(--g-dark),var(--g-mid));color:#fff;padding:24px 20px 32px;position:relative;overflow:hidden}
+.hero::after{content:'🎓';position:absolute;right:-10px;top:-10px;font-size:100px;opacity:.1}
+.hero h2{font-size:1.4rem;font-weight:800;margin-bottom:4px}
+.hero p{font-size:13px;opacity:.8}
+.hero-stats{display:flex;gap:12px;margin-top:18px}
+.hs{background:rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;flex:1;text-align:center;backdrop-filter:blur(4px)}
+.hs .num{font-size:1.4rem;font-weight:800}
+.hs .lbl{font-size:11px;opacity:.8;margin-top:2px}
+.section{padding:20px}
+.section h3{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h3 .material-icons{color:var(--g-mid);font-size:20px}
+
+/* ASSESSMENT CARDS */
+.ass-card{background:#fff;border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;align-items:flex-start;gap:14px;border:2px solid transparent}
+.ass-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.12);border-color:var(--g-accent)}
+.ass-card.completed{border-color:#b2dfdb;background:#f0faf8}
+.ac-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px}
+.ac-icon.mcq{background:#e3f0ff}
+.ac-icon.essay{background:#fff3e0}
+.ac-icon.done{background:#e6f4ed}
+.ac-info{flex:1;min-width:0}
+.ac-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.ac-sub{font-size:12px;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.chip.green{background:var(--g-light);color:var(--g-dark)}
+.chip.blue{background:#e3f0ff;color:#1565c0}
+.chip.orange{background:#fff3e0;color:#e65100}
+.chip.done{background:#e6f4ed;color:var(--g-dark)}
+.chip .material-icons{font-size:13px}
+.ac-score{font-size:13px;font-weight:700;color:var(--g-dark);white-space:nowrap}
+
+/* ── QUIZ ── */
+#s-quiz{background:var(--bg)}
+.quiz-header{background:var(--g-dark);color:#fff;padding:18px 20px}
+.qh-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.qh-title{font-size:15px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.progress-fill{height:100%;background:var(--g-accent);border-radius:4px;transition:width .4s ease}
+.qh-count{font-size:12px;opacity:.8}
+.quiz-body{flex:1;padding:20px;display:flex;flex-direction:column}
+.question-card{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:16px;flex:1}
+.q-num{font-size:12px;font-weight:700;color:var(--g-mid);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.q-num .chip{font-size:10px}
+.q-text{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:20px}
+.option{display:flex;align-items:center;gap:12px;padding:13px 16px;border:2px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:10px;transition:all .15s;font-size:14px;font-weight:500}
+.option:hover{border-color:var(--g-mid);background:var(--g-light)}
+.option.selected{border-color:var(--g-dark);background:var(--g-light);font-weight:700}
+.option.correct{border-color:#2e8b57;background:#e6f4ed;color:var(--g-dark)}
+.option.wrong{border-color:#e53935;background:#fef2f2;color:#c62828}
+.opt-letter{width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;transition:all .15s;border:2px solid var(--border)}
+.option.selected .opt-letter{background:var(--g-dark);color:#fff;border-color:var(--g-dark)}
+.option.correct .opt-letter{background:#2e8b57;color:#fff;border-color:#2e8b57}
+.option.wrong .opt-letter{background:#e53935;color:#fff;border-color:#e53935}
+.short-ans textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--font);font-size:14px;outline:none;resize:none;min-height:120px;transition:border-color .2s}
+.short-ans textarea:focus{border-color:var(--g-mid)}
+.quiz-nav{display:flex;gap:10px;padding:0 20px 24px}
+.btn-nav{flex:1;padding:14px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.btn-prev{background:#fff;color:var(--text);border:2px solid var(--border)}
+.btn-prev:hover{border-color:var(--g-mid)}
+.btn-next{background:var(--g-dark);color:#fff}
+.btn-next:hover{background:#155c2e}
+.btn-next:disabled{background:var(--muted);cursor:default}
+.btn-submit{background:#1565c0;color:#fff}
+.btn-submit:hover{background:#0d47a1}
+
+/* ── RESULTS ── */
+#s-result{background:var(--bg);align-items:center;justify-content:center;padding:24px;text-align:center}
+.result-card{background:#fff;border-radius:24px;padding:36px 28px;width:100%;max-width:400px;box-shadow:var(--shadow);animation:pop .4s ease}
+.result-emoji{font-size:64px;margin-bottom:16px;display:block;animation:bounce 1s ease .3s both}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.result-score{font-size:4rem;font-weight:800;color:var(--g-dark);line-height:1}
+.result-max{font-size:1.1rem;font-weight:500;color:var(--muted)}
+.result-pct{font-size:1.8rem;font-weight:800;margin:6px 0}
+.result-label{font-size:14px;color:var(--muted);margin-bottom:24px}
+.result-breakdown{background:var(--bg);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left}
+.rb-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.rb-row:last-child{border-bottom:none}
+.rb-row strong{color:var(--text)}
+.btn-home{width:100%;background:var(--g-dark);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-home:hover{background:#155c2e}
+.btn-review{width:100%;background:#fff;color:var(--g-dark);border:2px solid var(--g-mid);border-radius:10px;padding:12px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-review:hover{background:var(--g-light)}
+
+/* REVIEW MODAL */
+.review-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;flex-direction:column}
+.review-overlay.open{display:flex}
+.review-header{background:var(--g-dark);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.review-body{flex:1;overflow-y:auto;padding:16px}
+.rq-card{background:#fff;border-radius:12px;padding:18px;margin-bottom:12px}
+.rq-q{font-size:14px;font-weight:700;margin-bottom:12px}
+.rq-opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:6px}
+.rq-opt.correct{background:#e6f4ed;color:var(--g-dark);font-weight:600}
+.rq-opt.wrong{background:#fef2f2;color:#c62828}
+.rq-opt .material-icons{font-size:16px}
+
+@media(min-width:600px){
+  #s-login,#s-result{background:linear-gradient(160deg,var(--g-dark),var(--g-mid))}
+  .quiz-body{max-width:600px;margin:0 auto;width:100%}
+  .quiz-nav{max-width:600px;margin:0 auto;width:100%}
+  .quiz-header{padding:18px calc(50% - 280px)}
+}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="screen active" id="s-login">
+  <div class="login-card">
+    <div class="school-logo">
+      <div class="sl-icon"><span class="material-icons">school</span></div>
+      <div class="sl-text"><strong>American Intercon</strong><span>Student Portal</span></div>
+    </div>
+    <h2>Welcome, Student! 👋</h2>
+    <p>Sign in to access your classes and assessments</p>
+    <div class="lf-group">
+      <label>Username</label>
+      <span class="material-icons fi">person</span>
+      <input type="text" id="s-uname" placeholder="Enter your username" autocomplete="off"/>
+    </div>
+    <div class="lf-group">
+      <label>Password</label>
+      <span class="material-icons fi">lock</span>
+      <input type="password" id="s-pw" placeholder="Enter your password" onkeydown="if(event.key==='Enter')studentLogin()"/>
+    </div>
+    <div class="err" id="s-err">❌ Incorrect username or password.</div>
+    <button class="btn-login" onclick="studentLogin()">
+      <span class="material-icons">login</span> Sign In
+    </button>
+    <div class="demo-hint">
+      <strong>🔑 Login with your credentials</strong>
+      <div style="margin-top:5px;opacity:.85">Your username and password are provided by your teacher.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="s-dash">
+  <div class="topbar">
+    <div class="tb-title" id="dash-title">My Dashboard</div>
+    <div class="avatar-sm" id="dash-avatar">S</div>
+    <button class="tb-back" onclick="studentLogout()" title="Logout">
+      <span class="material-icons">logout</span>
+    </button>
+  </div>
+  <div class="hero">
+    <h2 id="hero-name">Hello, Student!</h2>
+    <p id="hero-class">Class: —</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="num" id="stat-total">0</div><div class="lbl">Assessments</div></div>
+      <div class="hs"><div class="num" id="stat-done">0</div><div class="lbl">Completed</div></div>
+      <div class="hs"><div class="num" id="stat-pending">0</div><div class="lbl">Pending</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <h3><span class="material-icons">quiz</span>Your Assessments</h3>
+    <div id="ass-list">
+      <div style="text-align:center;padding:40px;color:var(--muted)">
+        <span class="material-icons" style="font-size:48px;color:#d0d8e4;display:block;margin-bottom:10px">inbox</span>
+        <p>No assessments available yet.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-header">
+    <div class="qh-top">
+      <button class="tb-back" onclick="exitQuiz()"><span class="material-icons">arrow_back</span></button>
+      <div class="qh-title" id="quiz-title">Quiz</div>
+      <div class="chip blue" id="quiz-timer" style="font-size:12px;background:rgba(255,255,255,.2);color:#fff"></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="q-progress" style="width:0%"></div></div>
+    <div class="qh-count" id="q-count">Question 1 of 0</div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-nav" id="quiz-nav"></div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-result">
+  <div class="result-card">
+    <span class="result-emoji" id="r-emoji">🎉</span>
+    <div class="result-score" id="r-score">0</div>
+    <div class="result-max" id="r-max">/ 0 points</div>
+    <div class="result-pct" id="r-pct">0%</div>
+    <div class="result-label" id="r-label">Well done!</div>
+    <div class="result-breakdown" id="r-breakdown"></div>
+    <button class="btn-review" onclick="showReview()"><span class="material-icons">visibility</span>Review Answers</button>
+    <button class="btn-home" onclick="showScreen('s-dash')"><span class="material-icons">home</span>Back to Dashboard</button>
+  </div>
+</div>
+
+<!-- REVIEW OVERLAY -->
+<div class="review-overlay" id="review-overlay">
+  <div class="review-header">
+    <button class="tb-back" onclick="closeReview()"><span class="material-icons">close</span></button>
+    <span style="font-size:15px;font-weight:700">Review Answers</span>
+  </div>
+  <div class="review-body" id="review-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+const DB={
+  get:k=>JSON.parse(localStorage.getItem('lms_'+k)||'[]'),
+  set:(k,v)=>localStorage.setItem('lms_'+k,JSON.stringify(v)),
+  uid:()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)
+};
+
+// Data is created by the admin in mentor-back-office.html
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let currentStudent=null;
+let currentAssessment=null;
+let currentQuestions=[];
+let answers=[];
+let currentQ=0;
+let timerInterval=null;
+let timeLeft=0;
+
+// ═══════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════
+function studentLogin(){
+  const u=document.getElementById('s-uname').value.trim().toLowerCase();
+  const p=document.getElementById('s-pw').value.trim();
+  const err=document.getElementById('s-err');
+  const students=DB.get('students');
+  const match=students.find(s=>s.username.toLowerCase()===u&&s.password===p);
+  if(match){
+    err.style.display='none';
+    currentStudent=match;
+    loadDashboard();
+    showScreen('s-dash');
+  } else {
+    err.style.display='block';
+    document.getElementById('s-pw').value='';
+  }
+}
+function studentLogout(){
+  if(confirm('Log out?')){
+    currentStudent=null;clearTimer();
+    document.getElementById('s-uname').value='';
+    document.getElementById('s-pw').value='';
+    showScreen('s-login');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════
+function loadDashboard(){
+  const st=currentStudent;
+  document.getElementById('dash-title').textContent=st.name.split(' ')[0]+"'s Dashboard";
+  document.getElementById('dash-avatar').textContent=st.name[0].toUpperCase();
+  document.getElementById('hero-name').textContent='Hello, '+st.name+'! 👋';
+  document.getElementById('hero-class').textContent='Class: '+st.className;
+
+  // Get assessments for this student's class
+  const allAss=DB.get('assessments').filter(a=>a.classId===st.classId&&a.validState==='Valid');
+  const subs=DB.get('submissions').filter(s=>s.studentId===st.id);
+  const doneIds=new Set(subs.map(s=>s.assessmentId));
+
+  document.getElementById('stat-total').textContent=allAss.length;
+  document.getElementById('stat-done').textContent=subs.length;
+  document.getElementById('stat-pending').textContent=allAss.filter(a=>!doneIds.has(a.id)).length;
+
+  const wrap=document.getElementById('ass-list');
+  if(!allAss.length){
+    wrap.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">
+      <span class="material-icons" style="font-size:48px;color:#d0d8e4;display:block;margin-bottom:10px">inbox</span>
+      <p>No assessments available for your class yet.</p>
+      <p style="font-size:12px;margin-top:6px">Ask your teacher to create and publish one!</p>
+    </div>`;
+    return;
+  }
+  wrap.innerHTML=allAss.map(a=>{
+    const done=doneIds.has(a.id);
+    const sub=subs.find(s=>s.assessmentId===a.id);
+    const qs=DB.get('questions').filter(q=>q.assessmentId===a.id);
+    const pct=sub?Math.round(sub.score/a.maxScore*100):null;
+    return `<div class="ass-card${done?' completed':''}" onclick="startAssessment('${a.id}')">
+      <div class="ac-icon ${done?'done':a.config==='MCQ'?'mcq':'essay'}">${done?'✅':a.config==='MCQ'?'📝':'✍️'}</div>
+      <div class="ac-info">
+        <div class="ac-title">${a.name}</div>
+        <div class="ac-sub">${a.subjectName} · ${a.lessonName}</div>
+        <div class="ac-meta">
+          <span class="chip ${done?'done':'green'}"><span class="material-icons">${done?'check_circle':'schedule'}</span>${done?'Completed':'Available'}</span>
+          <span class="chip blue"><span class="material-icons">help_outline</span>${qs.length} Qs</span>
+          <span class="chip orange"><span class="material-icons">star</span>${a.maxScore} pts</span>
+          ${done?`<span class="ac-score">${sub.score}/${a.maxScore} (${pct}%)</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════
+function startAssessment(assessmentId){
+  const ass=DB.get('assessments').find(a=>a.id===assessmentId);
+  const qs=DB.get('questions').filter(q=>q.assessmentId===assessmentId);
+  const subs=DB.get('submissions');
+  const prevSub=subs.find(s=>s.assessmentId===assessmentId&&s.studentId===currentStudent.id);
+
+  if(prevSub){
+    // Show results again
+    showResults(ass,qs,prevSub.answers);
+    return;
+  }
+  if(!qs.length){
+    alert('This assessment has no questions yet. Check back later!');
+    return;
+  }
+
+  currentAssessment=ass;
+  currentQuestions=qs;
+  answers=new Array(qs.length).fill(null);
+  currentQ=0;
+
+  document.getElementById('quiz-title').textContent=ass.name;
+  timeLeft=qs.length*60; // 1 min per question
+  startTimer();
+  renderQuestion();
+  showScreen('s-quiz');
+}
+
+function renderQuestion(){
+  const q=currentQuestions[currentQ];
+  const total=currentQuestions.length;
+  const pct=Math.round((currentQ/total)*100);
+  document.getElementById('q-progress').style.width=pct+'%';
+  document.getElementById('q-count').textContent=`Question ${currentQ+1} of ${total}`;
+  const body=document.getElementById('quiz-body');
+  const LETTERS='ABCDEFGH';
+  let optHtml='';
+  if(q.type==='MCQ'||q.type==='True/False'){
+    const opts=q.options||[];
+    optHtml=opts.map((o,i)=>`
+      <div class="option${answers[currentQ]===i?' selected':''}" onclick="selectOption(${i})">
+        <div class="opt-letter">${LETTERS[i]}</div>
+        <span>${o}</span>
+      </div>`).join('');
+  } else {
+    optHtml=`<div class="short-ans">
+      <textarea id="short-ans-input" placeholder="Type your answer here..." rows="5">${answers[currentQ]||''}</textarea>
+    </div>`;
+  }
+  body.innerHTML=`<div class="question-card">
+    <div class="q-num">
+      Question ${currentQ+1}
+      <span class="chip ${q.type==='MCQ'?'blue':'orange'}">${q.type}</span>
+      <span class="chip green">${q.points} pts</span>
+    </div>
+    <div class="q-text">${q.title}</div>
+    ${optHtml}
+  </div>`;
+  const nav=document.getElementById('quiz-nav');
+  const isLast=currentQ===total-1;
+  nav.innerHTML=`
+    ${currentQ>0?`<button class="btn-nav btn-prev" onclick="prevQ()"><span class="material-icons">arrow_back</span>Previous</button>`:'<div></div>'}
+    ${isLast?
+      `<button class="btn-nav btn-submit" onclick="submitQuiz()"><span class="material-icons">check_circle</span>Submit Quiz</button>`:
+      `<button class="btn-nav btn-next" onclick="nextQ()">Next<span class="material-icons">arrow_forward</span></button>`
+    }`;
+  // auto-scroll to top
+  window.scrollTo(0,0);
+}
+
+function selectOption(i){
+  answers[currentQ]=i;
+  renderQuestion();
+}
+function nextQ(){
+  saveShortAns();
+  if(answers[currentQ]===null&&currentQuestions[currentQ].type!=='Short Answer'){
+    if(!confirm('Skip this question?')) return;
+  }
+  currentQ++;renderQuestion();
+}
+function prevQ(){saveShortAns();currentQ--;renderQuestion();}
+function saveShortAns(){
+  const ta=document.getElementById('short-ans-input');
+  if(ta) answers[currentQ]=ta.value;
+}
+function exitQuiz(){if(confirm('Exit quiz? Your progress will be lost.')){clearTimer();showScreen('s-dash');}}
+
+function submitQuiz(){
+  saveShortAns();
+  const unanswered=answers.filter((a,i)=>a===null&&currentQuestions[i].type!=='Short Answer').length;
+  if(unanswered>0&&!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  clearTimer();
+  const ass=currentAssessment;
+  // Score
+  let score=0;
+  currentQuestions.forEach((q,i)=>{
+    if(q.type==='MCQ'||q.type==='True/False'){
+      if(answers[i]===q.answer) score+=q.points;
+    } else {
+      // Short answer: give full points (teacher graded would be manual)
+      if(answers[i]&&answers[i].trim().length>0) score+=Math.floor(q.points*0.5);
+    }
+  });
+  // Save submission
+  const subs=DB.get('submissions');
+  subs.push({id:DB.uid(),studentId:currentStudent.id,assessmentId:ass.id,answers:[...answers],score,maxScore:ass.maxScore,submittedAt:new Date().toISOString()});
+  DB.set('submissions',subs);
+  showResults(ass,currentQuestions,answers,score);
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════
+function showResults(ass,qs,ans,score){
+  // If score not passed, recalculate
+  if(score===undefined){
+    score=0;
+    qs.forEach((q,i)=>{
+      if((q.type==='MCQ'||q.type==='True/False')&&ans[i]===q.answer) score+=q.points;
+      else if(q.type==='Short Answer'&&ans[i]&&ans[i].trim()) score+=Math.floor(q.points*0.5);
+    });
+  }
+  const max=ass.maxScore||qs.reduce((s,q)=>s+q.points,0);
+  const pct=Math.round(score/max*100);
+  const emoji=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'👍':pct>=30?'📚':'💪';
+  const label=pct>=90?'Outstanding!':pct>=70?'Great job!':pct>=50?'Good effort!':pct>=30?'Keep studying!':'Don\'t give up!';
+  document.getElementById('r-emoji').textContent=emoji;
+  document.getElementById('r-score').textContent=score;
+  document.getElementById('r-max').textContent='/ '+max+' points';
+  document.getElementById('r-pct').textContent=pct+'%';
+  document.getElementById('r-pct').style.color=pct>=70?'var(--g-dark)':pct>=50?'#e65100':'#e53935';
+  document.getElementById('r-label').textContent=label;
+  const correct=qs.filter((q,i)=>(q.type==='MCQ'||q.type==='True/False')&&ans[i]===q.answer).length;
+  const mcqTotal=qs.filter(q=>q.type==='MCQ'||q.type==='True/False').length;
+  document.getElementById('r-breakdown').innerHTML=`
+    <div class="rb-row"><span>Assessment</span><strong>${ass.name}</strong></div>
+    <div class="rb-row"><span>Score</span><strong>${score} / ${max}</strong></div>
+    <div class="rb-row"><span>Correct Answers</span><strong style="color:var(--g-dark)">${correct} / ${mcqTotal}</strong></div>
+    <div class="rb-row"><span>Percentage</span><strong style="color:${pct>=70?'var(--g-dark)':'#e65100'}">${pct}%</strong></div>
+    <div class="rb-row"><span>Submitted</span><strong>${new Date().toLocaleDateString()}</strong></div>`;
+  // Store for review
+  window._lastReview={qs,ans};
+  showScreen('s-result');
+  loadDashboard(); // refresh stats
+}
+
+function showReview(){
+  const {qs,ans}=window._lastReview||{qs:[],ans:[]};
+  const LETTERS='ABCDEFGH';
+  document.getElementById('review-body').innerHTML=qs.map((q,i)=>{
+    const isMCQ=q.type==='MCQ'||q.type==='True/False';
+    const isCorrect=isMCQ&&ans[i]===q.answer;
+    const optHtml=isMCQ?(q.options||[]).map((o,j)=>{
+      let cls='';
+      if(j===q.answer) cls='correct';
+      else if(j===ans[i]&&ans[i]!==q.answer) cls='wrong';
+      return `<div class="rq-opt ${cls}">
+        <span class="material-icons">${j===q.answer?'check_circle':j===ans[i]?'cancel':'radio_button_unchecked'}</span>
+        <span>${LETTERS[j]}. ${o}</span>
+      </div>`;
+    }).join(''):
+    `<div style="background:var(--bg);border-radius:8px;padding:10px;font-size:13px;color:var(--muted)"><em>Your answer: ${ans[i]||'(not answered)'}</em></div>`;
+    return `<div class="rq-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <span style="font-size:11px;color:var(--muted);font-weight:700">Q${i+1} · ${q.points} pts</span>
+        ${isMCQ?`<span style="font-size:12px;font-weight:700;color:${isCorrect?'var(--g-dark)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:''}
+      </div>
+      <div class="rq-q">${q.title}</div>
+      ${optHtml}
+    </div>`;
+  }).join('');
+  document.getElementById('review-overlay').classList.add('open');
+}
+function closeReview(){document.getElementById('review-overlay').classList.remove('open');}
+
+// ═══════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════
+function startTimer(){
+  clearTimer();
+  updateTimerDisplay();
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){clearTimer();alert('Time is up! Submitting your answers.');submitQuiz();}
+  },1000);
+}
+function clearTimer(){clearInterval(timerInterval);timerInterval=null;}
+function updateTimerDisplay(){
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  const el=document.getElementById('quiz-timer');
+  if(el){
+    el.textContent=(timeLeft<=60?'⚠ ':'')+`${m}:${s.toString().padStart(2,'0')}`;
+    el.style.background=timeLeft<=60?'rgba(229,57,53,.6)':'rgba(255,255,255,.2)';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  SCREEN MANAGER
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

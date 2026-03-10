@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mentor Back Office – American Intercon School</title>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gd:#1a6b3c;--gm:#2e8b57;--gl:#e6f4ed;--ga:#3dba76;
+  --teal:#d1f0e8;--tt:#1d7a5f;
+  --bg:#f4f6f8;--w:#fff;--sw:264px;--hh:60px;
+  --tx:#1a1a2e;--mu:#8a94a6;--bo:#e2e8f0;
+  --sh:0 2px 14px rgba(0,0,0,.07);--dk:#1a1a2e;
+  --r:10px;--f:'Kantumruy Pro',sans-serif
+}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh}
+/* LOGIN */
+#login-screen{display:flex;min-height:100vh;background:linear-gradient(135deg,#e8f5ef,#f0f4ff 50%,#fce8e8);align-items:center}
+.ll{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px}
+.ll h1{font-size:2.2rem;font-weight:800;margin-bottom:40px;text-align:center}
+.deco{position:relative;width:380px;height:280px}
+.dc{position:absolute;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.1);padding:16px;animation:fl 4s ease-in-out infinite}
+.dc:nth-child(1){left:0;top:30px;width:160px;animation-delay:0s}
+.dc:nth-child(2){right:0;top:0;width:150px;animation-delay:1s}
+.dc:nth-child(3){left:60px;bottom:0;width:160px;animation-delay:2s}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.db{height:8px;border-radius:4px;background:#d0d8e4;margin:6px 0}
+.db.s{width:50%}.db.p{background:var(--ga)}
+.cm{width:100%;height:70px;background:linear-gradient(135deg,#2196f3,#03a9f4);border-radius:10px;display:flex;align-items:flex-end;padding:8px;gap:4px}
+.cb{flex:1;background:rgba(255,255,255,.4);border-radius:3px}
+.pie{width:60px;height:60px;border-radius:50%;background:conic-gradient(#f44336 0 120deg,#4caf50 120deg 200deg,#2196f3 200deg 280deg,#ffeb3b 280deg 360deg);margin:0 auto 8px}
+.lr{width:440px;background:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:60px 48px;box-shadow:-4px 0 24px rgba(0,0,0,.06)}
+.lr h2{font-size:1.5rem;font-weight:700;margin-bottom:28px}
+.ib2{background:var(--teal);border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:28px;color:var(--tt);font-size:13px}
+.ib2 .material-icons{font-size:18px;color:var(--gm)}
+.fg{margin-bottom:18px}
+.fg input{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:13px 16px;font-family:var(--f);font-size:14px;outline:none;transition:border-color .2s}
+.fg input:focus{border-color:var(--gm)}
+.fg input::placeholder{color:var(--mu)}
+.iw{position:relative}
+.iw .material-icons{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--mu);cursor:pointer;font-size:20px}
+.btn-login{width:100%;background:var(--dk);color:#fff;border:none;border-radius:8px;padding:14px;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:background .2s}
+.btn-login:hover{background:#2d2d4e}
+.lerr{color:#f44336;font-size:12px;margin-top:10px;display:none;text-align:center}
+/* APP */
+#app-screen{display:none;min-height:100vh}
+.sidebar{width:var(--sw);background:#fff;border-right:1px solid var(--bo);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:width .25s;overflow:hidden}
+.sidebar.col{width:64px}
+.slogo{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--bo);min-height:var(--hh)}
+.li{width:36px;height:36px;background:var(--gd);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.li .material-icons{color:#fff;font-size:20px}
+.lt{white-space:nowrap;overflow:hidden;line-height:1.25}
+.lt strong{display:block;font-size:12px;font-weight:800;color:var(--gd)}
+.lt span{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px}
+.ssec{padding:16px 10px 8px;overflow-y:auto;flex:1}
+.slbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px;margin-bottom:5px;white-space:nowrap}
+.ng{background:var(--gl);border-radius:var(--r);margin-bottom:4px;overflow:hidden}
+.ngh{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-weight:600;font-size:13px;color:var(--gd);user-select:none}
+.ngh .material-icons{font-size:19px;flex-shrink:0;color:var(--gm)}
+.ngh .arr{margin-left:auto;font-size:17px;transition:transform .2s}
+.ngh.open .arr{transform:rotate(180deg)}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 30px;cursor:pointer;font-size:13px;color:var(--tx);border-radius:8px;transition:background .1s;white-space:nowrap;position:relative;user-select:none}
+.ni::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--mu);position:absolute;left:14px}
+.ni:hover{background:rgba(46,139,87,.1);color:var(--gd)}
+.ni.active{color:var(--gd);font-weight:700}
+.ni.active::before{background:var(--gd)}
+.mw{margin-left:var(--sw);display:flex;flex-direction:column;transition:margin-left .25s;min-height:100vh}
+.mw.col{margin-left:64px}
+.topbar{height:var(--hh);background:#fff;border-bottom:1px solid var(--bo);display:flex;align-items:center;padding:0 22px;gap:10px;position:sticky;top:0;z-index:90}
+.tog{background:none;border:none;cursor:pointer;color:var(--mu);display:flex;align-items:center;padding:4px;border-radius:6px}
+.tog:hover{background:var(--bg)}
+.tsp{flex:1}
+.ti{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--bo);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);transition:all .15s;background:#fff;position:relative}
+.ti:hover{border-color:var(--gm);color:var(--gd)}
+.ti .material-icons{font-size:19px}
+.fuk{width:26px;height:18px;border-radius:3px;background:#012169;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0}
+.fuk::before{content:'';position:absolute;width:100%;height:30%;top:35%;left:0;background:#fff}
+.fuk::after{content:'';position:absolute;width:30%;height:100%;top:0;left:35%;background:#fff}
+.av{width:34px;height:34px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
+.nd{width:7px;height:7px;background:#f44336;border-radius:50%;position:absolute;top:5px;right:5px;border:1.5px solid #fff}
+/* PAGE */
+.pc{flex:1;padding:26px 26px 40px}
+.page{display:none}.page.active{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.pt{font-size:1.55rem;font-weight:800}
+.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);margin-bottom:22px}
+.bc .ac{color:var(--tx);font-weight:600}
+.bc-dot{font-size:7px}
+.btn-c{background:var(--dk);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap}
+.btn-c:hover{background:#2d2d4e}
+.btn-c .material-icons{font-size:17px}
+/* TABLE CARD */
+.tc{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;animation:su .25s ease}
+@keyframes su{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tt{display:flex;align-items:center;padding:13px 18px;gap:10px;border-bottom:1px solid var(--bo);flex-wrap:wrap}
+.sw2{position:relative;flex:0 0 220px}
+.sw2 .material-icons{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:17px;pointer-events:none}
+.sw2 input{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:8px 10px 8px 32px;font-family:var(--f);font-size:13px;outline:none;transition:border-color .2s;background:var(--bg)}
+.sw2 input:focus{border-color:var(--gm);background:#fff}
+.flbl{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px}
+.fgp{display:flex;flex-direction:column;gap:4px}
+.fgp label{font-size:11px;font-weight:600;color:var(--tx)}
+select.fs{border:1.5px solid var(--bo);border-radius:8px;padding:7px 28px 7px 10px;font-family:var(--f);font-size:12px;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='%238a94a6'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat calc(100% - 7px) center;appearance:none;min-width:130px;cursor:pointer;transition:border-color .2s}
+select.fs:focus{border-color:var(--gm)}
+.tr2{margin-left:auto;display:flex;align-items:center;gap:7px}
+.ib{width:31px;height:31px;border:1.5px solid var(--bo);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);transition:all .15s;background:#fff}
+.ib:hover{border-color:var(--gm);color:var(--gd)}
+.ib .material-icons{font-size:16px}
+.ib.xl{background:#1d7a3c;border-color:#1d7a3c;color:#fff}
+.ib.xl:hover{background:#155c2e}
+.ib.ref{color:#f59e0b;border-color:#fde68a}
+.ib.ref:hover{border-color:#f59e0b}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--mu);background:var(--bg);border-bottom:1px solid var(--bo);white-space:nowrap;user-select:none}
+thead th.srt{cursor:pointer}
+thead th.srt:hover{color:var(--gd)}
+tbody tr{border-bottom:1px solid var(--bo);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f9fbff}
+tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.cg{background:var(--gl);color:var(--gd)}.cb2{background:#e3f0ff;color:#1565c0}
+.co{background:#fff3e0;color:#e65100}.cr{background:#fef2f2;color:#c62828}
+.code{font-family:monospace;font-weight:700;font-size:11px;background:var(--bg);padding:2px 7px;border-radius:5px;border:1px solid var(--bo)}
+.ab{display:flex;gap:5px}
+.ab .ib{width:27px;height:27px}
+.ab .ib .material-icons{font-size:14px}
+.ab .ib.del:hover{border-color:#f44336;color:#f44336;background:#fef2f2}
+.qrb{width:27px;height:27px;background:var(--dk);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;border:none}
+.qrb .material-icons{font-size:14px}
+.thumbi{width:42px;height:34px;border-radius:6px;background:var(--gl);display:flex;align-items:center;justify-content:center;color:var(--gm)}
+.thumbi .material-icons{font-size:17px}
+.nd-data{text-align:center;padding:52px 20px;color:var(--mu)}
+.nd-data .material-icons{font-size:48px;color:#d0d8e4;display:block;margin-bottom:8px}
+.nd-data p{font-size:13px;font-weight:600}
+.nd-data small{font-size:11px;display:block;margin-top:4px}
+.pg{display:flex;align-items:center;padding:11px 16px;border-top:1px solid var(--bo);gap:7px;flex-wrap:wrap}
+.rpp{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mu);margin-right:auto}
+.rpp select{border:1.5px solid var(--bo);border-radius:6px;padding:4px 20px 4px 7px;font-family:var(--f);font-size:12px;outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='%238a94a6'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat calc(100% - 5px) center;appearance:none;cursor:pointer}
+.pi{font-size:12px;color:var(--mu)}
+.pb{min-width:28px;height:28px;padding:0 6px;border:1.5px solid var(--bo);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);background:#fff;transition:all .15s;font-family:var(--f);font-size:12px;font-weight:600}
+.pb:hover:not([disabled]){border-color:var(--gm);color:var(--gd)}
+.pb[disabled]{opacity:.35;cursor:default;pointer-events:none}
+.pb.ap{background:var(--gd);color:#fff;border-color:var(--gd)}
+.pb .material-icons{font-size:17px}
+.pw2{height:4px;background:var(--bo)}
+.pf{height:100%;background:linear-gradient(90deg,var(--gm),var(--ga));border-radius:0 4px 4px 0;transition:width .6s ease}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:520px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:mi .18s ease;display:flex;flex-direction:column}
+@keyframes mi{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--bo);position:sticky;top:0;background:#fff;z-index:1;border-radius:14px 14px 0 0}
+.mhd h3{font-size:1rem;font-weight:800}
+.mcl{background:none;border:none;cursor:pointer;color:var(--mu);display:flex;align-items:center;border-radius:6px;padding:4px}
+.mcl:hover{background:var(--bg)}
+.mb{padding:18px 22px;flex:1}
+.mfg{margin-bottom:13px}
+.mfg label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.mfg input,.mfg select,.mfg textarea{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:10px 12px;font-family:var(--f);font-size:13px;outline:none;transition:border-color .2s;color:var(--tx)}
+.mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--gm)}
+.mfg select:disabled{background:var(--bg);color:var(--mu);cursor:not-allowed;opacity:.65}
+.mfg textarea{resize:vertical;min-height:80px}
+.opt-wrap{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.or{display:flex;gap:7px;align-items:center}
+.or input{flex:1;border:1.5px solid var(--bo);border-radius:8px;padding:9px 12px;font-family:var(--f);font-size:13px;outline:none}
+.or input:focus{border-color:var(--gm)}
+.oc{width:27px;height:27px;border:1.5px solid var(--bo);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--mu);transition:all .15s;background:#fff}
+.oc.sel{background:var(--gd);color:#fff;border-color:var(--gd)}
+.oc .material-icons{font-size:15px}
+.mft{display:flex;gap:9px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--bo);position:sticky;bottom:0;background:#fff;border-radius:0 0 14px 14px}
+.btn-can{padding:8px 16px;border:1.5px solid var(--bo);border-radius:8px;background:none;font-family:var(--f);font-size:13px;cursor:pointer;color:var(--tx)}
+.btn-can:hover{border-color:#999}
+.btn-sv{padding:8px 18px;background:var(--gm);color:#fff;border:none;border-radius:8px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-sv:hover{background:var(--gd)}
+.cfm{padding:24px;text-align:center}
+.cfm .material-icons{font-size:46px;color:#f59e0b;display:block;margin-bottom:10px}
+.cfm strong{font-size:15px;display:block;margin-bottom:6px}
+.cfm p{font-size:13px;color:var(--mu)}
+.pww{position:relative}
+.pww input{padding-right:38px}
+.pww .eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--mu);background:none;border:none;padding:2px}
+.pww .eye .material-icons{font-size:18px}
+.qr-canvas{border:1px solid var(--bo);border-radius:10px;padding:10px;background:#fff;display:block;margin:0 auto}
+.pw-bar{height:3px;border-radius:2px;margin-top:5px;background:var(--bo);transition:all .3s}
+.pw-bar.w{background:#f44336;width:33%}.pw-bar.m{background:#ff9800;width:66%}.pw-bar.s{background:#4caf50;width:100%}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transform:translateY(70px);opacity:0;transition:all .28s;display:flex;align-items:center;gap:7px;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast .material-icons{font-size:17px;color:var(--ga)}
+@media(max-width:768px){.sidebar{display:none}.mw{margin-left:0!important}.ll{display:none}.lr{width:100%;padding:40px 24px}}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:3px}
+/* ── Custom Select Dropdown */
+.csd{position:relative;display:inline-flex;flex-direction:column;font-family:var(--f);min-width:130px}
+.csd-btn{border:1.5px solid var(--bo);border-radius:8px;padding:7px 10px 7px 12px;font-size:12px;background:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:border-color .2s,box-shadow .2s;color:var(--tx);width:100%;text-align:left}
+.csd-btn:hover,.csd.open .csd-btn{border-color:var(--gm);box-shadow:0 0 0 3px rgba(46,139,87,.08)}
+.csd.dis .csd-btn{background:var(--bg);color:var(--mu);cursor:not-allowed;opacity:.6;pointer-events:none}
+.csd.err .csd-btn{border-color:#f44336!important;box-shadow:0 0 0 3px rgba(244,67,54,.08)}
+.csd-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx)}
+.csd-label.ph{color:var(--mu)}
+.csd-arr{font-size:18px;color:var(--mu);transition:transform .2s;flex-shrink:0;line-height:1;margin-left:auto}
+.csd.open .csd-arr{transform:rotate(180deg)}
+.csd-panel{position:absolute;top:calc(100% + 5px);left:0;min-width:100%;background:#fff;border:1.5px solid var(--bo);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.13);z-index:502;overflow:hidden;display:none;animation:csdi .13s ease;max-height:230px;overflow-y:auto}
+@keyframes csdi{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.csd-opt{padding:9px 14px;font-size:12px;cursor:pointer;transition:background .1s;white-space:nowrap;color:var(--tx);display:flex;align-items:center;gap:8px}
+.csd-opt:hover{background:var(--gl);color:var(--gd)}
+.csd-opt.sel{color:var(--gd);font-weight:700;background:#eef8f3}
+.csd-opt.sel::after{content:'✓';margin-left:auto;font-size:11px;color:var(--gm)}
+.csd-sep{height:1px;background:var(--bo);margin:3px 0}
+/* Larger style for modal forms */
+.mfg .csd{min-width:100%;width:100%}
+.mfg .csd-btn{font-size:13px;padding:10px 12px;border-radius:8px}
+.mfg .csd-panel{border-radius:8px}
+.mfg .csd-opt{font-size:13px;padding:9px 14px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="ll">
+    <h1>Hi, Welcome back 👋</h1>
+    <div class="deco">
+      <div class="dc"><div class="cm"><div class="cb" style="height:45%"></div><div class="cb" style="height:70%"></div><div class="cb" style="height:55%"></div><div class="cb" style="height:85%"></div><div class="cb" style="height:60%"></div><div class="cb" style="height:90%"></div></div><div class="db" style="width:70%;margin-top:10px"></div><div class="db s"></div></div>
+      <div class="dc" style="display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-size:2rem">🏔️</span><div class="db" style="width:80%"></div><div class="db s p"></div></div>
+      <div class="dc" style="display:flex;flex-direction:column;align-items:center"><div class="pie"></div><div class="db" style="width:75%"></div><div class="db s"></div></div>
+    </div>
+  </div>
+  <div class="lr">
+    <h2>Sign in to Mentor Back Office</h2>
+    <div class="ib2"><span class="material-icons">info</span><span>Please enter your username and password to continue!</span></div>
+    <div class="fg"><input type="text" id="uname" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="fg"><div class="iw"><input type="password" id="pw" placeholder="Password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/><span class="material-icons" onclick="togglePw()" id="peye">visibility_off</span></div></div>
+    <div class="lerr" id="lerr">Invalid username or password.</div>
+    <button class="btn-login" onclick="doLogin()">Login</button>
+    <p style="font-size:11px;color:var(--mu);margin-top:14px;text-align:center">Login: <strong>admin</strong> / <strong>admin123</strong></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <aside class="sidebar" id="sb">
+    <div class="slogo">
+      <div class="li"><span class="material-icons">school</span></div>
+      <div class="lt"><strong>American Intercon</strong><span>School</span></div>
+    </div>
+    <div class="ssec">
+      <div class="slbl">Management</div>
+      <div class="ng">
+        <div class="ngh open" id="ng1" onclick="toggleGroup('ng1')">
+          <span class="material-icons">calendar_month</span><span>Learning Management</span>
+          <span class="material-icons arr">expand_more</span>
+        </div>
+        <div id="ng1-c">
+          <div class="ni active" data-page="class-list"      onclick="nav('class-list',this)">Class List</div>
+          <div class="ni"        data-page="subject-list"    onclick="nav('subject-list',this)">Subject List</div>
+          <div class="ni"        data-page="lesson-list"     onclick="nav('lesson-list',this)">Lesson List</div>
+          <div class="ni"        data-page="assessment-list" onclick="nav('assessment-list',this)">Assessment List</div>
+          <div class="ni"        data-page="question-list"   onclick="nav('question-list',this)">Question List</div>
+          <div class="ni"        data-page="content-list"    onclick="nav('content-list',this)">Content List</div>
+          <div class="ni"        data-page="reports"         onclick="nav('reports',this)">Reports</div>
+        </div>
+      </div>
+      <div class="ng" style="margin-top:8px">
+        <div class="ngh open" id="ng2" onclick="toggleGroup('ng2')">
+          <span class="material-icons">people</span><span>Student Management</span>
+          <span class="material-icons arr">expand_more</span>
+        </div>
+        <div id="ng2-c">
+          <div class="ni" data-page="student-list" onclick="nav('student-list',this)">Student List</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="mw" id="mw">
+    <header class="topbar">
+      <button class="tog" onclick="toggleSidebar()"><span class="material-icons">menu</span></button>
+      <div class="tsp"></div>
+      <div class="fuk" title="English"></div>
+      <div class="ti" style="position:relative"><span class="material-icons-outlined">notifications</span><div class="nd"></div></div>
+      <div class="ti"><span class="material-icons-outlined">settings</span></div>
+      <div class="av" title="Click to logout" onclick="doLogout()">K</div>
+    </header>
+    <main class="pc">
+
+      <!-- CLASS LIST -->
+      <div class="page active" id="page-class-list">
+        <div class="ph"><div><div class="pt">Class List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Class List</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('class')"><span class="material-icons">add</span>Create New Class</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Type to Search..." oninput="doSearch('class',this.value)"/></div>
+            <span class="flbl">Filter</span>
+            <div class="fgp"><label>Year</label><div class="csd" id="f-class-year" data-onchange="renderT('class')"></div></div>
+            <div class="fgp"><label>Campus</label><div class="csd" id="f-class-campus" data-onchange="renderT('class')"></div></div>
+            <div class="tr2">
+              <div class="ib xl" title="Export CSV" onclick="exportCSV('class')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('class',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('class',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('class',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Year</th><th>Campus</th><th>Thumbnail</th><th>Code</th><th>QR</th><th>Class</th><th>SMS Status</th><th>Students</th><th>Created By</th><th class="srt" onclick="setSort('class','createdAt')">Created At ↓</th><th>Action</th></tr></thead><tbody id="tb-class"></tbody></table></div>
+          <div class="pw2"><div class="pf" id="pf-class" style="width:0"></div></div>
+          <div class="pg" id="pg-class"></div>
+        </div>
+      </div>
+
+      <!-- SUBJECT LIST -->
+      <div class="page" id="page-subject-list">
+        <div class="ph"><div><div class="pt">Subject List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Subject List</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('subject')"><span class="material-icons">add</span>Create New Subject</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Type to Search..." oninput="doSearch('subject',this.value)"/></div>
+            <div class="tr2">
+              <div class="ib xl" onclick="exportCSV('subject')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('subject',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('subject',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('subject',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Created By</th><th class="srt" onclick="setSort('subject','createdAt')">Created At ↓</th><th>Action</th></tr></thead><tbody id="tb-subject"></tbody></table></div>
+          <div class="pg" id="pg-subject"></div>
+        </div>
+      </div>
+
+      <!-- LESSON LIST -->
+      <div class="page" id="page-lesson-list">
+        <div class="ph"><div><div class="pt">Lesson List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Lesson List</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('lesson')"><span class="material-icons">add</span>Create New Lesson</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Type to Search..." oninput="doSearch('lesson',this.value)"/></div>
+            <span class="flbl">Filter</span>
+            <div class="fgp"><label>Class</label><div class="csd" id="f-lesson-class" data-onchange="onTbFilterClass('lesson');renderT('lesson')"></div></div>
+            <div class="fgp"><label>Subject</label><div class="csd" id="f-lesson-subject" data-onchange="renderT('lesson')"></div></div>
+            <div class="tr2">
+              <div class="ib xl" onclick="exportCSV('lesson')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('lesson',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('lesson',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('lesson',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Order</th><th>Created By</th><th>Created At ↓</th><th>Action</th></tr></thead><tbody id="tb-lesson"></tbody></table></div>
+          <div class="pw2"><div class="pf" id="pf-lesson" style="width:0"></div></div>
+          <div class="pg" id="pg-lesson"></div>
+        </div>
+      </div>
+
+      <!-- ASSESSMENT LIST -->
+      <div class="page" id="page-assessment-list">
+        <div class="ph"><div><div class="pt">Assessment List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Assessment List</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('assessment')"><span class="material-icons">add</span>Create New Assessment</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Type to Search..." oninput="doSearch('assessment',this.value)"/></div>
+            <span class="flbl">Filter</span>
+            <div class="fgp"><label>Class</label><div class="csd" id="f-ass-class" data-onchange="onTbFilterClass('ass');renderT('assessment')"></div></div>
+            <div class="fgp"><label>Subject</label><div class="csd" id="f-ass-subject" data-onchange="renderT('assessment')"></div></div>
+            <div class="fgp"><label>Lesson</label><div class="csd" id="f-ass-lesson" data-onchange="renderT('assessment')"></div></div>
+            <div class="tr2">
+              <div class="ib xl" onclick="exportCSV('assessment')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('assessment',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('assessment',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('assessment',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Assessment</th><th>Type</th><th>Max Score</th><th>Date</th><th>State</th><th>Action</th></tr></thead><tbody id="tb-assessment"></tbody></table></div>
+          <div class="pw2"><div class="pf" id="pf-assessment" style="width:0"></div></div>
+          <div class="pg" id="pg-assessment"></div>
+        </div>
+      </div>
+
+      <!-- QUESTION LIST -->
+      <div class="page" id="page-question-list">
+        <div class="ph"><div><div class="pt">Question List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Question List</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('question')"><span class="material-icons">add</span>Create New Question</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Type to Search..." oninput="doSearch('question',this.value)"/></div>
+            <span class="flbl">Filter</span>
+            <div class="fgp"><label>Class</label><div class="csd" id="f-q-class" data-onchange="onTbFilterClass('q');renderT('question')"></div></div>
+            <div class="fgp"><label>Subject</label><div class="csd" id="f-q-subject" data-onchange="renderT('question')"></div></div>
+            <div class="fgp"><label>Assessment</label><div class="csd" id="f-q-assessment" data-onchange="renderT('question')"></div></div>
+            <div class="tr2">
+              <div class="ib xl" onclick="exportCSV('question')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('question',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('question',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('question',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Assessment</th><th>Question</th><th>Type</th><th>Points</th><th>Created By</th><th>Created At ↓</th><th>Action</th></tr></thead><tbody id="tb-question"></tbody></table></div>
+          <div class="pw2"><div class="pf" id="pf-question" style="width:0"></div></div>
+          <div class="pg" id="pg-question"></div>
+        </div>
+      </div>
+
+      <!-- STUDENT LIST -->
+      <div class="page" id="page-student-list">
+        <div class="ph"><div><div class="pt">Student List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span>Students</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">List</span></div></div>
+          <button class="btn-c" onclick="openCreate('student')"><span class="material-icons">person_add</span>Add New Student</button></div>
+        <div class="tc">
+          <div class="tt">
+            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search students..." oninput="doSearch('student',this.value)"/></div>
+            <span class="flbl">Filter</span>
+            <div class="fgp"><label>Class</label><div class="csd" id="f-st-class" data-onchange="renderT('student')"></div></div>
+            <div class="tr2">
+              <div class="ib xl" onclick="exportCSV('student')"><span class="material-icons">table_view</span></div>
+              <div class="ib" onclick="changePage('student',-1)"><span class="material-icons">arrow_back</span></div>
+              <div class="ib" onclick="changePage('student',1)"><span class="material-icons">arrow_forward</span></div>
+              <div class="ib ref" onclick="doRefresh('student',this)"><span class="material-icons">refresh</span></div>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Email</th><th>Class</th><th>Status</th><th>Created At</th><th>Action</th></tr></thead><tbody id="tb-student"></tbody></table></div>
+          <div class="pg" id="pg-student"></div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="page" id="page-content-list">
+        <div class="ph"><div><div class="pt">Content List</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Content List</span></div></div>
+          <button class="btn-c" onclick="toast('Content upload coming soon!')"><span class="material-icons">add</span>Upload Content</button></div>
+        <div class="tc"><div class="nd-data"><span class="material-icons">folder_open</span><p>No content yet</p><small>Click Upload Content to add learning materials</small></div></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="ph"><div><div class="pt">Reports</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Reports</span></div></div>
+          <button class="btn-c" onclick="toast('Exporting all data...')"><span class="material-icons">download</span>Export All</button></div>
+        <div id="rw"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeBg(event)">
+  <div class="modal" id="modal">
+    <div class="mhd"><h3 id="mtitle">Modal</h3><button class="mcl" onclick="closeModal()"><span class="material-icons">close</span></button></div>
+    <div class="mb" id="mbody"></div>
+    <div class="mft" id="mftr">
+      <button class="btn-can" onclick="closeModal()">Cancel</button>
+      <button class="btn-sv" id="msave" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="tmsg"></span></div>
+
+<script>
+'use strict';
+// ── DB
+const DB={
+  get:k=>{try{return JSON.parse(localStorage.getItem('lms_'+k)||'[]')}catch(e){return[]}},
+  set:(k,v)=>localStorage.setItem('lms_'+k,JSON.stringify(v)),
+  uid:()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)
+};
+
+// ── CUSTOM SELECT DROPDOWN (CSD)
+function csdFill(id,options,ph){
+  const el=document.getElementById(id);if(!el)return;
+  el.setAttribute('data-ph',ph||'');
+  let curVal=el.getAttribute('data-val')||'';
+  // reset stale value if not in new options
+  if(curVal&&!options.find(o=>String(o.value)===curVal))curVal='';
+  el.setAttribute('data-val',curVal);
+  const found=options.find(o=>String(o.value)===curVal);
+  const labelTxt=found?found.label:(ph||'');
+  const isPlaceholder=!curVal;
+  if(!el.querySelector('.csd-btn')){
+    el.innerHTML=`<div class="csd-btn" onclick="csdToggle('${id}')"><span class="csd-label${isPlaceholder?' ph':''}">${labelTxt}</span><span class="material-icons csd-arr">expand_more</span></div><div class="csd-panel" id="cdp-${id}"></div>`;
+  } else {
+    const lbl=el.querySelector('.csd-label');
+    lbl.textContent=labelTxt;
+    lbl.className='csd-label'+(isPlaceholder?' ph':'');
+  }
+  const panel=document.getElementById('cdp-'+id);
+  if(panel){
+    panel.innerHTML=
+      `<div class="csd-opt${!curVal?' sel':''}" data-val="" onclick="csdSel('${id}',this)">${ph||'—'}</div>`+
+      (options.length?'<div class="csd-sep"></div>':'')+
+      options.map(o=>`<div class="csd-opt${String(o.value)===curVal?' sel':''}" data-val="${o.value}" onclick="csdSel('${id}',this)">${o.label}</div>`).join('');
+  }
+}
+function csdFillEnum(id,options,curVal){
+  // For fixed-option dropdowns (no empty placeholder)
+  const el=document.getElementById(id);if(!el)return;
+  const v=curVal||options[0]?.value||'';
+  el.setAttribute('data-val',v);el.setAttribute('data-ph','');
+  const lbl=options.find(o=>o.value===v)?.label||v;
+  if(!el.querySelector('.csd-btn')){
+    el.innerHTML=`<div class="csd-btn" onclick="csdToggle('${id}')"><span class="csd-label">${lbl}</span><span class="material-icons csd-arr">expand_more</span></div><div class="csd-panel" id="cdp-${id}"></div>`;
+  } else {
+    el.querySelector('.csd-label').textContent=lbl;
+  }
+  const panel=document.getElementById('cdp-'+id);
+  if(panel)panel.innerHTML=options.map(o=>`<div class="csd-opt${o.value===v?' sel':''}" data-val="${o.value}" onclick="csdSel('${id}',this)">${o.label}</div>`).join('');
+}
+function csdSel(id,optEl){
+  const el=document.getElementById(id);if(!el||el.classList.contains('dis'))return;
+  const value=optEl.getAttribute('data-val')||'';
+  el.setAttribute('data-val',value);
+  const ph=el.getAttribute('data-ph')||'';
+  const lbl=el.querySelector('.csd-label');
+  if(lbl){lbl.textContent=value?optEl.textContent:ph;lbl.className='csd-label'+(value?'':' ph');}
+  const panel=document.getElementById('cdp-'+id);
+  if(panel)panel.querySelectorAll('.csd-opt').forEach(o=>o.classList.toggle('sel',o===optEl));
+  csdClose(id);
+  const cb=el.getAttribute('data-onchange');
+  if(cb){try{(new Function(cb))();}catch(e){console.warn(e);}}
+}
+function csdToggle(id){
+  const el=document.getElementById(id);if(!el||el.classList.contains('dis'))return;
+  const isOpen=el.classList.contains('open');
+  csdCloseAll();
+  if(!isOpen){el.classList.add('open');const p=document.getElementById('cdp-'+id);if(p)p.style.display='block';}
+}
+function csdClose(id){
+  const el=document.getElementById(id);if(el)el.classList.remove('open');
+  const p=document.getElementById('cdp-'+id);if(p)p.style.display='none';
+}
+function csdCloseAll(){
+  document.querySelectorAll('.csd.open').forEach(el=>{
+    el.classList.remove('open');
+    const p=document.getElementById('cdp-'+el.id);if(p)p.style.display='none';
+  });
+}
+function csdVal(id){const el=document.getElementById(id);return el?(el.getAttribute('data-val')||''):'';}
+function csdDis(id,disabled){const el=document.getElementById(id);if(el)el.classList.toggle('dis',disabled);}
+document.addEventListener('click',e=>{if(!e.target.closest('.csd'))csdCloseAll();});
+// NO PRESET DATA — starts empty
+
+// ── STATE
+const ST={
+  class:     {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  subject:   {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  lesson:    {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  assessment:{page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  question:  {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  student:   {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+};
+let editId=null,curType=null;
+
+// ── AUTH
+function doLogin(){
+  const u=document.getElementById('uname').value.trim();
+  const p=document.getElementById('pw').value.trim();
+  if(u==='admin'&&p==='admin123'){
+    document.getElementById('lerr').style.display='none';
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    initApp();
+  } else document.getElementById('lerr').style.display='block';
+}
+function togglePw(){const i=document.getElementById('pw'),e=document.getElementById('peye');i.type=i.type==='password'?'text':'password';e.textContent=i.type==='password'?'visibility_off':'visibility';}
+function doLogout(){if(confirm('Log out?'))location.reload();}
+
+// ── INIT
+function initApp(){
+  ['class','subject','lesson','assessment','question','student'].forEach(t=>renderT(t));
+  refreshFilters();
+}
+
+// ── SIDEBAR
+function toggleSidebar(){document.getElementById('sb').classList.toggle('col');document.getElementById('mw').classList.toggle('col');}
+function toggleGroup(id){const h=document.getElementById(id),c=document.getElementById(id+'-c');h.classList.toggle('open');c.style.display=h.classList.contains('open')?'':'none';}
+function nav(pid,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+pid).classList.add('active');
+  if(el&&el.classList) el.classList.add('active');
+  if(pid==='reports') renderReports();
+  refreshFilters();
+}
+
+// ── FILTER DROPDOWNS — always reads live from DB
+function refreshFilters(){
+  const cls=DB.get('classes'), subs=DB.get('subjects');
+  const les=DB.get('lessons'), ass=DB.get('assessments');
+  // Class page year/campus filters
+  fillVals('f-class-year',  [...new Set(cls.map(c=>c.year).filter(Boolean))], 'All Years');
+  fillVals('f-class-campus',[...new Set(cls.map(c=>c.campus).filter(Boolean))], 'All Campuses');
+  // Lesson filters
+  fillRef('f-lesson-class',  cls,  'All Classes');
+  fillRef('f-lesson-subject',subs, 'All Subjects');
+  // Assessment filters
+  fillRef('f-ass-class',  cls,  'All Classes');
+  fillRef('f-ass-subject',subs, 'All Subjects');
+  fillRef('f-ass-lesson', les,  'All Lessons');
+  // Question filters
+  fillRef('f-q-class',      cls, 'All Classes');
+  fillRef('f-q-subject',    subs,'All Subjects');
+  fillRef('f-q-assessment', ass, 'All Assessments');
+  // Student filter
+  fillRef('f-st-class', cls, 'All Classes');
+}
+function fillVals(id,vals,ph){csdFill(id,vals.map(v=>({value:v,label:v})),ph);}
+function fillRef(id,arr,ph){csdFill(id,arr.map(r=>({value:r.id,label:r.name})),ph);}
+function onTbFilterClass(pg){
+  const cl=csdVal('f-'+pg+'-class');
+  const subs=cl?DB.get('subjects').filter(s=>s.classId===cl):DB.get('subjects');
+  fillRef('f-'+pg+'-subject',subs,'All Subjects');
+  // cascade lesson filter for assessment page
+  if(pg==='ass'){
+    const sub=csdVal('f-ass-subject');
+    const les=sub?DB.get('lessons').filter(l=>l.subjectId===sub):(cl?DB.get('lessons').filter(l=>l.classId===cl):DB.get('lessons'));
+    fillRef('f-ass-lesson',les,'All Lessons');
+  }
+}
+
+// ── TABLE RENDER
+function getFiltered(type){
+  const s=ST[type];
+  let data=DB.get(type==='student'?'students':type+'s');
+  if(s.q) data=data.filter(r=>Object.values(r).join(' ').toLowerCase().includes(s.q.toLowerCase()));
+  if(type==='class'){
+    const yr=csdVal('f-class-year'), cp=csdVal('f-class-campus');
+    if(yr) data=data.filter(r=>r.year===yr); if(cp) data=data.filter(r=>r.campus===cp);
+  }
+  if(type==='lesson'){
+    const cl=csdVal('f-lesson-class'), su=csdVal('f-lesson-subject');
+    if(cl) data=data.filter(r=>r.classId===cl); if(su) data=data.filter(r=>r.subjectId===su);
+  }
+  if(type==='assessment'){
+    const cl=csdVal('f-ass-class'), su=csdVal('f-ass-subject'), le=csdVal('f-ass-lesson');
+    if(cl) data=data.filter(r=>r.classId===cl); if(su) data=data.filter(r=>r.subjectId===su); if(le) data=data.filter(r=>r.lessonId===le);
+  }
+  if(type==='question'){
+    const cl=csdVal('f-q-class'), su=csdVal('f-q-subject'), as=csdVal('f-q-assessment');
+    if(cl) data=data.filter(r=>r.classId===cl); if(su) data=data.filter(r=>r.subjectId===su); if(as) data=data.filter(r=>r.assessmentId===as);
+  }
+  if(type==='student'){const cl=csdVal('f-st-class');if(cl)data=data.filter(r=>r.classId===cl);}
+  data.sort((a,b)=>{const va=a[s.sort]||'',vb=b[s.sort]||'';return s.dir*(va>vb?1:va<vb?-1:0);});
+  return data;
+}
+
+function renderT(type){
+  const s=ST[type], data=getFiltered(type), total=data.length;
+  const tp=Math.max(1,Math.ceil(total/s.ps));
+  if(s.page>tp) s.page=tp;
+  const st=(s.page-1)*s.ps, en=Math.min(st+s.ps,total);
+  const pg=data.slice(st,en);
+  const tb=document.getElementById('tb-'+type);
+  if(!tb) return;
+  tb.innerHTML=pg.length===0
+    ?`<tr><td colspan="20"><div class="nd-data"><span class="material-icons">table_rows</span><p>No Data</p><small>Click the Create button above to get started</small></div></td></tr>`
+    :pg.map((r,i)=>rowHTML(type,r,st+i+1)).join('');
+  const pf=document.getElementById('pf-'+type);
+  if(pf) pf.style.width=(total?Math.min(100,Math.round(en/total*100))+'%':'0%');
+  renderPag(type,total,tp);
+}
+
+function rowHTML(type,r,n){
+  const ac=`<div class="ab"><div class="ib" title="Edit" onclick="openEdit('${type}','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" onclick="confirmDel('${type}','${r.id}','${esc(r.name||r.title||r.username||'')}')"><span class="material-icons">delete</span></div></div>`;
+  if(type==='class') return`<tr><td>${n}</td><td>${r.year||'—'}</td><td>${r.campus||'—'}</td><td><div class="thumbi"><span class="material-icons">image</span></div></td><td><span class="code">${r.code||'—'}</span></td><td><button class="qrb" onclick="showQR('${esc(r.code||r.id)}','${esc(r.name)}')"><span class="material-icons">qr_code_2</span></button></td><td><strong>${r.name}</strong></td><td><span class="chip ${r.smsInfo==='Active'?'cg':'co'}">${r.smsInfo||'Active'}</span></td><td><strong>${r.totalStudents||0}</strong></td><td>${r.createdBy||'Admin K'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
+  if(type==='subject') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td><strong>${r.name}</strong></td><td>${r.createdBy||'Admin K'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
+  if(type==='lesson') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.ordinal||1}</span></td><td>${r.createdBy||'Admin K'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
+  if(type==='assessment') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.config||'MCQ'}</span></td><td><strong>${r.maxScore||0}</strong></td><td style="font-size:12px;color:var(--mu)">${r.date||'—'}</td><td><span class="chip ${r.validState==='Valid'?'cg':'co'}">${r.validState||'Pending'}</span></td><td>${ac}</td></tr>`;
+  if(type==='question') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.title)}"><strong>${r.title}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin K'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
+  if(type==='student') return`<tr><td>${n}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(r.name||'?')[0].toUpperCase()}</div><strong>${r.name||'—'}</strong></div></td><td><span class="code">${r.username||'—'}</span></td><td style="font-size:12px;color:var(--mu)">${r.email||'—'}</td><td>${r.className||'—'}</td><td><span class="chip ${r.status==='Active'?'cg':'co'}">${r.status||'Active'}</span></td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('student','${r.id}')"><span class="material-icons">edit</span></div><div class="ib" title="Reset Password" onclick="showResetPw('${r.id}')"><span class="material-icons">lock_reset</span></div><div class="ib del" title="Delete" onclick="confirmDel('student','${r.id}','${esc(r.name||'')}')"><span class="material-icons">delete</span></div></div></td></tr>`;
+}
+function esc(s){return String(s||'').replace(/['"<>&]/g,c=>({'\'':'&#39;','"':'&quot;','<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
+
+function renderPag(type,total,tp){
+  const s=ST[type], w=document.getElementById('pg-'+type); if(!w) return;
+  const st=(s.page-1)*s.ps+1, en=Math.min(s.page*s.ps,total);
+  const psId='rpp-'+type;
+  let btns='';
+  for(let i=1;i<=tp;i++){
+    if(tp<=6||i===1||i===tp||Math.abs(i-s.page)<=1) btns+=`<div class="pb${i===s.page?' ap':''}" onclick="goPage('${type}',${i})">${i}</div>`;
+    else if(Math.abs(i-s.page)===2) btns+=`<div class="pb" style="pointer-events:none;border:none">…</div>`;
+  }
+  w.innerHTML=`<div class="rpp">Rows per page:<div class="csd" id="${psId}" data-onchange="setPS('${type}',csdVal('${psId}'))" style="min-width:64px;display:inline-flex"></div></div><div class="pi">${total?`${st}–${en} of ${total}`:'0–0 of 0'}</div><div class="pb" onclick="changePage('${type}',-1)" ${s.page<=1?'disabled':''}><span class="material-icons">chevron_left</span></div>${btns}<div class="pb" onclick="changePage('${type}',1)" ${s.page>=tp?'disabled':''}><span class="material-icons">chevron_right</span></div>`;
+  // must set data-val BEFORE csdFillEnum so it picks up current ps
+  const psEl=document.getElementById(psId);if(psEl)psEl.setAttribute('data-val',String(s.ps));
+  csdFillEnum(psId,[10,25,50].map(n=>({value:String(n),label:String(n)})),String(s.ps));
+}
+function changePage(t,d){const s=ST[t];const tp=Math.max(1,Math.ceil(getFiltered(t).length/s.ps));s.page=Math.max(1,Math.min(tp,s.page+d));renderT(t);}
+function goPage(t,p){ST[t].page=p;renderT(t);}
+function setPS(t,v){ST[t].ps=+v;ST[t].page=1;renderT(t);}
+function doSearch(t,v){ST[t].q=v;ST[t].page=1;renderT(t);}
+function setSort(t,f){const s=ST[t];s.dir=s.sort===f?s.dir*-1:-1;s.sort=f;renderT(t);}
+function doRefresh(t,btn){const ic=btn.querySelector('.material-icons');ic.style.transition='transform .5s';ic.style.transform='rotate(360deg)';setTimeout(()=>{ic.style.transition='none';ic.style.transform='';},550);renderT(t);refreshFilters();toast('Refreshed!');}
+
+// ── CSV
+function exportCSV(type){
+  const data=getFiltered(type);if(!data.length){toast('No data to export');return;}
+  const skip=['id','classId','subjectId','lessonId','assessmentId','options','answer','password'];
+  const keys=Object.keys(data[0]).filter(k=>!skip.includes(k));
+  const csv=[keys.join(','),...data.map(r=>keys.map(k=>'"'+(r[k]??'')+'"').join(','))].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`${type}-${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exported!');
+}
+
+// ── QR
+function showQR(code,name){
+  document.getElementById('mtitle').textContent='QR Code – '+name;
+  document.getElementById('mbody').innerHTML=`<div style="text-align:center;padding:8px 0"><canvas id="qrc" width="200" height="200" class="qr-canvas"></canvas><p style="margin-top:12px;font-weight:700">${code}</p><p style="color:var(--mu);font-size:12px;margin-top:3px">Scan to access class resources</p><button class="btn-sv" style="margin-top:14px;width:100%;background:var(--dk)" onclick="dlQR()"><span class="material-icons" style="font-size:15px;vertical-align:middle">download</span> Download</button></div>`;
+  document.getElementById('mftr').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>{const c=document.getElementById('qrc');if(c)drawQR(c.getContext('2d'),code,200);},60);
+}
+function drawQR(ctx,text,size){
+  const N=21,cell=Math.floor(size/N);let rng=text.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const rand=()=>{rng=(rng*1103515245+12345)&0x7fffffff;return rng/0x7fffffff;};
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    const inF=(r<7&&c<7)||(r<7&&c>=N-7)||(r>=N-7&&c<7);let dark;
+    if(inF){const rr=r<7?r:r-(N-7),cc=c<7?c:c-(N-7);dark=(rr===0||rr===6||cc===0||cc===6||(rr>=2&&rr<=4&&cc>=2&&cc<=4));}
+    else dark=rand()>.5;
+    ctx.fillStyle=dark?'#1a1a2e':'#fff';ctx.fillRect(c*cell,r*cell,cell,cell);
+  }
+  const cs=cell*4;ctx.fillStyle='#fff';ctx.fillRect(size/2-cs/2-2,size/2-cs/2-2,cs+4,cs+4);
+  ctx.fillStyle='#1a6b3c';ctx.fillRect(size/2-cs/2,size/2-cs/2,cs,cs);
+  ctx.fillStyle='#fff';ctx.font=`bold ${cell*2.5}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('A',size/2,size/2+1);
+}
+function dlQR(){const c=document.getElementById('qrc');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL();a.download='qr-code.png';a.click();}
+
+// ── FORMS CONFIG
+const FORMS={
+  class:{title:'Class',fields:[
+    {k:'name',  l:'Class Name',    t:'text',  req:true, ph:'e.g. Grade 10 – Science'},
+    {k:'year',  l:'Academic Year', t:'text',  req:true, ph:'e.g. 2025–2026'},
+    {k:'campus',l:'Campus',        t:'text',  req:true, ph:'e.g. Main Campus'},
+    {k:'code',  l:'Class Code',    t:'text',  ph:'e.g. CLS-001'},
+    {k:'totalStudents',l:'Total Students',t:'number',ph:'0'},
+    {k:'smsInfo',l:'SMS Status',   t:'select',opts:['Active','Pending','Inactive']},
+  ]},
+  subject:{title:'Subject',fields:[
+    {k:'classId',l:'Class',        t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'name',   l:'Subject Name', t:'text',req:true,ph:'e.g. Biology'},
+  ]},
+  lesson:{title:'Lesson',fields:[
+    {k:'classId',  l:'Class',   t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'subjectId',l:'Subject', t:'ref',ref:'subjects', lk:'name',req:true,filterBy:'classId'},
+    {k:'name',     l:'Lesson Name',t:'text',req:true,ph:'e.g. Introduction to Cells'},
+    {k:'ordinal',  l:'Order',   t:'number',ph:'1'},
+  ]},
+  assessment:{title:'Assessment',fields:[
+    {k:'classId',  l:'Class',   t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'subjectId',l:'Subject', t:'ref',ref:'subjects', lk:'name',req:true,filterBy:'classId'},
+    {k:'lessonId', l:'Lesson',  t:'ref',ref:'lessons',  lk:'name',req:true,filterBy:'subjectId'},
+    {k:'name',     l:'Assessment Name',t:'text',req:true,ph:'e.g. Cell Structure Quiz'},
+    {k:'config',   l:'Type',    t:'select',opts:['MCQ','Essay','True/False','Mixed']},
+    {k:'maxScore', l:'Max Score',t:'number',ph:'100'},
+    {k:'date',     l:'Assessment Date',t:'date'},
+    {k:'validState',l:'Valid State',t:'select',opts:['Valid','Pending','Invalid']},
+  ]},
+  question:{title:'Question',extra:'opts',fields:[
+    {k:'classId',    l:'Class',     t:'ref',ref:'classes',    lk:'name',req:true},
+    {k:'subjectId',  l:'Subject',   t:'ref',ref:'subjects',   lk:'name',req:true,filterBy:'classId'},
+    {k:'lessonId',   l:'Lesson',    t:'ref',ref:'lessons',    lk:'name',req:true,filterBy:'subjectId'},
+    {k:'assessmentId',l:'Assessment',t:'ref',ref:'assessments',lk:'name',req:true,filterBy:'lessonId'},
+    {k:'title',      l:'Question Text',t:'textarea',req:true,ph:'Type the question here...'},
+    {k:'type',       l:'Question Type',t:'select',opts:['MCQ','True/False','Short Answer'],onch:'renderOptBuilder'},
+    {k:'points',     l:'Points',    t:'number',ph:'5'},
+  ]},
+  student:{title:'Student',fields:[
+    {k:'name',    l:'Full Name',   t:'text', req:true,ph:'e.g. Sophea Meng'},
+    {k:'username',l:'Username',    t:'text', req:true,ph:'e.g. sophea2025'},
+    {k:'email',   l:'Email Address',t:'email',ph:'e.g. sophea@school.edu'},
+    {k:'password',l:'Password',    t:'pwfield',req:true,ph:'Minimum 6 characters'},
+    {k:'classId', l:'Assign to Class',t:'ref',ref:'classes',lk:'name',req:true},
+    {k:'status',  l:'Account Status',t:'select',opts:['Active','Inactive','Suspended']},
+  ]},
+};
+
+// ── OPEN MODALS
+function openCreate(type){
+  editId=null;curType=type;
+  document.getElementById('mtitle').textContent='Create New '+FORMS[type].title;
+  document.getElementById('msave').textContent='Create';
+  document.getElementById('msave').style.background='';
+  document.getElementById('msave').onclick=saveModal;
+  document.getElementById('mftr').style.display='flex';
+  buildForm(type,{});
+  document.getElementById('overlay').classList.add('open');
+}
+function openEdit(type,id){
+  const arr=type==='student'?DB.get('students'):DB.get(type+'s');
+  const item=arr.find(r=>r.id===id);if(!item)return;
+  editId=id;curType=type;
+  document.getElementById('mtitle').textContent='Edit '+FORMS[type].title;
+  document.getElementById('msave').textContent='Save Changes';
+  document.getElementById('msave').style.background='';
+  document.getElementById('msave').onclick=saveModal;
+  document.getElementById('mftr').style.display='flex';
+  buildForm(type,item);
+  document.getElementById('overlay').classList.add('open');
+}
+
+function buildForm(type,data){
+  const form=FORMS[type];let html='';
+  const postFills=[];
+  form.fields.forEach(f=>{
+    html+=`<div class="mfg"><label>${f.l}${f.req?' *':''}</label>`;
+    if(f.t==='select'){
+      const opts=f.opts||[];const curVal=data[f.k]||opts[0]||'';
+      const onch=f.onch?` data-onchange="${f.onch}()"`:' data-onchange=""';
+      html+=`<div class="csd" id="mf-${f.k}" data-val="${curVal}"${onch}></div>`;
+      postFills.push({type:'enum',id:'mf-'+f.k,options:opts.map(o=>({value:o,label:o})),curVal});
+    } else if(f.t==='ref'){
+      const pVal=f.filterBy?(data[f.filterBy]||null):null;
+      let opts=[];
+      if(!f.filterBy) opts=DB.get(f.ref);
+      else if(pVal) opts=DB.get(f.ref).filter(o=>o[f.filterBy]===pVal);
+      const dis=f.filterBy&&!pVal;
+      const ph=dis?`Select ${FORMS[type].fields.find(ff=>ff.k===f.filterBy)?.l||'parent'} first`:`Select ${f.l}`;
+      const disClass=dis?' dis':'';
+      html+=`<div class="csd${disClass}" id="mf-${f.k}" data-val="${data[f.k]||''}" data-onchange="onRefChange('${f.k}','${type}')"></div>`;
+      postFills.push({type:'ref',id:'mf-'+f.k,options:opts.map(o=>({value:o.id,label:o[f.lk]})),ph,curVal:data[f.k]||''});
+      if(dis) html+=`<div style="font-size:11px;color:var(--mu);margin-top:4px">← Select the parent field first</div>`;
+    } else if(f.t==='textarea'){
+      html+=`<textarea id="mf-${f.k}" placeholder="${f.ph||''}">${data[f.k]||''}</textarea>`;
+    } else if(f.t==='pwfield'){
+      html+=`<div class="pww"><input type="password" id="mf-${f.k}" placeholder="${f.ph||''}" value="" oninput="chkPw(this.value)"/><button type="button" class="eye" onclick="toggleFPw('mf-${f.k}',this)"><span class="material-icons">visibility_off</span></button></div><div class="pw-bar" id="pw-bar"></div>`;
+      if(editId) html+=`<div style="font-size:11px;color:var(--mu);margin-top:4px">Leave blank to keep the current password</div>`;
+    } else {
+      html+=`<input type="${f.t||'text'}" id="mf-${f.k}" value="${data[f.k]||''}" placeholder="${f.ph||''}"/>`;
+    }
+    html+='</div>';
+  });
+  if(form.extra==='opts') html+=`<div id="opt-builder"></div>`;
+  document.getElementById('mbody').innerHTML=html;
+  // Initialize all custom dropdowns
+  postFills.forEach(pf=>{
+    if(pf.type==='enum') csdFillEnum(pf.id,pf.options,pf.curVal);
+    else csdFill(pf.id,pf.options,pf.ph);
+  });
+  if(form.extra==='opts') renderOptBuilder();
+}
+
+// cascade ref fields inside modal
+function onRefChange(key,type){
+  const val=csdVal('mf-'+key);
+  FORMS[type].fields.forEach(f=>{
+    if(f.t==='ref'&&f.filterBy===key){
+      const childId='mf-'+f.k;
+      if(!document.getElementById(childId))return;
+      if(!val){
+        const parentLabel=FORMS[type].fields.find(ff=>ff.k===key)?.l||'parent';
+        csdFill(childId,[],`Select ${parentLabel} first`);
+        csdDis(childId,true);
+        onRefChange(f.k,type);
+      } else {
+        const opts=DB.get(f.ref).filter(o=>o[f.filterBy]===val);
+        csdDis(childId,false);
+        if(!opts.length){
+          csdFill(childId,[],`No ${f.l}s for this selection`);
+          csdDis(childId,true);
+        } else {
+          csdFill(childId,opts.map(o=>({value:o.id,label:o[f.lk]})),`Select ${f.l}`);
+        }
+        onRefChange(f.k,type);
+      }
+    }
+  });
+}
+
+// option builder (questions)
+let corIdx=0;
+function renderOptBuilder(){
+  const qt=document.getElementById('mf-type')?.value||'MCQ';
+  const w=document.getElementById('opt-builder');if(!w)return;
+  if(qt==='Short Answer'){w.innerHTML='';return;}
+  const opts=qt==='True/False'?['True','False']:['','','',''];
+  corIdx=0;const ro=qt==='True/False';
+  w.innerHTML=`<div class="mfg"><label>Options <small style="font-weight:400;text-transform:none">(click ✓ to mark correct)</small></label><div class="opt-wrap" id="ow">
+    ${opts.map((o,i)=>`<div class="or">${ro?`<input type="text" value="${o}" readonly style="background:var(--bg)"/>`:`<input type="text" id="oo-${i}" value="${o}" placeholder="Option ${i+1}"/>`}<div class="oc${i===0?' sel':''}" onclick="setC(${i})"><span class="material-icons">check</span></div></div>`).join('')}
+  </div>${!ro?`<button type="button" onclick="addOpt()" style="margin-top:7px;font-family:var(--f);font-size:12px;border:1.5px dashed var(--bo);border-radius:7px;padding:5px 12px;cursor:pointer;color:var(--mu);background:none">+ Add Option</button>`:''}</div>`;
+}
+function setC(i){corIdx=i;document.querySelectorAll('.oc').forEach((el,j)=>el.classList.toggle('sel',j===i));}
+function addOpt(){const w=document.getElementById('ow');const i=w.children.length;const d=document.createElement('div');d.className='or';d.innerHTML=`<input type="text" id="oo-${i}" placeholder="Option ${i+1}"/><div class="oc" onclick="setC(${i})"><span class="material-icons">check</span></div>`;w.appendChild(d);}
+function chkPw(v){const b=document.getElementById('pw-bar');if(!b)return;if(!v){b.className='pw-bar';return;}const st=v.length>=8&&/[A-Z]/.test(v)&&/[0-9]/.test(v)?'s':v.length>=6?'m':'w';b.className='pw-bar '+st;}
+function toggleFPw(id,btn){const el=document.getElementById(id);if(!el)return;el.type=el.type==='password'?'text':'password';btn.querySelector('.material-icons').textContent=el.type==='password'?'visibility_off':'visibility';}
+
+// ── SAVE
+function saveModal(){
+  const type=curType, form=FORMS[type];
+  const now=new Date().toISOString().slice(0,10);
+  let rec={id:editId||DB.uid(),createdBy:'Admin K',createdAt:now};
+  if(editId){const old=(DB.get(type==='student'?'students':type+'s')).find(r=>r.id===editId);if(old)rec.createdAt=old.createdAt;}
+
+  for(const f of form.fields){
+    const el=document.getElementById('mf-'+f.k);if(!el)continue;
+    let val;
+    if(f.t==='select'||f.t==='ref'){
+      val=csdVal('mf-'+f.k);
+      // for enum selects default to first option if somehow empty
+      if(!val&&f.t==='select'&&f.opts) val=f.opts[0]||'';
+    } else if(f.t==='pwfield'){
+      val=el.value.trim();
+      if(!val&&editId){const old=DB.get('students').find(r=>r.id===editId);rec[f.k]=old?old.password:'';continue;}
+      if(!val&&f.req){highlight(el,f.l);return;}
+      if(val&&val.length<6){toast('Password must be at least 6 characters','err');return;}
+      rec[f.k]=val;continue;
+    } else {
+      val=f.t==='number'?el.value:el.value.trim();
+    }
+    if(f.req&&!val){highlight(el,f.l);return;}
+    rec[f.k]=val;
+  }
+
+  // resolve display names
+  if(rec.classId){const c=DB.get('classes').find(x=>x.id===rec.classId);if(c)rec.className=c.name;}
+  if(rec.subjectId){const s=DB.get('subjects').find(x=>x.id===rec.subjectId);if(s)rec.subjectName=s.name;}
+  if(rec.lessonId){const l=DB.get('lessons').find(x=>x.id===rec.lessonId);if(l)rec.lessonName=l.name;}
+  if(rec.assessmentId){const a=DB.get('assessments').find(x=>x.id===rec.assessmentId);if(a)rec.assessmentName=a.name;}
+
+  if(type==='question'){
+    const qt=rec.type||'MCQ';
+    if(qt==='MCQ'){const opts=[];let i=0;while(document.getElementById('oo-'+i)){opts.push(document.getElementById('oo-'+i).value);i++;}rec.options=opts;rec.answer=corIdx;}
+    else if(qt==='True/False'){rec.options=['True','False'];rec.answer=corIdx;}
+  }
+  if(type==='student'){
+    const dup=DB.get('students').find(s=>s.username===rec.username&&s.id!==editId);
+    if(dup){toast('Username "'+rec.username+'" is already taken','err');return;}
+  }
+
+  const key=type==='student'?'students':type+'s';
+  const arr=DB.get(key);
+  if(editId){const i=arr.findIndex(r=>r.id===editId);if(i>=0)arr[i]={...arr[i],...rec};}
+  else arr.push(rec);
+  DB.set(key,arr);
+  if(type==='student'||type==='class') syncStudentCounts();
+  closeModal();renderT(type);refreshFilters();
+  toast((editId?'Updated':'Created')+' '+form.title+'!');
+  editId=null;
+}
+function highlight(el,label){
+  if(el&&el.classList.contains('csd')){
+    el.classList.add('err');setTimeout(()=>el.classList.remove('err'),2000);
+  } else if(el){
+    el.focus();el.style.borderColor='#f44336';setTimeout(()=>el.style.borderColor='',2000);
+  }
+  toast('Please fill in: '+label,'err');
+}
+function syncStudentCounts(){
+  const students=DB.get('students');
+  const classes=DB.get('classes').map(c=>{c.totalStudents=students.filter(s=>s.classId===c.id).length;return c;});
+  DB.set('classes',classes);
+}
+
+// ── DELETE
+function confirmDel(type,id,name){
+  document.getElementById('mtitle').textContent='Confirm Delete';
+  document.getElementById('mbody').innerHTML=`<div class="cfm"><span class="material-icons">warning_amber</span><strong>Delete "${name}"?</strong><p>This cannot be undone.</p></div>`;
+  document.getElementById('msave').textContent='Yes, Delete';
+  document.getElementById('msave').style.background='#f44336';
+  document.getElementById('msave').onclick=()=>doDel(type,id);
+  document.getElementById('mftr').style.display='flex';
+  document.getElementById('overlay').classList.add('open');
+}
+function doDel(type,id){
+  const key=type==='student'?'students':type+'s';
+  DB.set(key,DB.get(key).filter(r=>r.id!==id));
+  closeModal();renderT(type);refreshFilters();
+  if(type==='student') syncStudentCounts();
+  toast('Deleted successfully');
+  document.getElementById('msave').style.background='';
+  document.getElementById('msave').onclick=saveModal;
+}
+
+// ── RESET PASSWORD
+function showResetPw(id){
+  const st=DB.get('students').find(s=>s.id===id);if(!st)return;
+  document.getElementById('mtitle').textContent='Reset Password – '+st.name;
+  document.getElementById('mbody').innerHTML=`<div style="background:var(--gl);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--gd)"><strong>Username:</strong> ${st.username}<br><strong>Class:</strong> ${st.className||'—'}</div><div class="mfg"><label>New Password *</label><div class="pww"><input type="password" id="npw" placeholder="Minimum 6 characters" oninput="chkPw(this.value)"/><button type="button" class="eye" onclick="toggleFPw('npw',this)"><span class="material-icons">visibility_off</span></button></div><div class="pw-bar" id="pw-bar"></div></div>`;
+  document.getElementById('msave').textContent='Update Password';
+  document.getElementById('msave').style.background='';
+  document.getElementById('msave').onclick=()=>{
+    const v=document.getElementById('npw')?.value.trim();
+    if(!v){toast('Enter a new password','err');return;}
+    if(v.length<6){toast('Password must be at least 6 characters','err');return;}
+    const arr=DB.get('students');const i=arr.findIndex(s=>s.id===id);if(i>=0)arr[i].password=v;
+    DB.set('students',arr);closeModal();toast('Password updated for '+st.name+'!');
+    document.getElementById('msave').onclick=saveModal;
+  };
+  document.getElementById('mftr').style.display='flex';
+  document.getElementById('overlay').classList.add('open');
+}
+
+// ── REPORTS
+function renderReports(){
+  const c=DB.get('classes').length,s=DB.get('subjects').length,l=DB.get('lessons').length;
+  const a=DB.get('assessments').length,q=DB.get('questions').length;
+  const st=DB.get('students').length,sb=DB.get('submissions').length;
+  const w=document.getElementById('rw');if(!w)return;
+  w.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:4px 0 18px">
+    ${[['school','Classes',c,'#e6f4ed','#1a6b3c'],['menu_book','Subjects',s,'#e3f0ff','#1565c0'],['chrome_reader_mode','Lessons',l,'#fff3e0','#e65100'],['quiz','Assessments',a,'#f3e5f5','#6a1b9a'],['help_outline','Questions',q,'#fce4ec','#c62828'],['people','Students',st,'#e0f7fa','#006064'],['assignment_turned_in','Submissions',sb,'#f1f8e9','#33691e']].map(([icon,label,count,bg,color])=>`<div style="background:${bg};border-radius:12px;padding:16px;text-align:center"><span class="material-icons" style="font-size:28px;color:${color}">${icon}</span><div style="font-size:1.8rem;font-weight:800;color:${color};margin:4px 0">${count}</div><div style="font-size:12px;font-weight:600;color:${color}">${label}</div></div>`).join('')}
+  </div>
+  <div style="background:var(--gl);border-radius:10px;padding:16px 18px;margin-bottom:14px">
+    <h4 style="color:var(--gd);margin-bottom:8px">📱 Student Portal</h4>
+    <p style="font-size:13px;color:var(--mu)">Share <strong style="color:var(--gd)">student-portal.html</strong> with your students. They use the username + password you create in Student List to log in.</p>
+    ${st===0?`<div style="margin-top:10px;background:#fff3e0;border-radius:7px;padding:10px 12px;font-size:12px;color:#e65100">⚠ No students yet — go to Student Management → Student List to add students.</div>`:''}
+  </div>
+  <div style="background:#fff;border-radius:10px;padding:16px 18px;box-shadow:var(--sh)">
+    <div style="font-size:14px;font-weight:800;margin-bottom:10px">Recent Students</div>
+    ${DB.get('students').slice(-6).reverse().map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bo)"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(s.name||'?')[0]}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${s.name}</div><div style="font-size:11px;color:var(--mu)">${s.username} · ${s.className||'No class'}</div></div><span class="chip ${s.status==='Active'?'cg':'co'}">${s.status||'Active'}</span></div>`).join('')||'<p style="font-size:13px;color:var(--mu);text-align:center;padding:20px 0">No students yet.</p>'}
+  </div>`;
+}
+
+// ── MODAL HELPERS
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+function closeBg(e){if(e.target===document.getElementById('overlay'))closeModal();}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.querySelector('.material-icons').textContent=type==='err'?'error':'check_circle';
+  document.getElementById('tmsg').textContent=msg;
+  t.classList.add('show');clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
