@@ -542,13 +542,14 @@ async function submitQuiz(){
   // Score
   let score=0;
   currentQuestions.forEach((q,i)=>{
+    const pts = parseFloat(q.points)||0;
     if(q.type==='MCQ'||q.type==='True/False'){
-      if(answers[i]===q.answer) score+=q.points;
+      if(answers[i]===q.answer) score+=pts;
     } else {
-      // Short answer: give full points (teacher graded would be manual)
-      if(answers[i]&&answers[i].trim().length>0) score+=Math.floor(q.points*0.5);
+      if(answers[i]&&answers[i].trim().length>0) score+=Math.floor(pts*0.5);
     }
   });
+  score = Math.round(score);
   // Save submission to Firestore
   // Check if retaking a returned submission — overwrite it
   const existingSub = CACHE.submissions?.find(s=>s.assessmentId===ass.id&&s.studentId===currentStudent.id);
@@ -566,9 +567,11 @@ function showResults(ass,qs,ans,score){
   if(score===undefined){
     score=0;
     qs.forEach((q,i)=>{
-      if((q.type==='MCQ'||q.type==='True/False')&&ans[i]===q.answer) score+=q.points;
-      else if(q.type==='Short Answer'&&ans[i]&&ans[i].trim()) score+=Math.floor(q.points*0.5);
+      const pts = parseFloat(q.points)||0;
+      if((q.type==='MCQ'||q.type==='True/False')&&ans[i]===q.answer) score+=pts;
+      else if(q.type==='Short Answer'&&ans[i]&&ans[i].trim()) score+=Math.floor(pts*0.5);
     });
+    score = Math.round(score);
   }
   const max=ass.maxScore||qs.reduce((s,q)=>s+q.points,0);
   const pct=Math.round(score/max*100);
@@ -627,6 +630,11 @@ function showReview(){
     </div>`;
   }).join('');
   document.getElementById('review-overlay').classList.add('open');
+  // Render math in review
+  if(window.MathJax){
+    MathJax.typesetClear([document.getElementById('review-body')]);
+    MathJax.typesetPromise([document.getElementById('review-body')]).catch(e=>console.warn(e));
+  }
 }
 function closeReview(){document.getElementById('review-overlay').classList.remove('open');}
 
