@@ -460,10 +460,10 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
 </div>
 <div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="tmsg"></span></div>
 
-<!-- Firebase SDK (compat version — works without bundler/import) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-firestore-compat.min.js"></script>
 
 <script>
 'use strict';
@@ -480,6 +480,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
+
+// Keep user logged in after page refresh
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
@@ -507,10 +510,17 @@ async function dbDel(collection, id) {
 // Load all collections from Firestore
 async function loadAll() {
   const cols = ['classes','subjects','lessons','assessments','questions','students'];
-  await Promise.all(cols.map(async col => {
-    const snap = await db.collection(col).get();
-    CACHE[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }));
+  // Load one by one (more reliable than Promise.all on page load)
+  for(const col of cols){
+    try {
+      const snap = await db.collection(col).get();
+      CACHE[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      console.log(col, '→', CACHE[col].length, 'records');
+    } catch(e) {
+      console.warn('Failed to load', col, e.message);
+      CACHE[col] = CACHE[col] || [];
+    }
+  }
 }
 
 // ── CUSTOM SELECT DROPDOWN (CSD) — no eval, no new Function
@@ -1116,25 +1126,35 @@ function toast(msg,type='ok'){
 }
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
+// Wait for auth to be fully ready before doing anything
+let appReady = false;
 auth.onAuthStateChanged(async user => {
+  if(appReady) return; // prevent double-firing
+  appReady = true;
+
+  const ldgEl  = document.getElementById('ldg');
+  const ldgMsg = ldgEl.querySelector('p');
+
   if(user){
-    // User is logged in — load data and show app
-    document.getElementById('ldg').querySelector('p').textContent='Loading data...';
+    ldgEl.style.display = 'flex';
+    ldgMsg.textContent  = 'Loading your data...';
     try {
       await loadAll();
-      document.getElementById('ldg').style.display='none';
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('app-screen').style.display='block';
+      // Double-check data actually loaded
+      const total = Object.values(CACHE).reduce((s,a)=>s+a.length,0);
+      console.log('Total records loaded:', total);
+      ldgEl.style.display = 'none';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display   = 'block';
       initApp();
     } catch(e) {
-      document.getElementById('ldg').querySelector('p').textContent='Error loading data. Check Firestore rules.';
+      ldgMsg.textContent = 'Error loading data: ' + e.message;
       console.error(e);
     }
   } else {
-    // Not logged in — show login
-    document.getElementById('ldg').style.display='none';
-    document.getElementById('login-screen').style.display='flex';
-    document.getElementById('app-screen').style.display='none';
+    ldgEl.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display   = 'none';
   }
 });
 </script>
