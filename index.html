@@ -1028,7 +1028,8 @@ function initTinyMCE(id){
                'alignleft aligncenter alignright | bullist numlist | '+
                'table link | math | removeformat',
       skin: 'oxide',
-      content_css: 'default',
+      content_css: 'https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap',
+      content_style: "body { font-family: 'Kantumruy Pro', sans-serif; font-size: 14px; line-height: 1.6; padding: 8px; }",
       placeholder: 'Type content here... Use the math button for formulas',
       setup: function(editor){
         // Custom math button
@@ -1432,12 +1433,8 @@ async function returnAssessment(){
 }
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
-// Wait for auth to be fully ready before doing anything
-let appReady = false;
+// Bootstrap — restore session on refresh
 auth.onAuthStateChanged(async user => {
-  if(appReady) return; // prevent double-firing
-  appReady = true;
-
   const ldgEl  = document.getElementById('ldg');
   const ldgMsg = ldgEl.querySelector('p');
 
@@ -1446,15 +1443,12 @@ auth.onAuthStateChanged(async user => {
     ldgMsg.textContent  = 'Loading your data...';
     try {
       await loadAll();
-      // Double-check data actually loaded
-      const total = Object.values(CACHE).reduce((s,a)=>s+a.length,0);
-      console.log('Total records loaded:', total);
       ldgEl.style.display = 'none';
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display   = 'block';
       initApp();
     } catch(e) {
-      ldgMsg.textContent = 'Error loading data: ' + e.message;
+      ldgMsg.textContent = 'Error: ' + e.message;
       console.error(e);
     }
   } else {
