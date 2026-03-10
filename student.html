@@ -154,7 +154,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:2px}
 /* TinyMCE content rendering */
-.tinymce-content { font-family: 'STIX Two Text', 'Cambria Math', 'Kantumruy Pro', serif; font-size: 15px; line-height: 1.8; }
+.tinymce-content, .tinymce-content * { font-family: 'Kantumruy Pro', sans-serif !important; font-size: 15px; line-height: 1.7; }
 .tinymce-content p { margin: 0 0 8px; }
 .tinymce-content strong { font-weight: 700; }
 .tinymce-content em { font-style: italic; }
@@ -356,6 +356,7 @@ async function studentLogin(){
     const match=CACHE.students.find(s=>s.username.toLowerCase()===u&&s.password===p);
     if(match){
       currentStudent=match;
+      sessionStorage.setItem('lms_student', JSON.stringify(match));
       loadDashboard();
       showScreen('s-dash');
     } else {
@@ -371,7 +372,8 @@ async function studentLogin(){
 }
 function studentLogout(){
   if(confirm('Log out?')){
-    currentStudent=null;clearTimer();
+    currentStudent=null; clearTimer();
+    sessionStorage.removeItem('lms_student');
     document.getElementById('s-uname').value='';
     document.getElementById('s-pw').value='';
     showScreen('s-login');
@@ -667,6 +669,21 @@ window.addEventListener('load', async ()=>{
     msg.textContent = 'Connecting...';
     await loadAll();
     ldg.style.display = 'none';
+    // Restore session if student was previously logged in
+    const saved = sessionStorage.getItem('lms_student');
+    if(saved){
+      try {
+        const student = JSON.parse(saved);
+        // Verify student still exists in DB
+        const match = CACHE.students.find(s=>s.id===student.id);
+        if(match){
+          currentStudent = match;
+          loadDashboard();
+          showScreen('s-dash');
+          return;
+        }
+      } catch(e){ sessionStorage.removeItem('lms_student'); }
+    }
     showScreen('s-login');
   } catch(e){
     msg.textContent = 'Failed to connect. Please refresh.';
