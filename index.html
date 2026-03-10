@@ -841,9 +841,12 @@ const FORMS={
 };
 
 // ── OPEN MODALS
-function openCreate(type){
+async function openCreate(type){
   editId=null; curType=type;
+  // Always reload fresh from Firestore before building the form
+  await loadAll();
   refreshFilters();
+  renderT(type);
   document.getElementById('mtitle').textContent='Create New '+FORMS[type].title;
   document.getElementById('msave').textContent='Create';
   document.getElementById('msave').style.background='';
@@ -1003,6 +1006,8 @@ async function saveModal(){
   try {
     await dbSet(colKey, rec.id, rec);
     if(type==='student'||type==='class') await syncStudentCounts();
+    // Reload all data so every table and dropdown is up to date
+    await loadAll();
     closeModal();
     renderT(type);
     refreshFilters();
