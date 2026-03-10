@@ -460,6 +460,11 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
 </div>
 <div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="tmsg"></span></div>
 
+<!-- MathJax for rendering math -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<!-- TinyMCE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
+
 <!-- Firebase SDK -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
@@ -819,6 +824,7 @@ const FORMS={
     {k:'classId',  l:'Class',   t:'ref',ref:'classs',  lk:'name',req:true},
     {k:'subjectId',l:'Subject', t:'ref',ref:'subjects', lk:'name',req:true,filterBy:'classId'},
     {k:'name',     l:'Lesson Name',t:'text',req:true,ph:'e.g. Introduction to Cells'},
+    {k:'content',  l:'Lesson Content',t:'richtext',ph:'Type lesson content here...'},
     {k:'ordinal',  l:'Order',   t:'number',ph:'1'},
   ]},
   assessment:{title:'Assessment',fields:[
@@ -836,7 +842,7 @@ const FORMS={
     {k:'subjectId',  l:'Subject',   t:'ref',ref:'subjects',   lk:'name',req:true,filterBy:'classId'},
     {k:'lessonId',   l:'Lesson',    t:'ref',ref:'lessons',    lk:'name',req:true,filterBy:'subjectId'},
     {k:'assessmentId',l:'Assessment',t:'ref',ref:'assessments',lk:'name',req:true,filterBy:'lessonId'},
-    {k:'title',      l:'Question Text',t:'textarea',req:true,ph:'Type the question here...'},
+    {k:'title',      l:'Question Text',t:'richtext',req:true,ph:'Type the question here...'},
     {k:'type',       l:'Question Type',t:'select',opts:['MCQ','True/False','Short Answer'],onch:'renderOptBuilder'},
     {k:'points',     l:'Points',    t:'number',ph:'5'},
   ]},
@@ -895,6 +901,9 @@ function buildForm(type,data){
       postFills.push({type:'refcb',id:'mf-'+f.k,key:f.k,ftype:type});
       postFills.push({type:'ref', id:'mf-'+f.k,ref:f.ref,lk:f.lk,filterBy:f.filterBy,filterVal:data[f.filterBy]||null,ph,curVal:data[f.k]||''});
       if(dis) html+=`<div style="font-size:11px;color:var(--mu);margin-top:4px">← Select the parent field first</div>`;
+    } else if(f.t==='richtext'){
+      html+=`<textarea id="mf-${f.k}" class="richtext-field">${data[f.k]||''}</textarea>`;
+      postFills.push({type:'richtext',id:'mf-'+f.k});
     } else if(f.t==='textarea'){
       html+=`<textarea id="mf-${f.k}" placeholder="${f.ph||''}">${data[f.k]||''}</textarea>`;
     } else if(f.t==='pwfield'){
@@ -912,6 +921,7 @@ function buildForm(type,data){
     if(pf.type==='cb')    { csdOn(pf.id, pf.fn); }
     else if(pf.type==='refcb') { csdOn(pf.id, ()=>onRefChange(pf.key, pf.ftype)); }
     else if(pf.type==='enum')  { csdFillEnum(pf.id, pf.options, pf.curVal); }
+    else if(pf.type==='richtext') { initTinyMCE(pf.id); }
     else { // ref
       let opts=[];
       if(!pf.filterBy) opts=DB.get(pf.ref);
@@ -966,6 +976,60 @@ function addOpt(){ const w=document.getElementById('ow'); const i=w.children.len
 function chkPw(v){ const b=document.getElementById('pw-bar'); if(!b)return; if(!v){b.className='pw-bar';return;} const st=v.length>=8&&/[A-Z]/.test(v)&&/[0-9]/.test(v)?'s':v.length>=6?'m':'w'; b.className='pw-bar '+st; }
 function toggleFPw(id,btn){ const el=document.getElementById(id); if(!el)return; el.type=el.type==='password'?'text':'password'; btn.querySelector('.material-icons').textContent=el.type==='password'?'visibility_off':'visibility'; }
 
+// ── TINYMCE INIT
+function initTinyMCE(id){
+  setTimeout(()=>{
+    tinymce.init({
+      selector: '#'+id,
+      height: 280,
+      menubar: false,
+      plugins: ['lists','link','table','codesample','emoticons'],
+      toolbar: 'undo redo | bold italic underline | forecolor backcolor | '+
+               'alignleft aligncenter alignright | bullist numlist | '+
+               'table link | math | removeformat',
+      skin: 'oxide',
+      content_css: 'default',
+      placeholder: 'Type content here... Use the math button for formulas',
+      setup: function(editor){
+        // Custom math button
+        editor.ui.registry.addButton('math', {
+          text: '∑ Math',
+          tooltip: 'Insert Math Formula',
+          onAction: function(){
+            editor.windowManager.open({
+              title: 'Insert Math Formula',
+              body: {
+                type: 'panel',
+                items: [{
+                  type: 'textarea',
+                  name: 'formula',
+                  label: 'LaTeX Formula (e.g. x^2 + y^2 = z^2)',
+                  maximized: true
+                }]
+              },
+              buttons: [
+                {type:'cancel', text:'Cancel'},
+                {type:'submit', text:'Insert', primary:true}
+              ],
+              onSubmit: function(api){
+                const formula = api.getData().formula.trim();
+                if(formula){
+                  editor.insertContent('\\('+formula+'\\)');
+                }
+                api.close();
+              }
+            });
+          }
+        });
+      },
+      init_instance_callback: function(editor){
+        // Render any existing math in the editor
+        if(window.MathJax) MathJax.typesetPromise([editor.getBody()]).catch(e=>console.warn(e));
+      }
+    });
+  }, 100);
+}
+
 // ── SAVE (async, writes to Firestore)
 async function saveModal(){
   const type=curType, form=FORMS[type];
@@ -981,6 +1045,9 @@ async function saveModal(){
     if(f.t==='select'||f.t==='ref'){
       val=csdVal('mf-'+f.k);
       if(!val&&f.t==='select'&&f.opts) val=f.opts[0]||'';
+    } else if(f.t==='richtext'){
+      const ed=tinymce.get('mf-'+f.k);
+      val=ed?ed.getContent():document.getElementById('mf-'+f.k)?.value||'';
     } else if(f.t==='pwfield'){
       val=el.value.trim();
       if(!val&&editId){ const old=DB.get('students').find(r=>r.id===editId); rec[f.k]=old?old.password:''; continue; }
@@ -1116,7 +1183,11 @@ function renderReports(){
 }
 
 // ── MODAL HELPERS
-function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function closeModal(){
+  // Remove any active TinyMCE editors before closing
+  tinymce.remove('.richtext-field');
+  document.getElementById('overlay').classList.remove('open');
+}
 function closeBg(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
 function toast(msg,type='ok'){
   const t=document.getElementById('toast');
