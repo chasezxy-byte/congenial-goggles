@@ -501,18 +501,19 @@ function csdFillEnum(id,options,curVal){
   const panel=document.getElementById('cdp-'+id);
   if(panel)panel.innerHTML=options.map(o=>`<div class="csd-opt${o.value===v?' sel':''}" data-val="${o.value}" onclick="csdSel('${id}',this)">${o.label}</div>`).join('');
 }
+const CSD_CB={};
+function csdOn(id,fn){CSD_CB[id]=fn;}
 function csdSel(id,optEl){
   const el=document.getElementById(id);if(!el||el.classList.contains('dis'))return;
   const value=optEl.getAttribute('data-val')||'';
   el.setAttribute('data-val',value);
   const ph=el.getAttribute('data-ph')||'';
   const lbl=el.querySelector('.csd-label');
-  if(lbl){lbl.textContent=value?optEl.textContent:ph;lbl.className='csd-label'+(value?'':' ph');}
+  if(lbl){lbl.textContent=value?optEl.textContent.trim():ph;lbl.className='csd-label'+(value?'':' ph');}
   const panel=document.getElementById('cdp-'+id);
   if(panel)panel.querySelectorAll('.csd-opt').forEach(o=>o.classList.toggle('sel',o===optEl));
   csdClose(id);
-  const cb=el.getAttribute('data-onchange');
-  if(cb){try{(new Function(cb))();}catch(e){console.warn(e);}}
+  if(CSD_CB[id])CSD_CB[id](value);
 }
 function csdToggle(id){
   const el=document.getElementById(id);if(!el||el.classList.contains('dis'))return;
@@ -582,22 +583,33 @@ function nav(pid,el){
 function refreshFilters(){
   const cls=DB.get('classes'), subs=DB.get('subjects');
   const les=DB.get('lessons'), ass=DB.get('assessments');
-  // Class page year/campus filters
+  // Class page filters
   fillVals('f-class-year',  [...new Set(cls.map(c=>c.year).filter(Boolean))], 'All Years');
   fillVals('f-class-campus',[...new Set(cls.map(c=>c.campus).filter(Boolean))], 'All Campuses');
+  csdOn('f-class-year',  ()=>renderT('class'));
+  csdOn('f-class-campus',()=>renderT('class'));
   // Lesson filters
   fillRef('f-lesson-class',  cls,  'All Classes');
   fillRef('f-lesson-subject',subs, 'All Subjects');
+  csdOn('f-lesson-class',  ()=>{onTbFilterClass('lesson');renderT('lesson');});
+  csdOn('f-lesson-subject',()=>renderT('lesson'));
   // Assessment filters
   fillRef('f-ass-class',  cls,  'All Classes');
   fillRef('f-ass-subject',subs, 'All Subjects');
   fillRef('f-ass-lesson', les,  'All Lessons');
+  csdOn('f-ass-class',  ()=>{onTbFilterClass('ass');renderT('assessment');});
+  csdOn('f-ass-subject',()=>renderT('assessment'));
+  csdOn('f-ass-lesson', ()=>renderT('assessment'));
   // Question filters
   fillRef('f-q-class',      cls, 'All Classes');
   fillRef('f-q-subject',    subs,'All Subjects');
   fillRef('f-q-assessment', ass, 'All Assessments');
+  csdOn('f-q-class',      ()=>{onTbFilterClass('q');renderT('question');});
+  csdOn('f-q-subject',    ()=>renderT('question'));
+  csdOn('f-q-assessment', ()=>renderT('question'));
   // Student filter
   fillRef('f-st-class', cls, 'All Classes');
+  csdOn('f-st-class', ()=>renderT('student'));
 }
 function fillVals(id,vals,ph){csdFill(id,vals.map(v=>({value:v,label:v})),ph);}
 function fillRef(id,arr,ph){csdFill(id,arr.map(r=>({value:r.id,label:r.name})),ph);}
@@ -675,10 +687,11 @@ function renderPag(type,total,tp){
     if(tp<=6||i===1||i===tp||Math.abs(i-s.page)<=1) btns+=`<div class="pb${i===s.page?' ap':''}" onclick="goPage('${type}',${i})">${i}</div>`;
     else if(Math.abs(i-s.page)===2) btns+=`<div class="pb" style="pointer-events:none;border:none">…</div>`;
   }
-  w.innerHTML=`<div class="rpp">Rows per page:<div class="csd" id="${psId}" data-onchange="setPS('${type}',csdVal('${psId}'))" style="min-width:64px;display:inline-flex"></div></div><div class="pi">${total?`${st}–${en} of ${total}`:'0–0 of 0'}</div><div class="pb" onclick="changePage('${type}',-1)" ${s.page<=1?'disabled':''}><span class="material-icons">chevron_left</span></div>${btns}<div class="pb" onclick="changePage('${type}',1)" ${s.page>=tp?'disabled':''}><span class="material-icons">chevron_right</span></div>`;
+  w.innerHTML=`<div class="rpp">Rows per page:<div class="csd" id="${psId}" style="min-width:64px;display:inline-flex"></div></div><div class="pi">${total?`${st}–${en} of ${total}`:'0–0 of 0'}</div><div class="pb" onclick="changePage('${type}',-1)" ${s.page<=1?'disabled':''}><span class="material-icons">chevron_left</span></div>${btns}<div class="pb" onclick="changePage('${type}',1)" ${s.page>=tp?'disabled':''}><span class="material-icons">chevron_right</span></div>`;
   // must set data-val BEFORE csdFillEnum so it picks up current ps
   const psEl=document.getElementById(psId);if(psEl)psEl.setAttribute('data-val',String(s.ps));
   csdFillEnum(psId,[10,25,50].map(n=>({value:String(n),label:String(n)})),String(s.ps));
+  csdOn(psId,v=>setPS(type,v));
 }
 function changePage(t,d){const s=ST[t];const tp=Math.max(1,Math.ceil(getFiltered(t).length/s.ps));s.page=Math.max(1,Math.min(tp,s.page+d));renderT(t);}
 function goPage(t,p){ST[t].page=p;renderT(t);}
@@ -801,15 +814,16 @@ function buildForm(type,data){
     html+=`<div class="mfg"><label>${f.l}${f.req?' *':''}</label>`;
     if(f.t==='select'){
       const opts=f.opts||[];const curVal=data[f.k]||opts[0]||'';
-      const onch=f.onch?` data-onchange="${f.onch}()"`:' data-onchange=""';
-      html+=`<div class="csd" id="mf-${f.k}" data-val="${curVal}"${onch}></div>`;
+      html+=`<div class="csd" id="mf-${f.k}" data-val="${curVal}"></div>`;
+      if(f.onch) postFills.push({type:'cb',id:'mf-'+f.k,fn:()=>window[f.onch]&&window[f.onch]()});
       postFills.push({type:'enum',id:'mf-'+f.k,options:opts.map(o=>({value:o,label:o})),curVal});
     } else if(f.t==='ref'){
       const pVal=f.filterBy?(data[f.filterBy]||null):null;
       const dis=f.filterBy&&!pVal;
       const ph=dis?`Select ${FORMS[type].fields.find(ff=>ff.k===f.filterBy)?.l||'parent'} first`:`Select ${f.l}`;
       const disClass=dis?' dis':'';
-      html+=`<div class="csd${disClass}" id="mf-${f.k}" data-val="${data[f.k]||''}" data-onchange="onRefChange('${f.k}','${type}')"></div>`;
+      html+=`<div class="csd${disClass}" id="mf-${f.k}" data-val="${data[f.k]||''}"></div>`;
+      postFills.push({type:'refcb',id:'mf-'+f.k,key:f.k,ftype:type});
       // Always read fresh from DB at postFill time (not captured in closure)
       postFills.push({type:'ref',id:'mf-'+f.k,ref:f.ref,lk:f.lk,filterBy:f.filterBy,filterVal:pVal,ph,curVal:data[f.k]||''});
       if(dis) html+=`<div style="font-size:11px;color:var(--mu);margin-top:4px">← Select the parent field first</div>`;
@@ -827,7 +841,9 @@ function buildForm(type,data){
   document.getElementById('mbody').innerHTML=html;
   // Initialize all custom dropdowns — ref fields read DB fresh here
   postFills.forEach(pf=>{
-    if(pf.type==='enum') csdFillEnum(pf.id,pf.options,pf.curVal);
+    if(pf.type==='enum'){csdFillEnum(pf.id,pf.options,pf.curVal);}
+    else if(pf.type==='cb'){csdOn(pf.id,pf.fn);}
+    else if(pf.type==='refcb'){csdOn(pf.id,()=>onRefChange(pf.key,pf.ftype));}
     else {
       let opts=[];
       if(!pf.filterBy) opts=DB.get(pf.ref);
