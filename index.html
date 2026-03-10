@@ -494,9 +494,10 @@ const DB = {
 // Write to Firestore + update cache
 async function dbSet(collection, id, data) {
   await db.collection(collection).doc(id).set(data);
-  const arr = CACHE[collection] || [];
+  const arr = CACHE[collection] ? [...CACHE[collection]] : [];
   const idx = arr.findIndex(r => r.id === id);
   if (idx >= 0) arr[idx] = data; else arr.push(data);
+  CACHE[collection] = arr;
 }
 async function dbDel(collection, id) {
   await db.collection(collection).doc(id).delete();
