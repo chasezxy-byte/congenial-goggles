@@ -153,6 +153,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   .quiz-header{padding:18px calc(50% - 280px)}
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:2px}
+/* TinyMCE content rendering */
+.tinymce-content { font-family: 'STIX Two Text', 'Cambria Math', 'Times New Roman', serif; font-size: 15px; line-height: 1.8; }
+.tinymce-content p { margin: 0 0 8px; }
+.tinymce-content strong { font-weight: 700; }
+.tinymce-content em { font-style: italic; }
+.tinymce-content ul, .tinymce-content ol { padding-left: 20px; margin-bottom: 8px; }
+.tinymce-content table { border-collapse: collapse; width: 100%; }
+.tinymce-content td, .tinymce-content th { border: 1px solid #ddd; padding: 6px 10px; }
 </style>
 <!-- Firebase SDK -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
@@ -479,9 +487,11 @@ function renderQuestion(){
       <span class="chip ${q.type==='MCQ'?'blue':'orange'}">${q.type}</span>
       <span class="chip green">${q.points} pts</span>
     </div>
-    <div class="q-text">${q.title}</div>
+    <div class="q-text tinymce-content">${q.title}</div>
     ${optHtml}
   </div>`;
+  // Re-render MathJax after content is inserted
+  if(window.MathJax) MathJax.typesetPromise([body]).catch(e=>console.warn(e));
   const nav=document.getElementById('quiz-nav');
   const isLast=currentQ===total-1;
   nav.innerHTML=`
@@ -601,7 +611,7 @@ function showReview(){
         <span style="font-size:11px;color:var(--muted);font-weight:700">Q${i+1} · ${q.points} pts</span>
         ${isMCQ?`<span style="font-size:12px;font-weight:700;color:${isCorrect?'var(--g-dark)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:''}
       </div>
-      <div class="rq-q">${q.title}</div>
+      <div class="rq-q tinymce-content">${q.title}</div>
       ${optHtml}
     </div>`;
   }).join('');
