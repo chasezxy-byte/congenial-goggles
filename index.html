@@ -787,10 +787,11 @@ function rowHTML(type,r,n){
   if(type==='subject')    return`<tr><td>${n}</td><td>${r.className||'—'}</td><td><strong>${r.name}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='lesson')     return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.ordinal||1}</span></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='assessment') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.config||'MCQ'}</span></td><td><strong>${r.maxScore||0}</strong></td><td style="font-size:12px;color:var(--mu)">${r.date||'—'}</td><td><span class="chip ${r.validState==='Valid'?'cg':'co'}">${r.validState||'Pending'}</span></td><td>${ac}</td></tr>`;
-  if(type==='question')   return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.title)}"><strong>${r.title}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
+  if(type==='question')   return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.title)}"><strong>${stripHtml(r.title)}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='student')    return`<tr><td>${n}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(r.name||'?')[0].toUpperCase()}</div><strong>${r.name||'—'}</strong></div></td><td><span class="code">${r.username||'—'}</span></td><td style="font-size:12px;color:var(--mu)">${r.email||'—'}</td><td>${r.className||'—'}</td><td><span class="chip ${r.status==='Active'?'cg':'co'}">${r.status||'Active'}</span></td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('student','${r.id}')"><span class="material-icons">edit</span></div><div class="ib" title="Reset Password" onclick="showResetPw('${r.id}')"><span class="material-icons">lock_reset</span></div><div class="ib del" title="Delete" onclick="confirmDel('student','${r.id}','${esc(r.name||'')}')"><span class="material-icons">delete</span></div></div></td></tr>`;
 }
 function esc(s){ return String(s||'').replace(/['"<>&]/g,c=>({'\'':'&#39;','"':'&quot;','<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return d.textContent||d.innerText||''; }
 
 function renderPag(type,total,tp){
   const s=ST[type], w=document.getElementById('pg-'+type); if(!w) return;
@@ -1028,7 +1029,7 @@ function initTinyMCE(id){
                'alignleft aligncenter alignright | bullist numlist | '+
                'table link | math | removeformat',
       skin: 'oxide',
-      content_style: "body { font-family: 'Times New Roman', Times, serif; font-size: 15px; line-height: 1.8; padding: 8px; }",
+      content_style: "body { font-family: 'STIX Two Text', 'Cambria Math', 'Times New Roman', serif; font-size: 15px; line-height: 1.8; padding: 8px; }",
       placeholder: 'Type content here... Use the math button for formulas',
       setup: function(editor){
         // Custom math button
@@ -1362,7 +1363,7 @@ async function openGradeDetail(subId){
         <span style="font-size:12px;font-weight:700;color:var(--mu)">Q${i+1} · ${q.points} pts · ${q.type}</span>
         ${isMCQ?`<span style="font-size:13px;font-weight:700;color:${isCorrect?'var(--gd)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:'<span style="font-size:12px;color:var(--mu)">Manual grade</span>'}
       </div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:12px">${q.title}</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;font-family:var(--font);line-height:1.6">${q.title}</div>
       ${ansHtml}
     </div>`;
   }).join('') || '<p style="color:var(--mu);text-align:center;padding:20px">No questions found.</p>';
