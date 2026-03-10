@@ -269,6 +269,7 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
           <div class="ni" onclick="nav('assessment-list',this)">Assessment List</div>
           <div class="ni" onclick="nav('question-list',this)">Question List</div>
           <div class="ni" onclick="nav('content-list',this)">Content List</div>
+          <div class="ni" onclick="nav('grades',this)">Grades & Submissions</div>
           <div class="ni" onclick="nav('reports',this)">Reports</div>
         </div>
       </div>
@@ -437,6 +438,44 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
       </div>
 
       <!-- REPORTS -->
+      <!-- GRADES PAGE -->
+      <div class="page" id="page-grades">
+        <div class="ph">
+          <div>
+            <div class="pt">Grades &amp; Submissions</div>
+            <div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Grades</span></div>
+          </div>
+        </div>
+        <div class="tc">
+          <div class="tt" style="flex-wrap:wrap;gap:10px">
+            <div class="fgp"><label>Assessment</label><div class="csd" id="gf-assessment"></div></div>
+            <div class="fgp"><label>Class</label><div class="csd" id="gf-class"></div></div>
+            <div class="fgp"><label>Status</label><div class="csd" id="gf-status"></div></div>
+          </div>
+          <div class="tw"><table><thead><tr>
+            <th>#</th><th>Student</th><th>Class</th><th>Assessment</th>
+            <th>Score</th><th>%</th><th>Status</th><th>Submitted</th><th>Action</th>
+          </tr></thead><tbody id="tb-grades"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- GRADE DETAIL MODAL (separate fullscreen overlay) -->
+      <div class="overlay" id="grade-overlay" onclick="closeGradeDetail(event)" style="display:none;z-index:1100">
+        <div class="modal" style="max-width:700px;max-height:90vh;overflow-y:auto">
+          <div class="mhd">
+            <h3 id="gd-title">Submission Detail</h3>
+            <button class="mcl" onclick="closeGradeDetail()"><span class="material-icons">close</span></button>
+          </div>
+          <div id="gd-body" style="padding:0 24px 16px"></div>
+          <div class="mft" style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px">
+            <button class="btn-can" onclick="closeGradeDetail()">Close</button>
+            <button class="btn-sv" id="gd-return-btn" onclick="returnAssessment()" style="background:#e65100">
+              <span class="material-icons" style="font-size:16px">reply</span> Return Assessment
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="page" id="page-reports">
         <div class="ph"><div><div class="pt">Reports</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Reports</span></div></div>
           <button class="btn-c" onclick="toast('Exporting all data...')"><span class="material-icons">download</span>Export All</button></div>
@@ -491,7 +530,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
-const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[] };
+const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[], submissions:[] };
 
 // ── DB HELPERS
 const DB = {
@@ -514,7 +553,7 @@ async function dbDel(collection, id) {
 
 // Load all collections from Firestore
 async function loadAll() {
-  const cols = ['classs','subjects','lessons','assessments','questions','students'];
+  const cols = ['classs','subjects','lessons','assessments','questions','students','submissions'];
   // Load one by one (more reliable than Promise.all on page load)
   for(const col of cols){
     try {
@@ -647,6 +686,7 @@ function nav(pid, el){
   document.getElementById('page-'+pid).classList.add('active');
   if(el&&el.classList) el.classList.add('active');
   if(pid==='reports') renderReports();
+  if(pid==='grades'){ loadAll().then(()=>renderGrades()); }
   refreshFilters();
 }
 
@@ -1195,6 +1235,200 @@ function toast(msg,type='ok'){
   document.getElementById('tmsg').textContent=msg;
   t.classList.add('show'); clearTimeout(t._t);
   t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ══════════════════════════════════════════════════════
+// ── GRADES & SUBMISSIONS
+// ══════════════════════════════════════════════════════
+let currentSubmission = null;
+
+async function renderGrades(){
+  // Load fresh data
+  const ldg = document.getElementById('ldg');
+  // Fill filter dropdowns
+  const assessments = DB.get('assessments');
+  const classes = DB.get('classs');
+  const submissions = DB.get('submissions') || [];
+
+  // Assessment filter
+  csdFill('gf-assessment',
+    [{value:'',label:'All Assessments'},...assessments.map(a=>({value:a.id,label:a.name}))],
+    'All Assessments');
+  // Class filter
+  csdFill('gf-class',
+    [{value:'',label:'All Classes'},...classes.map(c=>({value:c.id,label:c.name}))],
+    'All Classes');
+  // Status filter
+  csdFillEnum('gf-status',
+    [{value:'',label:'All Statuses'},{value:'submitted',label:'Submitted'},{value:'returned',label:'Returned'}],
+    '');
+
+  // Register filter callbacks
+  csdOn('gf-assessment', ()=>renderGradesTable());
+  csdOn('gf-class',      ()=>renderGradesTable());
+  csdOn('gf-status',     ()=>renderGradesTable());
+
+  renderGradesTable();
+}
+
+function renderGradesTable(){
+  const subs = DB.get('submissions') || [];
+  const students = DB.get('students');
+  const assessments = DB.get('assessments');
+
+  const filterAss    = csdVal('gf-assessment');
+  const filterClass  = csdVal('gf-class');
+  const filterStatus = csdVal('gf-status');
+
+  let rows = subs.map(sub => {
+    const st  = students.find(s=>s.id===sub.studentId);
+    const ass = assessments.find(a=>a.id===sub.assessmentId);
+    return {...sub, studentName:st?.name||'Unknown', className:st?.className||'—',
+            classId:st?.classId||'', assessmentName:ass?.name||'Unknown',
+            maxScore:sub.maxScore||ass?.maxScore||0};
+  });
+
+  if(filterAss)    rows = rows.filter(r=>r.assessmentId===filterAss);
+  if(filterClass)  rows = rows.filter(r=>r.classId===filterClass);
+  if(filterStatus) rows = rows.filter(r=>(r.status||'submitted')===filterStatus);
+
+  // Sort newest first
+  rows.sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+
+  const tb = document.getElementById('tb-grades');
+  if(!rows.length){
+    tb.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--mu)">No submissions found.</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = rows.map((r,i)=>{
+    const pct = r.maxScore ? Math.round((r.score/r.maxScore)*100) : 0;
+    const pctColor = pct>=70?'var(--gd)':pct>=50?'#e65100':'#e53935';
+    const isReturned = r.status==='returned';
+    const date = r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : '—';
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${r.studentName}</strong></td>
+      <td>${r.className}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.assessmentName}</td>
+      <td><strong>${r.score}/${r.maxScore}</strong></td>
+      <td><strong style="color:${pctColor}">${pct}%</strong></td>
+      <td><span class="chip ${isReturned?'co':'cg'}">${isReturned?'Returned':'Submitted'}</span></td>
+      <td style="font-size:12px;color:var(--mu)">${date}</td>
+      <td><button class="btn-c" style="padding:6px 12px;font-size:12px" onclick="openGradeDetail('${r.id}')">
+        <span class="material-icons" style="font-size:14px">visibility</span> View
+      </button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function openGradeDetail(subId){
+  // Load fresh submissions
+  const snap = await db.collection('submissions').doc(subId).get();
+  if(!snap.exists){ toast('Submission not found','err'); return; }
+  const sub = {id:snap.id,...snap.data()};
+  currentSubmission = sub;
+
+  const student    = DB.get('students').find(s=>s.id===sub.studentId);
+  const assessment = DB.get('assessments').find(a=>a.id===sub.assessmentId);
+  const questions  = DB.get('questions').filter(q=>q.assessmentId===sub.assessmentId);
+  const LETTERS    = 'ABCDEFGH';
+
+  const pct = sub.maxScore ? Math.round((sub.score/sub.maxScore)*100) : 0;
+  const pctColor = pct>=70?'var(--gd)':pct>=50?'#e65100':'#e53935';
+  const isReturned = sub.status==='returned';
+
+  let qHtml = questions.map((q,i)=>{
+    const ans = sub.answers?.[i];
+    const isMCQ = q.type==='MCQ'||q.type==='True/False';
+    const isCorrect = isMCQ && ans===q.answer;
+    let ansHtml = '';
+    if(isMCQ){
+      ansHtml = (q.options||[]).map((o,j)=>{
+        let bg=''; let icon='radio_button_unchecked';
+        if(j===q.answer){ bg='background:#e6f4ed;border-color:var(--gd)'; icon='check_circle'; }
+        if(j===ans && ans!==q.answer){ bg='background:#fdecea;border-color:#e53935'; icon='cancel'; }
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--bo);border-radius:8px;margin-bottom:8px;${bg}">
+          <span class="material-icons" style="font-size:16px;color:${j===q.answer?'var(--gd)':j===ans?'#e53935':'var(--mu)'}">${icon}</span>
+          <span style="font-size:13px">${LETTERS[j]}. ${o}</span>
+        </div>`;
+      }).join('');
+    } else {
+      ansHtml = `<div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px;color:var(--mu)">
+        <em>${ans||'(no answer)'}</em></div>`;
+    }
+    return `<div style="background:#fff;border:1px solid var(--bo);border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:700;color:var(--mu)">Q${i+1} · ${q.points} pts · ${q.type}</span>
+        ${isMCQ?`<span style="font-size:13px;font-weight:700;color:${isCorrect?'var(--gd)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:'<span style="font-size:12px;color:var(--mu)">Manual grade</span>'}
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px">${q.title}</div>
+      ${ansHtml}
+    </div>`;
+  }).join('') || '<p style="color:var(--mu);text-align:center;padding:20px">No questions found.</p>';
+
+  document.getElementById('gd-title').textContent = `${student?.name||'Student'} — ${assessment?.name||'Assessment'}`;
+  document.getElementById('gd-body').innerHTML = `
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding-top:16px">
+      <div style="flex:1;min-width:140px;background:var(--bg);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:28px;font-weight:800;color:${pctColor}">${pct}%</div>
+        <div style="font-size:12px;color:var(--mu)">Score: ${sub.score}/${sub.maxScore}</div>
+      </div>
+      <div style="flex:2;min-width:200px;background:var(--bg);border-radius:10px;padding:14px">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px">Student</div>
+        <div style="font-weight:700">${student?.name||'—'} <span style="font-size:12px;color:var(--mu)">(${student?.username||''})</span></div>
+        <div style="font-size:12px;color:var(--mu);margin-top:8px;margin-bottom:4px">Class</div>
+        <div style="font-weight:600">${student?.className||'—'}</div>
+      </div>
+      <div style="flex:2;min-width:200px;background:var(--bg);border-radius:10px;padding:14px">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px">Assessment</div>
+        <div style="font-weight:700">${assessment?.name||'—'}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:8px;margin-bottom:4px">Submitted</div>
+        <div style="font-weight:600">${sub.submittedAt?new Date(sub.submittedAt).toLocaleString():'—'}</div>
+      </div>
+    </div>
+    ${isReturned?`<div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px">
+      <strong>⚠ Returned</strong> — Teacher note: ${sub.returnNote||'(no note)'}</div>`:''}
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">Answer Review</div>
+    ${qHtml}
+    <div style="margin-top:16px">
+      <label style="font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px">Teacher Note (shown to student when returned)</label>
+      <textarea id="gd-note" style="width:100%;margin-top:8px;padding:10px;border:2px solid var(--bo);border-radius:8px;font-family:var(--font);font-size:13px;resize:vertical" rows="3" placeholder="Optional note for the student...">${sub.returnNote||''}</textarea>
+    </div>`;
+
+  // Show/hide return button
+  document.getElementById('gd-return-btn').style.display = isReturned ? 'none' : 'flex';
+
+  const overlay = document.getElementById('grade-overlay');
+  overlay.style.display = 'flex';
+  overlay.classList.add('open');
+}
+
+function closeGradeDetail(e){
+  if(e && e.target !== document.getElementById('grade-overlay')) return;
+  document.getElementById('grade-overlay').style.display='none';
+  document.getElementById('grade-overlay').classList.remove('open');
+  currentSubmission = null;
+}
+
+async function returnAssessment(){
+  if(!currentSubmission){ toast('No submission selected','err'); return; }
+  const note = document.getElementById('gd-note')?.value?.trim()||'';
+  const btn = document.getElementById('gd-return-btn');
+  btn.disabled=true; btn.textContent='Returning...';
+  try {
+    const updated = {...currentSubmission, status:'returned', returnNote:note, returnedAt:new Date().toISOString()};
+    await dbSet('submissions', currentSubmission.id, updated);
+    // Reload submissions cache
+    const snap = await db.collection('submissions').get();
+    CACHE['submissions'] = snap.docs.map(d=>({id:d.id,...d.data()}));
+    toast('Assessment returned to student!');
+    closeGradeDetail();
+    renderGradesTable();
+  } catch(e){
+    toast('Failed to return: '+e.message,'err');
+    btn.disabled=false; btn.textContent='Return Assessment';
+  }
 }
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
