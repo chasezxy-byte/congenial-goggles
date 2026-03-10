@@ -499,8 +499,14 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
 </div>
 <div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="tmsg"></span></div>
 
-<!-- MathJax for rendering math -->
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<!-- MathJax config must come before the script -->
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['\\[','\\]'],['$$','$$']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
 <!-- TinyMCE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
 
