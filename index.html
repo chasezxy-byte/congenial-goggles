@@ -772,6 +772,7 @@ const FORMS={
 // ── OPEN MODALS
 function openCreate(type){
   editId=null;curType=type;
+  refreshFilters();
   document.getElementById('mtitle').textContent='Create New '+FORMS[type].title;
   document.getElementById('msave').textContent='Create';
   document.getElementById('msave').style.background='';
@@ -805,14 +806,12 @@ function buildForm(type,data){
       postFills.push({type:'enum',id:'mf-'+f.k,options:opts.map(o=>({value:o,label:o})),curVal});
     } else if(f.t==='ref'){
       const pVal=f.filterBy?(data[f.filterBy]||null):null;
-      let opts=[];
-      if(!f.filterBy) opts=DB.get(f.ref);
-      else if(pVal) opts=DB.get(f.ref).filter(o=>o[f.filterBy]===pVal);
       const dis=f.filterBy&&!pVal;
       const ph=dis?`Select ${FORMS[type].fields.find(ff=>ff.k===f.filterBy)?.l||'parent'} first`:`Select ${f.l}`;
       const disClass=dis?' dis':'';
       html+=`<div class="csd${disClass}" id="mf-${f.k}" data-val="${data[f.k]||''}" data-onchange="onRefChange('${f.k}','${type}')"></div>`;
-      postFills.push({type:'ref',id:'mf-'+f.k,options:opts.map(o=>({value:o.id,label:o[f.lk]})),ph,curVal:data[f.k]||''});
+      // Always read fresh from DB at postFill time (not captured in closure)
+      postFills.push({type:'ref',id:'mf-'+f.k,ref:f.ref,lk:f.lk,filterBy:f.filterBy,filterVal:pVal,ph,curVal:data[f.k]||''});
       if(dis) html+=`<div style="font-size:11px;color:var(--mu);margin-top:4px">← Select the parent field first</div>`;
     } else if(f.t==='textarea'){
       html+=`<textarea id="mf-${f.k}" placeholder="${f.ph||''}">${data[f.k]||''}</textarea>`;
@@ -826,10 +825,15 @@ function buildForm(type,data){
   });
   if(form.extra==='opts') html+=`<div id="opt-builder"></div>`;
   document.getElementById('mbody').innerHTML=html;
-  // Initialize all custom dropdowns
+  // Initialize all custom dropdowns — ref fields read DB fresh here
   postFills.forEach(pf=>{
     if(pf.type==='enum') csdFillEnum(pf.id,pf.options,pf.curVal);
-    else csdFill(pf.id,pf.options,pf.ph);
+    else {
+      let opts=[];
+      if(!pf.filterBy) opts=DB.get(pf.ref);
+      else if(pf.filterVal) opts=DB.get(pf.ref).filter(o=>o[pf.filterBy]===pf.filterVal);
+      csdFill(pf.id,opts.map(o=>({value:o.id,label:o[pf.lk]})),pf.ph);
+    }
   });
   if(form.extra==='opts') renderOptBuilder();
 }
@@ -864,7 +868,7 @@ function onRefChange(key,type){
 // option builder (questions)
 let corIdx=0;
 function renderOptBuilder(){
-  const qt=document.getElementById('mf-type')?.value||'MCQ';
+  const qt=csdVal('mf-type')||'MCQ';
   const w=document.getElementById('opt-builder');if(!w)return;
   if(qt==='Short Answer'){w.innerHTML='';return;}
   const opts=qt==='True/False'?['True','False']:['','','',''];
