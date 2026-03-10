@@ -258,7 +258,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="result-pct" id="r-pct">0%</div>
     <div class="result-label" id="r-label">Well done!</div>
     <div class="result-breakdown" id="r-breakdown"></div>
-    <button class="btn-review" onclick="showReview()"><span class="material-icons">visibility</span>Review Answers</button>
+    <div id="r-note" style="display:none;background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:10px;margin:0 0 16px;font-size:13px;text-align:left;width:100%"></div>
+  <button class="btn-review" onclick="showReview()"><span class="material-icons">visibility</span>Review Answers</button>
     <button class="btn-home" onclick="showScreen('s-dash')"><span class="material-icons">home</span>Back to Dashboard</button>
   </div>
 </div>
@@ -402,7 +403,7 @@ function loadDashboard(){
         <div class="ac-title">${a.name}</div>
         <div class="ac-sub">${a.subjectName} · ${a.lessonName}</div>
         <div class="ac-meta">
-          <span class="chip ${done?'done':'green'}"><span class="material-icons">${done?'check_circle':'schedule'}</span>${done?'Completed':'Available'}</span>
+          <span class="chip ${done?(sub?.status==='returned'?'orange':'done'):'green'}"><span class="material-icons">${done?(sub?.status==='returned'?'reply':'check_circle'):'schedule'}</span>${done?(sub?.status==='returned'?'Returned':'Completed'):'Available'}</span>
           <span class="chip blue"><span class="material-icons">help_outline</span>${qs.length} Qs</span>
           <span class="chip orange"><span class="material-icons">star</span>${a.maxScore} pts</span>
           ${done?`<span class="ac-score">${sub.score}/${a.maxScore} (${pct}%)</span>`:''}
@@ -555,6 +556,13 @@ function showResults(ass,qs,ans,score){
     <div class="rb-row"><span>Correct Answers</span><strong style="color:var(--g-dark)">${correct} / ${mcqTotal}</strong></div>
     <div class="rb-row"><span>Percentage</span><strong style="color:${pct>=70?'var(--g-dark)':'#e65100'}">${pct}%</strong></div>
     <div class="rb-row"><span>Submitted</span><strong>${new Date().toLocaleDateString()}</strong></div>`;
+  // Show teacher note if returned
+  const noteEl = document.getElementById('r-note');
+  const subRecord = CACHE.submissions?.find(s=>s.assessmentId===ass.id&&s.studentId===currentStudent?.id);
+  if(subRecord?.returnNote){
+    noteEl.style.display='block';
+    noteEl.innerHTML='<strong>📩 Teacher note:</strong> '+subRecord.returnNote;
+  } else { noteEl.style.display='none'; }
   // Store for review
   window._lastReview={qs,ans};
   showScreen('s-result');
