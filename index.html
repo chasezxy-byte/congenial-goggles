@@ -486,6 +486,44 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
   </div>
 </div>
 
+<!-- COPY ASSESSMENT MODAL -->
+<div class="overlay" id="copy-overlay" onclick="closeCopyModal(event)" style="display:none;z-index:1100">
+  <div class="modal" style="max-width:500px">
+    <div class="mhd">
+      <h3>Copy Assessment</h3>
+      <button class="mcl" onclick="closeCopyModal()"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px">
+      <div class="mfg">
+        <label>New Assessment Name *</label>
+        <input type="text" id="copy-name" placeholder="e.g. Copy of Cell Quiz"/>
+      </div>
+      <div class="mfg">
+        <label>Copy to Class *</label>
+        <div class="csd" id="copy-class"></div>
+      </div>
+      <div class="mfg">
+        <label>Copy to Subject *</label>
+        <div class="csd" id="copy-subject"></div>
+      </div>
+      <div class="mfg">
+        <label>Copy to Lesson *</label>
+        <div class="csd" id="copy-lesson"></div>
+      </div>
+      <div style="background:var(--gl);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gd)">
+        <span class="material-icons" style="font-size:14px;vertical-align:middle">info</span>
+        All questions will be copied to the new assessment.
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-can" onclick="closeCopyModal()">Cancel</button>
+      <button class="btn-sv" onclick="doCopyAssessment()">
+        <span class="material-icons" style="font-size:16px">content_copy</span> Copy
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="overlay" id="overlay" onclick="closeBg(event)">
   <div class="modal" id="modal">
@@ -788,7 +826,8 @@ function renderT(type){
 }
 
 function rowHTML(type,r,n){
-  const ac=`<div class="ab"><div class="ib" title="Edit" onclick="openEdit('${type}','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" onclick="confirmDel('${type}','${r.id}','${esc(r.name||r.title||r.username||'')}')"><span class="material-icons">delete</span></div></div>`;
+  const copyBtn = type==='assessment' ? `<div class="ib" title="Copy Assessment" onclick="openCopyAssessment('${r.id}')"><span class="material-icons">content_copy</span></div>` : '';
+  const ac=`<div class="ab">${copyBtn}<div class="ib" title="Edit" onclick="openEdit('${type}','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" onclick="confirmDel('${type}','${r.id}','${esc(r.name||r.title||r.username||'')}')"><span class="material-icons">delete</span></div></div>`;
   if(type==='class')      return`<tr><td>${n}</td><td>${r.year||'—'}</td><td>${r.campus||'—'}</td><td><div class="thumbi"><span class="material-icons">image</span></div></td><td><span class="code">${r.code||'—'}</span></td><td><button class="qrb" onclick="showQR('${esc(r.code||r.id)}','${esc(r.name)}')"><span class="material-icons">qr_code_2</span></button></td><td><strong>${r.name}</strong></td><td><span class="chip ${r.smsInfo==='Active'?'cg':'co'}">${r.smsInfo||'Active'}</span></td><td><strong>${r.totalStudents||0}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='subject')    return`<tr><td>${n}</td><td>${r.className||'—'}</td><td><strong>${r.name}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='lesson')     return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.ordinal||1}</span></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
@@ -1435,6 +1474,123 @@ async function returnAssessment(){
   } catch(e){
     toast('Failed to return: '+e.message,'err');
     btn.disabled=false; btn.textContent='Return Assessment';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ── COPY ASSESSMENT
+// ══════════════════════════════════════════════════════
+let copySourceId = null;
+
+function openCopyAssessment(assessmentId){
+  copySourceId = assessmentId;
+  const ass = DB.get('assessments').find(a=>a.id===assessmentId);
+  if(!ass){ toast('Assessment not found','err'); return; }
+
+  // Pre-fill name
+  document.getElementById('copy-name').value = 'Copy of ' + ass.name;
+
+  // Fill class dropdown
+  const classes = DB.get('classs');
+  csdFill('copy-class',
+    [{value:'',label:'Select Class'},...classes.map(c=>({value:c.id,label:c.name}))],
+    'Select Class');
+
+  // Reset subject and lesson
+  csdFill('copy-subject',[{value:'',label:'Select Class first'}],'Select Class first');
+  csdFill('copy-lesson', [{value:'',label:'Select Subject first'}],'Select Subject first');
+
+  // Cascade: class → subject → lesson
+  csdOn('copy-class', ()=>{
+    const cid = csdVal('copy-class');
+    const subs = DB.get('subjects').filter(s=>s.classId===cid);
+    csdFill('copy-subject',
+      [{value:'',label:'Select Subject'},...subs.map(s=>({value:s.id,label:s.name}))],
+      'Select Subject');
+    csdFill('copy-lesson',[{value:'',label:'Select Subject first'}],'Select Subject first');
+  });
+  csdOn('copy-subject', ()=>{
+    const sid = csdVal('copy-subject');
+    const lessons = DB.get('lessons').filter(l=>l.subjectId===sid);
+    csdFill('copy-lesson',
+      [{value:'',label:'Select Lesson'},...lessons.map(l=>({value:l.id,label:l.name}))],
+      'Select Lesson');
+  });
+
+  const overlay = document.getElementById('copy-overlay');
+  overlay.style.display = 'flex';
+  setTimeout(()=>overlay.classList.add('open'),10);
+}
+
+function closeCopyModal(e){
+  if(e && e.target !== document.getElementById('copy-overlay')) return;
+  document.getElementById('copy-overlay').classList.remove('open');
+  setTimeout(()=>{ document.getElementById('copy-overlay').style.display='none'; }, 200);
+  copySourceId = null;
+}
+
+async function doCopyAssessment(){
+  const name      = document.getElementById('copy-name').value.trim();
+  const classId   = csdVal('copy-class');
+  const subjectId = csdVal('copy-subject');
+  const lessonId  = csdVal('copy-lesson');
+
+  if(!name)      { toast('Enter a name for the new assessment','err'); return; }
+  if(!classId)   { toast('Select a class','err'); return; }
+  if(!subjectId) { toast('Select a subject','err'); return; }
+  if(!lessonId)  { toast('Select a lesson','err'); return; }
+
+  const srcAss = DB.get('assessments').find(a=>a.id===copySourceId);
+  if(!srcAss){ toast('Source assessment not found','err'); return; }
+
+  const btn = document.querySelector('#copy-overlay .btn-sv');
+  btn.disabled=true; btn.textContent='Copying...';
+
+  try {
+    const cls  = DB.get('classs').find(c=>c.id===classId);
+    const sub  = DB.get('subjects').find(s=>s.id===subjectId);
+    const les  = DB.get('lessons').find(l=>l.id===lessonId);
+    const now  = new Date().toISOString().slice(0,10);
+    const newAssId = DB.uid();
+
+    // Create new assessment
+    const newAss = {
+      ...srcAss,
+      id: newAssId,
+      name,
+      classId,   className:  cls?.name  || '',
+      subjectId, subjectName: sub?.name || '',
+      lessonId,  lessonName:  les?.name || '',
+      validState: 'Pending',
+      createdAt: now,
+      createdBy: 'Admin K'
+    };
+    await dbSet('assessments', newAssId, newAss);
+
+    // Copy all questions
+    const srcQuestions = DB.get('questions').filter(q=>q.assessmentId===copySourceId);
+    await Promise.all(srcQuestions.map(q=>{
+      const newQId = DB.uid();
+      const newQ = {
+        ...q,
+        id: newQId,
+        assessmentId:   newAssId,
+        assessmentName: name,
+        classId,   className:   cls?.name  || '',
+        subjectId, subjectName: sub?.name  || '',
+        lessonId,  lessonName:  les?.name  || '',
+        createdAt: now
+      };
+      return dbSet('questions', newQId, newQ);
+    }));
+
+    await loadAll();
+    closeCopyModal();
+    renderT('assessment');
+    toast(`Copied "${name}" with ${srcQuestions.length} question(s)!`);
+  } catch(e){
+    toast('Copy failed: '+e.message,'err');
+    btn.disabled=false; btn.textContent='Copy';
   }
 }
 
