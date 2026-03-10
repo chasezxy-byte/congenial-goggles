@@ -486,7 +486,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
-const CACHE = { classes:[], subjects:[], lessons:[], assessments:[], questions:[], students:[] };
+const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[] };
 
 // ── DB HELPERS
 const DB = {
@@ -509,7 +509,7 @@ async function dbDel(collection, id) {
 
 // Load all collections from Firestore
 async function loadAll() {
-  const cols = ['classes','subjects','lessons','assessments','questions','students'];
+  const cols = ['classs','subjects','lessons','assessments','questions','students'];
   // Load one by one (more reliable than Promise.all on page load)
   for(const col of cols){
     try {
@@ -647,7 +647,7 @@ function nav(pid, el){
 
 // ── FILTER DROPDOWNS
 function refreshFilters(){
-  const cls=DB.get('classes'), subs=DB.get('subjects');
+  const cls=DB.get('classs'), subs=DB.get('subjects');
   const les=DB.get('lessons'), ass=DB.get('assessments');
   // Class page filters
   fillVals('f-class-year',   [...new Set(cls.map(c=>c.year).filter(Boolean))], 'All Years');
@@ -693,7 +693,7 @@ function onTbFilterClass(pg){
 // ── TABLE RENDER
 function getFiltered(type){
   const s = ST[type];
-  const key = type==='student' ? 'students' : type+'s';
+  const key = type==='student' ? 'students' : type==='class' ? 'classs' : type+'s';
   let data = DB.get(key);
   if(s.q) data = data.filter(r=>Object.values(r).join(' ').toLowerCase().includes(s.q.toLowerCase()));
   if(type==='class'){
@@ -812,17 +812,17 @@ const FORMS={
     {k:'smsInfo',l:'SMS Status',   t:'select',opts:['Active','Pending','Inactive']},
   ]},
   subject:{title:'Subject',fields:[
-    {k:'classId',l:'Class',        t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'classId',l:'Class',        t:'ref',ref:'classs',  lk:'name',req:true},
     {k:'name',   l:'Subject Name', t:'text',req:true,ph:'e.g. Biology'},
   ]},
   lesson:{title:'Lesson',fields:[
-    {k:'classId',  l:'Class',   t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'classId',  l:'Class',   t:'ref',ref:'classs',  lk:'name',req:true},
     {k:'subjectId',l:'Subject', t:'ref',ref:'subjects', lk:'name',req:true,filterBy:'classId'},
     {k:'name',     l:'Lesson Name',t:'text',req:true,ph:'e.g. Introduction to Cells'},
     {k:'ordinal',  l:'Order',   t:'number',ph:'1'},
   ]},
   assessment:{title:'Assessment',fields:[
-    {k:'classId',  l:'Class',   t:'ref',ref:'classes',  lk:'name',req:true},
+    {k:'classId',  l:'Class',   t:'ref',ref:'classs',  lk:'name',req:true},
     {k:'subjectId',l:'Subject', t:'ref',ref:'subjects', lk:'name',req:true,filterBy:'classId'},
     {k:'lessonId', l:'Lesson',  t:'ref',ref:'lessons',  lk:'name',req:true,filterBy:'subjectId'},
     {k:'name',     l:'Assessment Name',t:'text',req:true,ph:'e.g. Cell Structure Quiz'},
@@ -832,7 +832,7 @@ const FORMS={
     {k:'validState',l:'Valid State',t:'select',opts:['Valid','Pending','Invalid']},
   ]},
   question:{title:'Question',extra:'opts',fields:[
-    {k:'classId',    l:'Class',     t:'ref',ref:'classes',    lk:'name',req:true},
+    {k:'classId',    l:'Class',     t:'ref',ref:'classs',    lk:'name',req:true},
     {k:'subjectId',  l:'Subject',   t:'ref',ref:'subjects',   lk:'name',req:true,filterBy:'classId'},
     {k:'lessonId',   l:'Lesson',    t:'ref',ref:'lessons',    lk:'name',req:true,filterBy:'subjectId'},
     {k:'assessmentId',l:'Assessment',t:'ref',ref:'assessments',lk:'name',req:true,filterBy:'lessonId'},
@@ -845,7 +845,7 @@ const FORMS={
     {k:'username',l:'Username',    t:'text', req:true,ph:'e.g. sophea2025'},
     {k:'email',   l:'Email Address',t:'email',ph:'e.g. sophea@school.edu'},
     {k:'password',l:'Password',    t:'pwfield',req:true,ph:'Minimum 6 characters'},
-    {k:'classId', l:'Assign to Class',t:'ref',ref:'classes',lk:'name',req:true},
+    {k:'classId', l:'Assign to Class',t:'ref',ref:'classs',lk:'name',req:true},
     {k:'status',  l:'Account Status',t:'select',opts:['Active','Inactive','Suspended']},
   ]},
 };
@@ -866,7 +866,7 @@ async function openCreate(type){
   document.getElementById('overlay').classList.add('open');
 }
 function openEdit(type,id){
-  const key = type==='student'?'students':type+'s';
+  const key = type==='student'?'students':type==='class'?'classs':type+'s';
   const item = DB.get(key).find(r=>r.id===id); if(!item) return;
   editId=id; curType=type;
   document.getElementById('mtitle').textContent='Edit '+FORMS[type].title;
@@ -970,7 +970,8 @@ function toggleFPw(id,btn){ const el=document.getElementById(id); if(!el)return;
 async function saveModal(){
   const type=curType, form=FORMS[type];
   const now=new Date().toISOString().slice(0,10);
-  const colKey = type==='student'?'students':type+'s';
+  // Map type to Firestore collection name
+  const colKey = type==='student'?'students':type==='class'?'classs':type+'s';
   let rec={id:editId||DB.uid(), createdBy:'Admin K', createdAt:now};
   if(editId){ const old=DB.get(colKey).find(r=>r.id===editId); if(old) rec.createdAt=old.createdAt; }
 
@@ -994,7 +995,7 @@ async function saveModal(){
   }
 
   // Resolve display names
-  if(rec.classId)     { const c=DB.get('classes').find(x=>x.id===rec.classId);       if(c) rec.className=c.name; }
+  if(rec.classId)     { const c=DB.get('classs').find(x=>x.id===rec.classId);       if(c) rec.className=c.name; }
   if(rec.subjectId)   { const s=DB.get('subjects').find(x=>x.id===rec.subjectId);    if(s) rec.subjectName=s.name; }
   if(rec.lessonId)    { const l=DB.get('lessons').find(x=>x.id===rec.lessonId);       if(l) rec.lessonName=l.name; }
   if(rec.assessmentId){ const a=DB.get('assessments').find(x=>x.id===rec.assessmentId); if(a) rec.assessmentName=a.name; }
@@ -1040,7 +1041,7 @@ function highlight(el,label){
 
 async function syncStudentCounts(){
   const students=DB.get('students');
-  const classes=DB.get('classes');
+  const classes=DB.get('classs');
   await Promise.all(classes.map(c=>{
     const count=students.filter(s=>s.classId===c.id).length;
     if(c.totalStudents!==count){
@@ -1064,7 +1065,7 @@ async function doDel(type,id){
   const saveBtn=document.getElementById('msave');
   saveBtn.disabled=true; saveBtn.textContent='Deleting...';
   try {
-    const colKey=type==='student'?'students':type+'s';
+    const colKey=type==='student'?'students':type==='class'?'classs':type+'s';
     await dbDel(colKey,id);
     closeModal(); renderT(type); refreshFilters();
     if(type==='student') await syncStudentCounts();
@@ -1101,7 +1102,7 @@ function showResetPw(id){
 
 // ── REPORTS
 function renderReports(){
-  const c=DB.get('classes').length, s=DB.get('subjects').length, l=DB.get('lessons').length;
+  const c=DB.get('classs').length, s=DB.get('subjects').length, l=DB.get('lessons').length;
   const a=DB.get('assessments').length, q=DB.get('questions').length;
   const st=DB.get('students').length, sb=0;
   const w=document.getElementById('rw'); if(!w) return;
