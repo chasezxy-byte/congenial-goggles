@@ -154,8 +154,26 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 }
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:2px}
 </style>
+<!-- Firebase SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-firestore-compat.min.js"></script>
+<!-- MathJax for math formulas -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+.ldg{position:fixed;inset:0;background:linear-gradient(160deg,#1a6b3c,#2e8b57);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff}
+.ldg-spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ldg p{font-size:14px;font-weight:600;opacity:.9}
+</style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div class="ldg" id="ldg">
+  <div class="ldg-spin"></div>
+  <p id="ldg-msg">Loading...</p>
+</div>
 
 <!-- LOGIN -->
 <div class="screen active" id="s-login">
@@ -256,15 +274,45 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <script>
 // ═══════════════════════════════════════════════════
-//  DATA
+//  FIREBASE
 // ═══════════════════════════════════════════════════
-const DB={
-  get:k=>JSON.parse(localStorage.getItem('lms_'+k)||'[]'),
-  set:(k,v)=>localStorage.setItem('lms_'+k,JSON.stringify(v)),
-  uid:()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)
+const firebaseConfig = {
+  apiKey: "AIzaSyDO_m3ECeswwJqGDC7Bpicnt8nQ9xb6oIc",
+  authDomain: "ordinal-698c1.firebaseapp.com",
+  projectId: "ordinal-698c1",
+  storageBucket: "ordinal-698c1.firebasestorage.app",
+  messagingSenderId: "102527692497",
+  appId: "1:102527692497:web:bc6225ba04057ccd755ff0"
+};
+firebase.initializeApp(firebaseConfig);
+const fdb = firebase.firestore();
+
+// ── IN-MEMORY CACHE
+const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[], submissions:[] };
+
+async function loadAll(){
+  const cols = ['classs','subjects','lessons','assessments','questions','students','submissions'];
+  for(const col of cols){
+    try {
+      const snap = await fdb.collection(col).get();
+      CACHE[col] = snap.docs.map(d=>({id:d.id,...d.data()}));
+    } catch(e){ CACHE[col]=[]; console.warn(col, e.message); }
+  }
+}
+
+const DB = {
+  get: k => CACHE[k] || [],
+  set: async (k,v) => { CACHE[k]=v; },
+  uid: () => fdb.collection('_').doc().id
 };
 
-// Data is created by the admin in mentor-back-office.html
+async function dbSet(col, id, data){
+  await fdb.collection(col).doc(id).set(data);
+  const arr = CACHE[col] ? [...CACHE[col]] : [];
+  const idx = arr.findIndex(r=>r.id===id);
+  if(idx>=0) arr[idx]=data; else arr.push(data);
+  CACHE[col]=arr;
+}
 
 // ═══════════════════════════════════════════════════
 //  STATE
@@ -280,21 +328,31 @@ let timeLeft=0;
 // ═══════════════════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════════════════
-function studentLogin(){
+async function studentLogin(){
   const u=document.getElementById('s-uname').value.trim().toLowerCase();
   const p=document.getElementById('s-pw').value.trim();
   const err=document.getElementById('s-err');
-  const students=DB.get('students');
-  const match=students.find(s=>s.username.toLowerCase()===u&&s.password===p);
-  if(match){
-    err.style.display='none';
-    currentStudent=match;
-    loadDashboard();
-    showScreen('s-dash');
-  } else {
+  const btn=document.querySelector('.btn-login');
+  err.style.display='none';
+  btn.disabled=true; btn.textContent='Logging in...';
+  try {
+    // Reload fresh data on login
+    await loadAll();
+    const match=CACHE.students.find(s=>s.username.toLowerCase()===u&&s.password===p);
+    if(match){
+      currentStudent=match;
+      loadDashboard();
+      showScreen('s-dash');
+    } else {
+      err.style.display='block';
+      err.textContent='Invalid username or password.';
+      document.getElementById('s-pw').value='';
+    }
+  } catch(e){
     err.style.display='block';
-    document.getElementById('s-pw').value='';
+    err.textContent='Connection error. Please try again.';
   }
+  btn.disabled=false; btn.textContent='Login';
 }
 function studentLogout(){
   if(confirm('Log out?')){
@@ -445,7 +503,7 @@ function saveShortAns(){
 }
 function exitQuiz(){if(confirm('Exit quiz? Your progress will be lost.')){clearTimer();showScreen('s-dash');}}
 
-function submitQuiz(){
+async function submitQuiz(){
   saveShortAns();
   const unanswered=answers.filter((a,i)=>a===null&&currentQuestions[i].type!=='Short Answer').length;
   if(unanswered>0&&!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
@@ -461,10 +519,9 @@ function submitQuiz(){
       if(answers[i]&&answers[i].trim().length>0) score+=Math.floor(q.points*0.5);
     }
   });
-  // Save submission
-  const subs=DB.get('submissions');
-  subs.push({id:DB.uid(),studentId:currentStudent.id,assessmentId:ass.id,answers:[...answers],score,maxScore:ass.maxScore,submittedAt:new Date().toISOString()});
-  DB.set('submissions',subs);
+  // Save submission to Firestore
+  const sub={id:DB.uid(),studentId:currentStudent.id,assessmentId:ass.id,answers:[...answers],score,maxScore:ass.maxScore,submittedAt:new Date().toISOString()};
+  try{ await dbSet('submissions',sub.id,sub); } catch(e){ console.warn('Save failed',e); }
   showResults(ass,currentQuestions,answers,score);
 }
 
@@ -563,6 +620,21 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
+
+// ── BOOTSTRAP
+window.addEventListener('load', async ()=>{
+  const ldg = document.getElementById('ldg');
+  const msg = document.getElementById('ldg-msg');
+  try {
+    msg.textContent = 'Connecting...';
+    await loadAll();
+    ldg.style.display = 'none';
+    showScreen('s-login');
+  } catch(e){
+    msg.textContent = 'Failed to connect. Please refresh.';
+    console.error(e);
+  }
+});
 </script>
 </body>
 </html>
