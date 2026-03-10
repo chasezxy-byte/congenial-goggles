@@ -832,11 +832,12 @@ function rowHTML(type,r,n){
   if(type==='subject')    return`<tr><td>${n}</td><td>${r.className||'—'}</td><td><strong>${r.name}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='lesson')     return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.ordinal||1}</span></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='assessment') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.config||'MCQ'}</span></td><td><strong>${r.maxScore||0}</strong></td><td style="font-size:12px;color:var(--mu)">${r.date||'—'}</td><td><span class="chip ${r.validState==='Valid'?'cg':'co'}">${r.validState||'Pending'}</span></td><td>${ac}</td></tr>`;
-  if(type==='question'){ const qtitle=stripHtml(r.title||''); return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(qtitle)}"><strong>${qtitle}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('question','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" onclick="confirmDel('question','${r.id}','${esc(qtitle)}')"><span class="material-icons">delete</span></div></div></td></tr>`; }
+  if(type==='question'){ const qtitle=stripHtml(r.title||''); return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${qtitle}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('question','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" data-id="${r.id}" onclick="delQuestion(this)"><span class="material-icons">delete</span></div></div></td></tr>`; }
   if(type==='student')    return`<tr><td>${n}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(r.name||'?')[0].toUpperCase()}</div><strong>${r.name||'—'}</strong></div></td><td><span class="code">${r.username||'—'}</span></td><td style="font-size:12px;color:var(--mu)">${r.email||'—'}</td><td>${r.className||'—'}</td><td><span class="chip ${r.status==='Active'?'cg':'co'}">${r.status||'Active'}</span></td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('student','${r.id}')"><span class="material-icons">edit</span></div><div class="ib" title="Reset Password" onclick="showResetPw('${r.id}')"><span class="material-icons">lock_reset</span></div><div class="ib del" title="Delete" onclick="confirmDel('student','${r.id}','${esc(r.name||'')}')"><span class="material-icons">delete</span></div></div></td></tr>`;
 }
 function esc(s){ return String(s||'').replace(/['"<>&]/g,c=>({'\'':'&#39;','"':'&quot;','<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
 function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return d.textContent||d.innerText||''; }
+function delQuestion(btn){ confirmDel('question', btn.dataset.id, 'this question'); }
 
 function renderPag(type,total,tp){
   const s=ST[type], w=document.getElementById('pg-'+type); if(!w) return;
@@ -1205,6 +1206,17 @@ async function syncStudentCounts(){
 }
 
 // ── DELETE
+function delQuestion(btn){
+  const id = btn.getAttribute('data-id');
+  const row = btn.closest('tr');
+  const name = row ? row.querySelector('td:nth-child(6) strong')?.textContent || 'this question' : 'this question';
+  confirmDel('question', id, name);
+}
+function delQuestion(btn){
+  const id = btn.getAttribute('data-id');
+  confirmDel('question', id, 'this question');
+}
+
 function confirmDel(type,id,name){
   document.getElementById('mtitle').textContent='Confirm Delete';
   document.getElementById('mbody').innerHTML=`<div class="cfm"><span class="material-icons">warning_amber</span><strong>Delete "${name}"?</strong><p>This cannot be undone.</p></div>`;
