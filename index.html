@@ -639,7 +639,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── CURRENT USER STATE
 let CURRENT_USER = null; // { email, displayName, isAdmin }
-const ADMIN_EMAIL = 'admin@americanintercon.com'; // change to your admin email
+const ADMIN_EMAIL = 'admin@iai.edu.org'; // change to your admin email
 
 function isAdmin(){ return CURRENT_USER?.isAdmin || false; }
 function canEdit(record){ return isAdmin() || (record?.createdByEmail === CURRENT_USER?.email); }
