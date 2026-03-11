@@ -457,6 +457,7 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
             <th>#</th><th>Student</th><th>Class</th><th>Assessment</th>
             <th>Score</th><th>%</th><th>Status</th><th>Submitted</th><th>Action</th>
           </tr></thead><tbody id="tb-grades"></tbody></table></div>
+          <div class="pg" id="pg-grades"></div>
         </div>
       </div>
 
@@ -470,6 +471,9 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
           <div id="gd-body" style="padding:0 24px 16px"></div>
           <div class="mft" style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px">
             <button class="btn-can" onclick="closeGradeDetail()">Close</button>
+            <button class="btn-sv" onclick="saveManualGrades()" style="background:var(--gd)">
+              <span class="material-icons" style="font-size:16px">save</span> Save Grades
+            </button>
             <button class="btn-sv" id="gd-return-btn" onclick="returnAssessment()" style="background:#e65100">
               <span class="material-icons" style="font-size:16px">reply</span> Return Assessment
             </button>
@@ -589,7 +593,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── CURRENT USER STATE
 let CURRENT_USER = null; // { email, displayName, isAdmin }
-const ADMIN_EMAIL = 'admin@iai.edu.org'; // change to your admin email
+const ADMIN_EMAIL = 'admin@americanintercon.com'; // change to your admin email
 
 function isAdmin(){ return CURRENT_USER?.isAdmin || false; }
 function canEdit(record){ return isAdmin() || (record?.createdByEmail === CURRENT_USER?.email); }
@@ -714,6 +718,7 @@ const ST = {
   assessment:{page:1,ps:10,q:'',sort:'createdAt',dir:-1},
   question:  {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
   student:   {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
+  grades:    {page:1,ps:10},
 };
 let editId=null, curType=null;
 
@@ -891,9 +896,10 @@ function renderPag(type,total,tp){
   csdFillEnum(psId, [10,25,50].map(n=>({value:String(n),label:String(n)})), String(s.ps));
   csdOn(psId, v=>setPS(type,v));
 }
-function changePage(t,d){ const s=ST[t]; const tp=Math.max(1,Math.ceil(getFiltered(t).length/s.ps)); s.page=Math.max(1,Math.min(tp,s.page+d)); renderT(t); }
-function goPage(t,p){ ST[t].page=p; renderT(t); }
-function setPS(t,v){ ST[t].ps=+v; ST[t].page=1; renderT(t); }
+function renderAny(t){ if(t==='grades') renderGradesTable(); else renderT(t); }
+function changePage(t,d){ const s=ST[t]; const tp=t==='grades'?Math.ceil((DB.get('submissions')||[]).length/s.ps):Math.max(1,Math.ceil(getFiltered(t).length/s.ps)); s.page=Math.max(1,Math.min(Math.max(1,tp),s.page+d)); renderAny(t); }
+function goPage(t,p){ ST[t].page=p; renderAny(t); }
+function setPS(t,v){ ST[t].ps=+v; ST[t].page=1; renderAny(t); }
 function doSearch(t,v){ ST[t].q=v; ST[t].page=1; renderT(t); }
 function setSort(t,f){ const s=ST[t]; s.dir=s.sort===f?s.dir*-1:-1; s.sort=f; renderT(t); }
 function doRefresh(t,btn){ const ic=btn.querySelector('.material-icons'); ic.style.transition='transform .5s'; ic.style.transform='rotate(360deg)'; setTimeout(()=>{ic.style.transition='none';ic.style.transform='';},550); loadAll().then(()=>{ renderT(t); refreshFilters(); toast('Refreshed!'); }); }
@@ -1054,7 +1060,10 @@ function buildForm(type,data){
       csdFill(pf.id, opts.map(o=>({value:o.id,label:o[pf.lk]})), pf.ph);
     }
   });
-  if(form.extra==='opts') renderOptBuilder();
+  if(form.extra==='opts'){
+    // Pass saved options and answer when editing
+    renderOptBuilder(data.options||null, data.answer!==undefined?data.answer:null);
+  }
 }
 
 // Cascade ref fields inside modal
@@ -1086,14 +1095,19 @@ function onRefChange(key,type){
 
 // Option builder (questions)
 let corIdx=0;
-function renderOptBuilder(){
+function renderOptBuilder(existingOpts, existingAnswer){
   const qt=csdVal('mf-type')||'MCQ';
   const w=document.getElementById('opt-builder'); if(!w) return;
   if(qt==='Short Answer'){w.innerHTML='';return;}
-  const opts=qt==='True/False'?['True','False']:['','','',''];
-  corIdx=0; const ro=qt==='True/False';
+  const ro = qt==='True/False';
+  // Use saved options if editing, otherwise defaults
+  const opts = existingOpts && existingOpts.length
+    ? existingOpts
+    : (ro ? ['True','False'] : ['','','','']);
+  // Restore saved correct answer index, default 0
+  corIdx = (existingAnswer !== undefined && existingAnswer !== null) ? parseInt(existingAnswer) : 0;
   w.innerHTML=`<div class="mfg"><label>Options <small style="font-weight:400;text-transform:none">(click ✓ to mark correct)</small></label><div class="opt-wrap" id="ow">
-    ${opts.map((o,i)=>`<div class="or">${ro?`<input type="text" value="${o}" readonly style="background:var(--bg)"/>`:`<input type="text" id="oo-${i}" value="${o}" placeholder="Option ${i+1}"/>`}<div class="oc${i===0?' sel':''}" onclick="setC(${i})"><span class="material-icons">check</span></div></div>`).join('')}
+    ${opts.map((o,i)=>`<div class="or">${ro?`<input type="text" value="${o}" readonly style="background:var(--bg)"/>`:`<input type="text" id="oo-${i}" value="${o}" placeholder="Option ${i+1}"/>`}<div class="oc${i===corIdx?' sel':''}" onclick="setC(${i})"><span class="material-icons">check</span></div></div>`).join('')}
   </div>${!ro?`<button type="button" onclick="addOpt()" style="margin-top:7px;font-family:var(--f);font-size:12px;border:1.5px dashed var(--bo);border-radius:7px;padding:5px 12px;cursor:pointer;color:var(--mu);background:none">+ Add Option</button>`:''}</div>`;
 }
 function setC(i){ corIdx=i; document.querySelectorAll('.oc').forEach((el,j)=>el.classList.toggle('sel',j===i)); }
@@ -1428,19 +1442,28 @@ function renderGradesTable(){
   // Sort newest first
   rows.sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
 
+  const s = ST['grades'];
+  const total = rows.length;
+  const tp = Math.max(1, Math.ceil(total/s.ps));
+  if(s.page > tp) s.page = tp;
+  const start = (s.page-1)*s.ps;
+  const end   = Math.min(start+s.ps, total);
+  const paged = rows.slice(start, end);
+
   const tb = document.getElementById('tb-grades');
   if(!rows.length){
     tb.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--mu)">No submissions found.</td></tr>`;
+    document.getElementById('pg-grades').innerHTML='';
     return;
   }
 
-  tb.innerHTML = rows.map((r,i)=>{
+  tb.innerHTML = paged.map((r,i)=>{
     const pct = r.maxScore ? Math.round((r.score/r.maxScore)*100) : 0;
     const pctColor = pct>=70?'var(--gd)':pct>=50?'#e65100':'#e53935';
     const isReturned = r.status==='returned';
     const date = r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : '—';
     return `<tr>
-      <td>${i+1}</td>
+      <td>${start+i+1}</td>
       <td><strong>${r.studentName}</strong></td>
       <td>${r.className}</td>
       <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.assessmentName}</td>
@@ -1453,6 +1476,9 @@ function renderGradesTable(){
       </button></td>
     </tr>`;
   }).join('');
+
+  // Render pagination
+  renderPag('grades', total, tp);
 }
 
 async function openGradeDetail(subId){
@@ -1487,13 +1513,23 @@ async function openGradeDetail(subId){
         </div>`;
       }).join('');
     } else {
-      ansHtml = `<div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px;color:var(--mu)">
-        <em>${ans||'(no answer)'}</em></div>`;
+      ansHtml = `
+        <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;margin-bottom:6px">Student's Answer</div>
+          <div>${ans||'<em style=\"color:var(--mu)\">(no answer provided)</em>'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:#fff8e1;border:1.5px solid #ffd54f;border-radius:8px;padding:10px 14px">
+          <span class="material-icons" style="color:#f9a825;font-size:18px">edit</span>
+          <label style="font-size:12px;font-weight:700;color:#795548;white-space:nowrap">Manual Score:</label>
+          <input type="number" min="0" max="${q.points}" value="${sub.manualScores?.[i]??''}" id="manual-score-${i}"
+            style="width:70px;border:1.5px solid #ffd54f;border-radius:6px;padding:4px 8px;font-family:var(--font);font-size:14px;font-weight:700;text-align:center" placeholder="0"/>
+          <span style="font-size:12px;color:var(--mu)">/ ${q.points} pts</span>
+        </div>`;
     }
     return `<div style="background:#fff;border:1px solid var(--bo);border-radius:10px;padding:16px;margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span style="font-size:12px;font-weight:700;color:var(--mu)">Q${i+1} · ${q.points} pts · ${q.type}</span>
-        ${isMCQ?`<span style="font-size:13px;font-weight:700;color:${isCorrect?'var(--gd)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:'<span style="font-size:12px;color:var(--mu)">Manual grade</span>'}
+        ${isMCQ?`<span style="font-size:13px;font-weight:700;color:${isCorrect?'var(--gd)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:'<span style="font-size:12px;color:#f9a825;font-weight:700">✏ Manual Grade</span>'}
       </div>
       <div style="font-size:14px;font-weight:600;margin-bottom:12px;font-family:var(--font);line-height:1.6">${q.title}</div>
       ${ansHtml}
@@ -1544,15 +1580,72 @@ function closeGradeDetail(e){
   currentSubmission = null;
 }
 
+function updateManualScore(qIndex, maxPts){
+  // Clamp value between 0 and max
+  const inp = document.getElementById('manual-score-'+qIndex);
+  if(!inp) return;
+  let val = parseFloat(inp.value)||0;
+  val = Math.max(0, Math.min(maxPts, val));
+  inp.value = val;
+}
+
+function collectManualScores(questions){
+  const manualScores = {};
+  let manualTotal = 0;
+  questions.forEach((q,i)=>{
+    if(q.type !== 'MCQ' && q.type !== 'True/False'){
+      const inp = document.getElementById('manual-score-'+i);
+      const val = inp ? parseFloat(inp.value)||0 : (currentSubmission.manualScores?.[i]||0);
+      manualScores[i] = val;
+      manualTotal += val;
+    }
+  });
+  return { manualScores, manualTotal };
+}
+
+async function saveManualGrades(){
+  if(!currentSubmission){ toast('No submission selected','err'); return; }
+  const questions = DB.get('questions').filter(q=>q.assessmentId===currentSubmission.assessmentId);
+  const { manualScores, manualTotal } = collectManualScores(questions);
+
+  // Recalculate total score: auto-graded MCQ + manual essay
+  let autoScore = 0;
+  questions.forEach((q,i)=>{
+    const ans = currentSubmission.answers?.[i];
+    if((q.type==='MCQ'||q.type==='True/False') && ans===q.answer) autoScore += parseFloat(q.points)||0;
+  });
+  const newScore = Math.round(autoScore + manualTotal);
+
+  try {
+    const updated = {...currentSubmission, manualScores, score: newScore};
+    await dbSet('submissions', currentSubmission.id, updated);
+    currentSubmission = updated;
+    const snap = await db.collection('submissions').get();
+    CACHE['submissions'] = snap.docs.map(d=>({id:d.id,...d.data()}));
+    toast('Grades saved! New score: '+newScore);
+    renderGradesTable();
+  } catch(e){ toast('Failed to save: '+e.message,'err'); }
+}
+
 async function returnAssessment(){
   if(!currentSubmission){ toast('No submission selected','err'); return; }
   const note = document.getElementById('gd-note')?.value?.trim()||'';
   const btn = document.getElementById('gd-return-btn');
   btn.disabled=true; btn.textContent='Returning...';
+
+  // Save any manual grades first
+  const questions = DB.get('questions').filter(q=>q.assessmentId===currentSubmission.assessmentId);
+  const { manualScores, manualTotal } = collectManualScores(questions);
+  let autoScore = 0;
+  questions.forEach((q,i)=>{
+    const ans = currentSubmission.answers?.[i];
+    if((q.type==='MCQ'||q.type==='True/False') && ans===q.answer) autoScore += parseFloat(q.points)||0;
+  });
+  const newScore = Math.round(autoScore + manualTotal);
+
   try {
-    const updated = {...currentSubmission, status:'returned', returnNote:note, returnedAt:new Date().toISOString()};
+    const updated = {...currentSubmission, status:'returned', returnNote:note, returnedAt:new Date().toISOString(), manualScores, score:newScore};
     await dbSet('submissions', currentSubmission.id, updated);
-    // Reload submissions cache
     const snap = await db.collection('submissions').get();
     CACHE['submissions'] = snap.docs.map(d=>({id:d.id,...d.data()}));
     toast('Assessment returned to student!');
