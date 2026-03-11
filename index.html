@@ -292,7 +292,8 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
       <div class="fuk" title="English"></div>
       <div class="ti" style="position:relative"><span class="material-icons-outlined">notifications</span><div class="nd"></div></div>
       <div class="ti"><span class="material-icons-outlined">settings</span></div>
-      <div class="av" title="Click to logout" onclick="doLogout()">K</div>
+      <span id="user-role-badge" style="font-size:11px;font-weight:700;background:var(--gl);color:var(--gd);padding:3px 10px;border-radius:20px"></span>
+      <div class="av" id="user-avatar" title="Click to logout" onclick="doLogout()">?</div>
     </header>
     <main class="pc">
 
@@ -486,6 +487,17 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
   </div>
 </div>
 
+<!-- VIEW MODAL -->
+<div class="overlay" id="view-overlay" onclick="closeViewModal(event)" style="display:none;z-index:1100">
+  <div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto">
+    <div class="mhd">
+      <h3 id="vm-title">View</h3>
+      <button class="mcl" onclick="closeViewModal()"><span class="material-icons">close</span></button>
+    </div>
+    <div id="vm-body" style="padding:0 24px 24px"></div>
+  </div>
+</div>
+
 <!-- COPY ASSESSMENT MODAL -->
 <div class="overlay" id="copy-overlay" onclick="closeCopyModal(event)" style="display:none;z-index:1100">
   <div class="modal" style="max-width:500px">
@@ -545,6 +557,9 @@ MathJax = {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+<!-- KaTeX for math rendering inside editor AND student portal -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <!-- TinyMCE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
 
@@ -571,6 +586,13 @@ const db   = firebase.firestore();
 
 // Keep user logged in after page refresh
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// ── CURRENT USER STATE
+let CURRENT_USER = null; // { email, displayName, isAdmin }
+const ADMIN_EMAIL = 'admin@iai.edu.org'; // change to your admin email
+
+function isAdmin(){ return CURRENT_USER?.isAdmin || false; }
+function canEdit(record){ return isAdmin() || (record?.createdByEmail === CURRENT_USER?.email); }
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
@@ -717,6 +739,11 @@ function doLogout(){ if(confirm('Log out?')) auth.signOut(); }
 
 // ── INIT (called once after login + data load)
 function initApp(){
+  // Update avatar and role badge
+  const av = document.getElementById('user-avatar');
+  if(av) av.textContent = (CURRENT_USER?.displayName||'?')[0].toUpperCase();
+  const badge = document.getElementById('user-role-badge');
+  if(badge) badge.textContent = isAdmin() ? '👑 Admin' : '👤 Teacher';
   ['class','subject','lesson','assessment','question','student'].forEach(t=>renderT(t));
   refreshFilters();
 }
@@ -808,6 +835,13 @@ function getFiltered(type){
     if(as) data=data.filter(r=>r.assessmentId===as);
   }
   if(type==='student'){ const cl=csdVal('f-st-class'); if(cl) data=data.filter(r=>r.classId===cl); }
+  // Teachers only see records they created
+  if(!isAdmin() && CURRENT_USER){
+    const teacherTypes = ['subject','lesson','assessment','question'];
+    if(teacherTypes.includes(type)){
+      data = data.filter(r => r.createdByEmail === CURRENT_USER.email);
+    }
+  }
   data.sort((a,b)=>{ const va=a[s.sort]||'', vb=b[s.sort]||''; return s.dir*(va>vb?1:va<vb?-1:0); });
   return data;
 }
@@ -827,12 +861,16 @@ function renderT(type){
 
 function rowHTML(type,r,n){
   const copyBtn = type==='assessment' ? `<div class="ib" title="Copy Assessment" onclick="openCopyAssessment('${r.id}')"><span class="material-icons">content_copy</span></div>` : '';
-  const ac=`<div class="ab">${copyBtn}<div class="ib" title="Edit" onclick="openEdit('${type}','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" onclick="confirmDel('${type}','${r.id}','${esc(r.name||r.title||r.username||'')}')"><span class="material-icons">delete</span></div></div>`;
+  const viewBtn = (type==='assessment'||type==='question') ? `<div class="ib" title="View" onclick="openViewModal('${type}','${r.id}')"><span class="material-icons">visibility</span></div>` : '';
+  const canAct  = canEdit(r);
+  const editBtn = canAct ? `<div class="ib" title="Edit" onclick="openEdit('${type}','${r.id}')"><span class="material-icons">edit</span></div>` : '';
+  const delBtn  = canAct ? `<div class="ib del" title="Delete" onclick="confirmDel('${type}','${r.id}','${esc(r.name||r.username||'')}')"><span class="material-icons">delete</span></div>` : '';
+  const ac=`<div class="ab">${viewBtn}${copyBtn}${editBtn}${delBtn}</div>`;
   if(type==='class')      return`<tr><td>${n}</td><td>${r.year||'—'}</td><td>${r.campus||'—'}</td><td><div class="thumbi"><span class="material-icons">image</span></div></td><td><span class="code">${r.code||'—'}</span></td><td><button class="qrb" onclick="showQR('${esc(r.code||r.id)}','${esc(r.name)}')"><span class="material-icons">qr_code_2</span></button></td><td><strong>${r.name}</strong></td><td><span class="chip ${r.smsInfo==='Active'?'cg':'co'}">${r.smsInfo||'Active'}</span></td><td><strong>${r.totalStudents||0}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='subject')    return`<tr><td>${n}</td><td>${r.className||'—'}</td><td><strong>${r.name}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='lesson')     return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.ordinal||1}</span></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`;
   if(type==='assessment') return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td><strong>${r.name}</strong></td><td><span class="chip cb2">${r.config||'MCQ'}</span></td><td><strong>${r.maxScore||0}</strong></td><td style="font-size:12px;color:var(--mu)">${r.date||'—'}</td><td><span class="chip ${r.validState==='Valid'?'cg':'co'}">${r.validState||'Pending'}</span></td><td>${ac}</td></tr>`;
-  if(type==='question'){ const qtitle=stripHtml(r.title||''); return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${qtitle}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('question','${r.id}')"><span class="material-icons">edit</span></div><div class="ib del" title="Delete" data-id="${r.id}" onclick="delQuestion(this)"><span class="material-icons">delete</span></div></div></td></tr>`; }
+  if(type==='question'){ const qtitle=stripHtml(r.title||''); return`<tr><td>${n}</td><td>${r.className||'—'}</td><td>${r.subjectName||'—'}</td><td>${r.lessonName||'—'}</td><td>${r.assessmentName||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${qtitle}</strong></td><td><span class="chip ${r.type==='MCQ'?'cb2':'co'}">${r.type||'MCQ'}</span></td><td><strong>${r.points||1}</strong></td><td>${r.createdBy||'Admin'}</td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td>${ac}</td></tr>`; }
   if(type==='student')    return`<tr><td>${n}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(r.name||'?')[0].toUpperCase()}</div><strong>${r.name||'—'}</strong></div></td><td><span class="code">${r.username||'—'}</span></td><td style="font-size:12px;color:var(--mu)">${r.email||'—'}</td><td>${r.className||'—'}</td><td><span class="chip ${r.status==='Active'?'cg':'co'}">${r.status||'Active'}</span></td><td style="color:var(--mu);font-size:12px">${r.createdAt||'—'}</td><td><div class="ab"><div class="ib" title="Edit" onclick="openEdit('student','${r.id}')"><span class="material-icons">edit</span></div><div class="ib" title="Reset Password" onclick="showResetPw('${r.id}')"><span class="material-icons">lock_reset</span></div><div class="ib del" title="Delete" onclick="confirmDel('student','${r.id}','${esc(r.name||'')}')"><span class="material-icons">delete</span></div></div></td></tr>`;
 }
 function esc(s){ return String(s||'').replace(/['"<>&]/g,c=>({'\'':'&#39;','"':'&quot;','<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
@@ -1068,17 +1106,22 @@ function initTinyMCE(id){
   setTimeout(()=>{
     tinymce.init({
       selector: '#'+id,
-      height: 280,
+      height: 320,
       menubar: false,
-      plugins: ['lists','link','table','codesample','emoticons'],
+      plugins: ['lists','link','table'],
       toolbar: 'undo redo | bold italic underline | forecolor backcolor | '+
                'alignleft aligncenter alignright | bullist numlist | '+
                'table link | math | removeformat',
       skin: 'oxide',
-      content_style: "body { font-family: 'Kantumruy Pro', sans-serif; font-size: 14px; line-height: 1.6; padding: 8px; } @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');",
-      placeholder: 'Type content here... Use the math button for formulas',
+      content_style: [
+        "@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');",
+        "@import url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css');",
+        "body { font-family: 'Kantumruy Pro', sans-serif; font-size: 14px; line-height: 1.7; padding: 10px; }",
+        ".math-formula { display: inline-block; vertical-align: middle; margin: 0 2px; }",
+        ".math-block { display: block; text-align: center; margin: 10px 0; }"
+      ].join(''),
+      placeholder: 'Type here... Click ∑ Math to insert a formula',
       setup: function(editor){
-        // Custom math button
         editor.ui.registry.addButton('math', {
           text: '∑ Math',
           tooltip: 'Insert Math Formula',
@@ -1087,21 +1130,45 @@ function initTinyMCE(id){
               title: 'Insert Math Formula',
               body: {
                 type: 'panel',
-                items: [{
-                  type: 'textarea',
-                  name: 'formula',
-                  label: 'LaTeX Formula (e.g. x^2 + y^2 = z^2)',
-                  maximized: true
-                }]
+                items: [
+                  {
+                    type: 'selectbox',
+                    name: 'display',
+                    label: 'Display style',
+                    items: [
+                      {value:'inline', text:'Inline (within text)'},
+                      {value:'block',  text:'Block (centered on its own line)'}
+                    ]
+                  },
+                  {
+                    type: 'textarea',
+                    name: 'formula',
+                    label: 'LaTeX (e.g.  \\frac{1}{2}  or  x^{2}+y^{2})',
+                    maximized: true
+                  }
+                ]
               },
               buttons: [
                 {type:'cancel', text:'Cancel'},
                 {type:'submit', text:'Insert', primary:true}
               ],
               onSubmit: function(api){
-                const formula = api.getData().formula.trim();
-                if(formula){
-                  editor.insertContent('\\('+formula+'\\)');
+                const data    = api.getData();
+                const formula = data.formula.trim();
+                const block   = data.display === 'block';
+                if(!formula){ api.close(); return; }
+                try {
+                  // Render with KaTeX inside the editor
+                  const rendered = katex.renderToString(formula, {
+                    throwOnError: false,
+                    displayMode: block
+                  });
+                  const cls   = block ? 'math-block' : 'math-formula';
+                  // Store raw latex in data-latex so we can re-render on student side
+                  const html  = `<span class="${cls}" data-latex="${formula.replace(/"/g,'&quot;')}" data-display="${block}">${rendered}</span>`;
+                  editor.insertContent(block ? '<p>'+html+'</p>' : html);
+                } catch(e){
+                  editor.insertContent(block ? `<p>\\[${formula}\\]</p>` : `\\(${formula}\\)`);
                 }
                 api.close();
               }
@@ -1110,8 +1177,15 @@ function initTinyMCE(id){
         });
       },
       init_instance_callback: function(editor){
-        // Render any existing math in the editor
-        if(window.MathJax) MathJax.typesetPromise([editor.getBody()]).catch(e=>console.warn(e));
+        // Re-render any existing KaTeX spans when editing saved content
+        const body = editor.getBody();
+        body.querySelectorAll('[data-latex]').forEach(el=>{
+          try {
+            const latex   = el.getAttribute('data-latex');
+            const display = el.getAttribute('data-display')==='true';
+            el.innerHTML  = katex.renderToString(latex,{throwOnError:false,displayMode:display});
+          } catch(e){}
+        });
       }
     });
   }, 100);
@@ -1123,7 +1197,8 @@ async function saveModal(){
   const now=new Date().toISOString().slice(0,10);
   // Map type to Firestore collection name
   const colKey = type==='student'?'students':type==='class'?'classs':type+'s';
-  let rec={id:editId||DB.uid(), createdBy:'Admin K', createdAt:now};
+  const displayName = CURRENT_USER?.displayName || 'Admin';
+  let rec={id:editId||DB.uid(), createdBy:displayName, createdByEmail:CURRENT_USER?.email||'', createdAt:now};
   if(editId){ const old=DB.get(colKey).find(r=>r.id===editId); if(old) rec.createdAt=old.createdAt; }
 
   for(const f of form.fields){
@@ -1490,6 +1565,89 @@ async function returnAssessment(){
 }
 
 // ══════════════════════════════════════════════════════
+// ── VIEW MODAL
+// ══════════════════════════════════════════════════════
+function openViewModal(type, id){
+  const overlay = document.getElementById('view-overlay');
+  const body    = document.getElementById('vm-body');
+  const LETTERS = 'ABCDEFGH';
+
+  if(type === 'question'){
+    const q = DB.get('questions').find(r=>r.id===id);
+    if(!q){ toast('Not found','err'); return; }
+    document.getElementById('vm-title').textContent = 'Question Detail';
+
+    const optHtml = (q.type==='MCQ'||q.type==='True/False') ?
+      (q.options||[]).map((o,i)=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:2px solid ${i===q.answer?'var(--gd)':'var(--bo)'};border-radius:8px;margin-bottom:8px;background:${i===q.answer?'var(--gl)':'#fff'}">
+          <div style="width:26px;height:26px;border-radius:50%;background:${i===q.answer?'var(--gd)':'var(--bo)'};color:${i===q.answer?'#fff':'var(--mu)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0">${LETTERS[i]}</div>
+          <span style="flex:1">${o}</span>
+          ${i===q.answer?'<span class="material-icons" style="color:var(--gd)">check_circle</span>':''}
+        </div>`).join('') :
+      `<div style="background:var(--bg);border-radius:8px;padding:12px;color:var(--mu);font-size:13px"><em>Short answer — manually graded</em></div>`;
+
+    body.innerHTML = `
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0">
+        <span class="chip cb2">${q.type||'MCQ'}</span>
+        <span class="chip cg">${q.points||1} pts</span>
+        <span style="font-size:12px;color:var(--mu);align-self:center">${q.assessmentName||'—'} · ${q.subjectName||'—'}</span>
+      </div>
+      <div style="font-size:16px;font-weight:700;line-height:1.6;margin-bottom:20px;padding:14px;background:var(--bg);border-radius:10px" class="tinymce-content">${q.title||'(no text)'}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Answer Options</div>
+      ${optHtml}
+      <div style="font-size:11px;color:var(--mu);margin-top:16px">Created by ${q.createdBy||'—'} on ${q.createdAt||'—'}</div>`;
+
+  } else if(type === 'assessment'){
+    const a  = DB.get('assessments').find(r=>r.id===id);
+    const qs = DB.get('questions').filter(q=>q.assessmentId===id);
+    if(!a){ toast('Not found','err'); return; }
+    document.getElementById('vm-title').textContent = a.name;
+
+    const qList = qs.length ? qs.map((q,i)=>{
+      const optHtml = (q.type==='MCQ'||q.type==='True/False') ?
+        (q.options||[]).map((o,j)=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid ${j===q.answer?'var(--gd)':'var(--bo)'};border-radius:7px;margin-bottom:6px;background:${j===q.answer?'var(--gl)':'#fff'}">
+            <div style="width:22px;height:22px;border-radius:50%;background:${j===q.answer?'var(--gd)':'#e5e7eb'};color:${j===q.answer?'#fff':'var(--mu)'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${LETTERS[j]}</div>
+            <span style="font-size:13px;flex:1">${o}</span>
+            ${j===q.answer?'<span class="material-icons" style="color:var(--gd);font-size:16px">check_circle</span>':''}
+          </div>`).join('') :
+        `<div style="font-size:12px;color:var(--mu);padding:8px">Short answer — manually graded</div>`;
+      return `<div style="background:#fff;border:1px solid var(--bo);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:12px;font-weight:700;color:var(--mu)">Q${i+1} · ${q.points||1} pts · ${q.type||'MCQ'}</span>
+        </div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:10px" class="tinymce-content">${q.title}</div>
+        ${optHtml}
+      </div>`;
+    }).join('') : '<p style="color:var(--mu);text-align:center;padding:20px">No questions yet.</p>';
+
+    body.innerHTML = `
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 20px">
+        <span class="chip ${a.validState==='Valid'?'cg':'co'}">${a.validState||'Pending'}</span>
+        <span class="chip cb2">${a.config||'MCQ'}</span>
+        <span class="chip cg">Max: ${a.maxScore||0} pts</span>
+        <span style="font-size:12px;color:var(--mu);align-self:center">${a.className||'—'} · ${a.subjectName||'—'} · ${a.lessonName||'—'}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">${qs.length} Question${qs.length!==1?'s':''}</div>
+      ${qList}`;
+  }
+
+  // Re-render KaTeX
+  body.querySelectorAll('[data-latex]').forEach(el=>{
+    try{ el.innerHTML=katex.renderToString(el.getAttribute('data-latex'),{throwOnError:false,displayMode:el.getAttribute('data-display')==='true'}); }catch(e){}
+  });
+
+  overlay.style.display='flex';
+  setTimeout(()=>overlay.classList.add('open'),10);
+}
+
+function closeViewModal(e){
+  if(e && e.target!==document.getElementById('view-overlay')) return;
+  document.getElementById('view-overlay').classList.remove('open');
+  setTimeout(()=>{ document.getElementById('view-overlay').style.display='none'; },200);
+}
+
+// ══════════════════════════════════════════════════════
 // ── COPY ASSESSMENT
 // ══════════════════════════════════════════════════════
 let copySourceId = null;
@@ -1575,7 +1733,8 @@ async function doCopyAssessment(){
       lessonId,  lessonName:  les?.name || '',
       validState: 'Pending',
       createdAt: now,
-      createdBy: 'Admin K'
+      createdBy: CURRENT_USER?.displayName||'Admin',
+      createdByEmail: CURRENT_USER?.email||''
     };
     await dbSet('assessments', newAssId, newAss);
 
@@ -1616,10 +1775,16 @@ auth.onAuthStateChanged(async user => {
     ldgEl.style.display = 'flex';
     ldgMsg.textContent  = 'Loading your data...';
     try {
+      CURRENT_USER = {
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0],
+        isAdmin: user.email === ADMIN_EMAIL
+      };
       await loadAll();
       ldgEl.style.display = 'none';
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display   = 'block';
+
       initApp();
     } catch(e) {
       ldgMsg.textContent = 'Error: ' + e.message;
