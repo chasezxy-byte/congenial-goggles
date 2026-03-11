@@ -280,6 +280,7 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
         </div>
         <div id="ng2-c">
           <div class="ni" onclick="nav('student-list',this)">Student List</div>
+          <div class="ni" onclick="nav('teacher-list',this)">Teacher List</div>
         </div>
       </div>
     </div>
@@ -481,6 +482,23 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
         </div>
       </div>
 
+      <!-- TEACHER LIST -->
+      <div class="page" id="page-teacher-list">
+        <div class="ph">
+          <div>
+            <div class="pt">Teacher List</div>
+            <div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Teacher List</span></div>
+          </div>
+          <button class="btn-c" onclick="openAddTeacher()"><span class="material-icons">add</span>Add Teacher</button>
+        </div>
+        <div class="tc">
+          <div class="tw"><table><thead><tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Assigned Classes</th><th>Added</th><th>Action</th>
+          </tr></thead><tbody id="tb-teacher"></tbody></table></div>
+          <div class="pg" id="pg-teacher"></div>
+        </div>
+      </div>
+
       <div class="page" id="page-reports">
         <div class="ph"><div><div class="pt">Reports</div><div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Reports</span></div></div>
           <button class="btn-c" onclick="toast('Exporting all data...')"><span class="material-icons">download</span>Export All</button></div>
@@ -499,6 +517,34 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
       <button class="mcl" onclick="closeViewModal()"><span class="material-icons">close</span></button>
     </div>
     <div id="vm-body" style="padding:0 24px 24px"></div>
+  </div>
+</div>
+
+<!-- TEACHER MODAL -->
+<div class="overlay" id="teacher-overlay" onclick="closeTeacherModal(event)" style="display:none;z-index:1100">
+  <div class="modal" style="max-width:500px">
+    <div class="mhd">
+      <h3 id="tm-title">Add Teacher</h3>
+      <button class="mcl" onclick="closeTeacherModal()"><span class="material-icons">close</span></button>
+    </div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+      <div class="mfg">
+        <label>Teacher Name *</label>
+        <input type="text" id="tm-name" placeholder="e.g. Mr. Sokha"/>
+      </div>
+      <div class="mfg">
+        <label>Firebase Email * <small style="font-weight:400;color:var(--mu)">(must match their login email)</small></label>
+        <input type="email" id="tm-email" placeholder="e.g. teacher@school.com"/>
+      </div>
+      <div class="mfg">
+        <label>Assign Classes</label>
+        <div id="tm-classes" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;border:1.5px solid var(--bo);border-radius:8px;padding:10px"></div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn-can" onclick="closeTeacherModal()">Cancel</button>
+      <button class="btn-sv" id="tm-save-btn" onclick="saveTeacher()">Save Teacher</button>
+    </div>
   </div>
 </div>
 
@@ -593,14 +639,14 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── CURRENT USER STATE
 let CURRENT_USER = null; // { email, displayName, isAdmin }
-const ADMIN_EMAIL = 'admin@iai.edu.org'; // change to your admin email
+const ADMIN_EMAIL = 'admin@americanintercon.com'; // change to your admin email
 
 function isAdmin(){ return CURRENT_USER?.isAdmin || false; }
 function canEdit(record){ return isAdmin() || (record?.createdByEmail === CURRENT_USER?.email); }
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
-const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[], submissions:[] };
+const CACHE = { classs:[], subjects:[], lessons:[], assessments:[], questions:[], students:[], submissions:[], teachers:[] };
 
 // ── DB HELPERS
 const DB = {
@@ -623,7 +669,7 @@ async function dbDel(collection, id) {
 
 // Load all collections from Firestore
 async function loadAll() {
-  const cols = ['classs','subjects','lessons','assessments','questions','students','submissions'];
+  const cols = ['classs','subjects','lessons','assessments','questions','students','submissions','teachers'];
   // Load one by one (more reliable than Promise.all on page load)
   for(const col of cols){
     try {
@@ -719,6 +765,7 @@ const ST = {
   question:  {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
   student:   {page:1,ps:10,q:'',sort:'createdAt',dir:-1},
   grades:    {page:1,ps:10},
+  teacher:   {page:1,ps:10},
 };
 let editId=null, curType=null;
 
@@ -763,6 +810,7 @@ function nav(pid, el){
   if(el&&el.classList) el.classList.add('active');
   if(pid==='reports') renderReports();
   if(pid==='grades'){ loadAll().then(()=>renderGrades()); }
+  if(pid==='teacher-list'){ renderTeacherList(); }
   refreshFilters();
 }
 
@@ -840,11 +888,13 @@ function getFiltered(type){
     if(as) data=data.filter(r=>r.assessmentId===as);
   }
   if(type==='student'){ const cl=csdVal('f-st-class'); if(cl) data=data.filter(r=>r.classId===cl); }
-  // Teachers only see records they created
+  // Teachers only see records for their assigned classes (or created by them)
   if(!isAdmin() && CURRENT_USER){
     const teacherTypes = ['subject','lesson','assessment','question'];
     if(teacherTypes.includes(type)){
-      data = data.filter(r => r.createdByEmail === CURRENT_USER.email);
+      const myTeacher = CACHE.teachers.find(t=>t.email===CURRENT_USER.email);
+      const myClasses = myTeacher?.classIds || [];
+      data = data.filter(r => myClasses.includes(r.classId) || r.createdByEmail===CURRENT_USER.email);
     }
   }
   data.sort((a,b)=>{ const va=a[s.sort]||'', vb=b[s.sort]||''; return s.dir*(va>vb?1:va<vb?-1:0); });
@@ -1738,6 +1788,148 @@ function closeViewModal(e){
   if(e && e.target!==document.getElementById('view-overlay')) return;
   document.getElementById('view-overlay').classList.remove('open');
   setTimeout(()=>{ document.getElementById('view-overlay').style.display='none'; },200);
+}
+
+// ══════════════════════════════════════════════════════
+// ── TEACHER MANAGEMENT
+// ══════════════════════════════════════════════════════
+let editTeacherId = null;
+
+function renderTeacherList(){
+  const teachers = DB.get('teachers');
+  const classes  = DB.get('classs');
+  const s = ST['teacher'];
+  const total = teachers.length;
+  const tp = Math.max(1, Math.ceil(total/s.ps));
+  if(s.page>tp) s.page=tp;
+  const start=(s.page-1)*s.ps, end=Math.min(start+s.ps,total);
+  const paged=teachers.slice(start,end);
+
+  const tb = document.getElementById('tb-teacher');
+  if(!tb) return;
+  if(!teachers.length){
+    tb.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--mu)">No teachers yet. Click "Add Teacher" to get started.</td></tr>`;
+    document.getElementById('pg-teacher').innerHTML='';
+    return;
+  }
+  tb.innerHTML = paged.map((t,i)=>{
+    const assignedClasses = (t.classIds||[]).map(cid=>{
+      const c=classes.find(x=>x.id===cid);
+      return c?`<span class="chip cb2" style="margin:2px">${c.name}</span>`:'';
+    }).join('');
+    return `<tr>
+      <td>${start+i+1}</td>
+      <td><strong>${t.name}</strong></td>
+      <td><span class="code">${t.email}</span></td>
+      <td>${assignedClasses||'<span style="color:var(--mu);font-size:12px">No classes assigned</span>'}</td>
+      <td style="font-size:12px;color:var(--mu)">${t.createdAt||'—'}</td>
+      <td><div class="ab">
+        <div class="ib" title="Edit" onclick="openEditTeacher('${t.id}')"><span class="material-icons">edit</span></div>
+        <div class="ib del" title="Delete" onclick="confirmDelTeacher('${t.id}','${esc(t.name)}')"><span class="material-icons">delete</span></div>
+      </div></td>
+    </tr>`;
+  }).join('');
+  renderPag('teacher', total, tp);
+}
+
+function openAddTeacher(){
+  editTeacherId = null;
+  document.getElementById('tm-title').textContent = 'Add Teacher';
+  document.getElementById('tm-name').value = '';
+  document.getElementById('tm-email').value = '';
+  document.getElementById('tm-email').disabled = false;
+  buildClassCheckboxes([]);
+  const o=document.getElementById('teacher-overlay');
+  o.style.display='flex'; setTimeout(()=>o.classList.add('open'),10);
+}
+
+function openEditTeacher(id){
+  const t = DB.get('teachers').find(x=>x.id===id); if(!t) return;
+  editTeacherId = id;
+  document.getElementById('tm-title').textContent = 'Edit Teacher';
+  document.getElementById('tm-name').value = t.name||'';
+  document.getElementById('tm-email').value = t.email||'';
+  document.getElementById('tm-email').disabled = true; // email can't change
+  buildClassCheckboxes(t.classIds||[]);
+  const o=document.getElementById('teacher-overlay');
+  o.style.display='flex'; setTimeout(()=>o.classList.add('open'),10);
+}
+
+function buildClassCheckboxes(selectedIds){
+  const classes = DB.get('classs');
+  const wrap = document.getElementById('tm-classes');
+  if(!classes.length){
+    wrap.innerHTML='<p style="color:var(--mu);font-size:13px">No classes yet. Create a class first.</p>';
+    return;
+  }
+  wrap.innerHTML = classes.map(c=>`
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 4px;border-radius:6px">
+      <input type="checkbox" value="${c.id}" ${selectedIds.includes(c.id)?'checked':''}
+        style="width:16px;height:16px;accent-color:var(--gd);cursor:pointer"/>
+      <span style="font-size:13px;font-weight:600">${c.name}</span>
+      <span style="font-size:11px;color:var(--mu)">${c.year||''}</span>
+    </label>`).join('');
+}
+
+function closeTeacherModal(e){
+  if(e && e.target!==document.getElementById('teacher-overlay')) return;
+  document.getElementById('teacher-overlay').classList.remove('open');
+  setTimeout(()=>{ document.getElementById('teacher-overlay').style.display='none'; },200);
+  editTeacherId=null;
+}
+
+async function saveTeacher(){
+  const name  = document.getElementById('tm-name').value.trim();
+  const email = document.getElementById('tm-email').value.trim().toLowerCase();
+  if(!name)  { toast('Enter teacher name','err'); return; }
+  if(!email) { toast('Enter teacher email','err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Invalid email','err'); return; }
+
+  // Collect selected class ids
+  const classIds = [...document.querySelectorAll('#tm-classes input[type=checkbox]:checked')].map(cb=>cb.value);
+
+  const btn = document.getElementById('tm-save-btn');
+  btn.disabled=true; btn.textContent='Saving...';
+
+  try {
+    const id  = editTeacherId || DB.uid();
+    const rec = {
+      id, name, email, classIds,
+      createdAt: editTeacherId
+        ? (DB.get('teachers').find(t=>t.id===editTeacherId)?.createdAt || new Date().toISOString().slice(0,10))
+        : new Date().toISOString().slice(0,10)
+    };
+    await dbSet('teachers', id, rec);
+    await loadAll();
+    closeTeacherModal();
+    renderTeacherList();
+    toast(editTeacherId ? 'Teacher updated!' : 'Teacher added!');
+  } catch(e){
+    toast('Failed: '+e.message,'err');
+  }
+  btn.disabled=false; btn.textContent='Save Teacher';
+}
+
+function confirmDelTeacher(id, name){
+  confirmDel('_teacher', id, name);
+}
+
+// Hook _teacher into doDel
+const _origDoDel = doDel;
+async function doDel(type, id){
+  if(type==='_teacher'){
+    const saveBtn=document.getElementById('msave');
+    saveBtn.disabled=true; saveBtn.textContent='Deleting...';
+    try{
+      await dbDel('teachers',id);
+      await loadAll();
+      closeModal(); renderTeacherList();
+      toast('Teacher deleted');
+    } catch(e){ toast('Delete failed: '+e.message,'err'); }
+    finally{ saveBtn.disabled=false; saveBtn.style.background=''; saveBtn.onclick=saveModal; }
+    return;
+  }
+  return _origDoDel(type,id);
 }
 
 // ══════════════════════════════════════════════════════
