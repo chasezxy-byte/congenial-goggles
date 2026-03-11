@@ -166,14 +166,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-firestore-compat.min.js"></script>
-<!-- MathJax config must be before the script loads -->
-<script>
-MathJax = {
-  tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['\\[','\\]'],['$$','$$']] },
-  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
-};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <style>
 .ldg{position:fixed;inset:0;background:linear-gradient(160deg,#1a6b3c,#2e8b57);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff}
 .ldg-spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
@@ -498,11 +493,8 @@ function renderQuestion(){
     <div class="q-text tinymce-content">${q.title}</div>
     ${optHtml}
   </div>`;
-  // Re-render MathJax after content is inserted
-  if(window.MathJax){
-    MathJax.typesetClear([body]);
-    MathJax.typesetPromise([body]).catch(e=>console.warn(e));
-  }
+  // Re-render KaTeX spans
+  renderKatex(body);
   const nav=document.getElementById('quiz-nav');
   const isLast=currentQ===total-1;
   nav.innerHTML=`
@@ -630,11 +622,8 @@ function showReview(){
     </div>`;
   }).join('');
   document.getElementById('review-overlay').classList.add('open');
-  // Render math in review
-  if(window.MathJax){
-    MathJax.typesetClear([document.getElementById('review-body')]);
-    MathJax.typesetPromise([document.getElementById('review-body')]).catch(e=>console.warn(e));
-  }
+  // Render KaTeX in review
+  renderKatex(document.getElementById('review-body'));
 }
 function closeReview(){document.getElementById('review-overlay').classList.remove('open');}
 
@@ -667,6 +656,25 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+}
+
+// ── KATEX RENDERER
+function renderKatex(container){
+  if(!container || !window.katex) return;
+  // Re-render any KaTeX spans saved from the editor
+  container.querySelectorAll('[data-latex]').forEach(el=>{
+    try {
+      const latex   = el.getAttribute('data-latex');
+      const display = el.getAttribute('data-display')==='true';
+      el.innerHTML  = katex.renderToString(latex,{throwOnError:false,displayMode:display});
+    } catch(e){}
+  });
+  // Also handle raw \(...\) or \[...\] in case of old content
+  container.querySelectorAll('.tinymce-content, .q-text, .rq-q').forEach(el=>{
+    el.innerHTML = el.innerHTML
+      .replace(/\\\((.+?)\\\)/g, (m,f)=>{ try{ return katex.renderToString(f,{throwOnError:false}); }catch(e){return m;} })
+      .replace(/\\\[(.+?)\\\]/gs,(m,f)=>{ try{ return katex.renderToString(f,{throwOnError:false,displayMode:true}); }catch(e){return m;} });
+  });
 }
 
 // ── BOOTSTRAP
