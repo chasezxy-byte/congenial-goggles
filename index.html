@@ -218,6 +218,54 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
 .mfg .csd-btn{font-size:13px;padding:10px 12px;border-radius:8px}
 .mfg .csd-panel{border-radius:8px}
 .mfg .csd-opt{font-size:13px;padding:9px 14px}
+/* ── SETTINGS */
+.layout-btn{padding:10px 18px;border:2px solid var(--bo);border-radius:10px;background:var(--w);cursor:pointer;font-family:var(--f);font-size:13px;font-weight:700;color:var(--tx);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.layout-btn small{font-size:10px;font-weight:400;color:var(--mu)}
+.layout-btn:hover,.layout-btn.active{border-color:var(--gd);background:var(--gl);color:var(--gd)}
+.theme-card{border:2px solid var(--bo);border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;transition:all .15s;background:var(--w)}
+.theme-card:hover{border-color:var(--gm)}
+.theme-card.active{border-color:var(--gd);box-shadow:0 0 0 3px var(--gl)}
+.theme-preview{height:44px;border-radius:8px;margin-bottom:8px;display:flex;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+.tp-sb{width:28%;height:100%}
+.tp-main{flex:1;display:flex;flex-direction:column;gap:3px;padding:5px}
+.tp-bar{height:5px;border-radius:3px}
+.theme-card .tc-name{font-size:11px;font-weight:700;color:var(--tx)}
+.accent-dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;flex-shrink:0}
+.accent-dot:hover{transform:scale(1.15)}
+.accent-dot.active{border-color:#333!important;transform:scale(1.15)}
+/* ── DARK */
+body.theme-dark{--bg:#0f1117;--w:#1a1d26;--bo:#2a2d3a;--tx:#e2e8f0;--mu:#64748b;--sh:0 2px 14px rgba(0,0,0,.4);--dk:#e2e8f0;--teal:#1a2d24;--tt:#4ade80}
+body.theme-dark .sidebar,body.theme-dark .topbar{background:#1a1d26;border-color:#2a2d3a}
+body.theme-dark .tc{background:#1a1d26;border-color:#2a2d3a}
+body.theme-dark .modal{background:#1a1d26}
+body.theme-dark .overlay{background:rgba(0,0,0,.75)}
+body.theme-dark input,body.theme-dark textarea{background:#0f1117;color:#e2e8f0;border-color:#2a2d3a}
+body.theme-dark table thead th{background:#0f1117;color:#64748b}
+body.theme-dark .csd-btn,body.theme-dark .csd-panel{background:#1a1d26;color:#e2e8f0;border-color:#2a2d3a}
+body.theme-dark .csd-opt{background:#1a1d26;color:#e2e8f0}
+body.theme-dark .csd-opt:hover{background:#2a2d3a}
+body.theme-dark .theme-card,.theme-dark .layout-btn{background:#0f1117;border-color:#2a2d3a}
+body.theme-dark .btn-c{background:#2a2d3a;color:#e2e8f0}
+body.theme-dark .ng{background:#1a2d24}
+/* ── MORNING */
+body.theme-morning{--bg:#fef8f0;--w:#fffcf7;--bo:#edd9b8;--tx:#2d1b0e;--mu:#a07850;--teal:#fef3e2;--tt:#7c4a1e;--dk:#2d1b0e}
+body.theme-morning .sidebar{background:#fffcf7;border-color:#edd9b8}
+body.theme-morning .topbar{background:#fffcf7;border-color:#edd9b8}
+body.theme-morning .tc{background:#fffcf7;border-color:#edd9b8}
+body.theme-morning .modal{background:#fffcf7}
+body.theme-morning .ng{background:#fef3e2}
+/* ── OCEAN */
+body.theme-ocean{--bg:#edf4fb;--w:#f6faff;--bo:#bdd4ee;--tx:#0a1c2e;--mu:#4a78a0;--teal:#dceefb;--tt:#0a4a7e;--dk:#0a1c2e}
+body.theme-ocean .sidebar{background:#f0f7ff;border-color:#bdd4ee}
+body.theme-ocean .topbar{background:#f6faff;border-color:#bdd4ee}
+body.theme-ocean .tc{background:#f6faff}
+body.theme-ocean .modal{background:#f6faff}
+/* ── ROSE */
+body.theme-rose{--bg:#fdf0f3;--w:#fff7f9;--bo:#f0c4cf;--tx:#2d0a14;--mu:#a05070;--teal:#fde8ee;--tt:#8b1a3a;--dk:#2d0a14}
+body.theme-rose .sidebar{background:#fff7f9;border-color:#f0c4cf}
+body.theme-rose .topbar{background:#fff7f9;border-color:#f0c4cf}
+body.theme-rose .tc{background:#fff7f9}
+body.theme-rose .modal{background:#fff7f9}
 </style>
 </head>
 <body>
@@ -294,7 +342,7 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
         <span id="lang-flag">🇰🇭</span><span id="lang-label">ខ្មែរ</span>
       </button>
       <div class="ti" style="position:relative"><span class="material-icons-outlined">notifications</span><div class="nd"></div></div>
-      <div class="ti"><span class="material-icons-outlined">settings</span></div>
+      <div class="ti" onclick="nav('settings',this)" title="Settings" style="cursor:pointer"><span class="material-icons-outlined">settings</span></div>
       <span id="user-role-badge" style="font-size:11px;font-weight:700;background:var(--gl);color:var(--gd);padding:3px 10px;border-radius:20px"></span>
       <div class="av" id="user-avatar" title="Click to logout" onclick="doLogout()">?</div>
     </header>
@@ -498,6 +546,63 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
             <th>#</th><th>Name</th><th>Email</th><th>Assigned Classes</th><th>Added</th><th>Action</th>
           </tr></thead><tbody id="tb-teacher"></tbody></table></div>
           <div class="pg" id="pg-teacher"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE -->
+      <div class="page" id="page-settings">
+        <div class="ph">
+          <div>
+            <div class="pt">Settings</div>
+            <div class="bc"><span>Dashboard</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="ac">Settings</span></div>
+          </div>
+        </div>
+        <div style="max-width:760px;display:flex;flex-direction:column;gap:24px">
+
+          <!-- THEME -->
+          <div class="tc" style="padding:24px">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">🎨 Theme</div>
+            <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Choose how the back office looks</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px" id="theme-grid">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+
+          <!-- ACCENT COLOR -->
+          <div class="tc" style="padding:24px">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">🌈 Accent Color</div>
+            <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Pick the primary color used throughout the app</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap" id="accent-grid">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+
+          <!-- SIDEBAR WIDTH -->
+          <div class="tc" style="padding:24px">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">📐 Layout</div>
+            <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Adjust the sidebar width</div>
+            <div style="display:flex;gap:10px">
+              <button class="layout-btn" onclick="setSidebarWidth('compact')" data-w="compact">Compact <small>220px</small></button>
+              <button class="layout-btn" onclick="setSidebarWidth('normal')" data-w="normal">Normal <small>264px</small></button>
+              <button class="layout-btn" onclick="setSidebarWidth('wide')" data-w="wide">Wide <small>300px</small></button>
+            </div>
+          </div>
+
+          <!-- FONT SIZE -->
+          <div class="tc" style="padding:24px">
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">🔠 Font Size</div>
+            <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Adjust the base font size</div>
+            <div style="display:flex;gap:10px">
+              <button class="layout-btn" onclick="setFontSize('small')" data-fs="small">Small <small>13px</small></button>
+              <button class="layout-btn" onclick="setFontSize('normal')" data-fs="normal">Normal <small>14px</small></button>
+              <button class="layout-btn" onclick="setFontSize('large')" data-fs="large">Large <small>15px</small></button>
+            </div>
+          </div>
+
+          <!-- RESET -->
+          <div style="text-align:right">
+            <button class="btn-can" onclick="resetSettings()" style="font-size:13px">↺ Reset to Default</button>
+          </div>
         </div>
       </div>
 
@@ -801,6 +906,8 @@ function doLogout(){ if(confirm('Log out?')) auth.signOut(); }
 
 // ── INIT (called once after login + data load)
 function initApp(){
+  // Apply saved settings first (theme, accent, layout)
+  applySettings();
   // Update avatar and role badge
   const av = document.getElementById('user-avatar');
   if(av) av.textContent = (CURRENT_USER?.displayName||'?')[0].toUpperCase();
@@ -823,6 +930,7 @@ function nav(pid, el){
   if(pid==='reports') renderReports();
   if(pid==='grades'){ loadAll().then(()=>renderGrades()); }
   if(pid==='teacher-list'){ renderTeacherList(); }
+  if(pid==='settings'){ buildSettingsPage(); }
   refreshFilters();
 }
 
@@ -2054,6 +2162,115 @@ async function doCopyAssessment(){
 }
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
+// ══════════════════════════════════════════════════════
+// ── SETTINGS / THEMES
+// ══════════════════════════════════════════════════════
+const THEMES = [
+  { id:'light',   name:'Light',   sb:'#f0f0f5', bg:'#f4f6f8', bar:'#d0d8e4', bar2:'#e8ecf0' },
+  { id:'dark',    name:'Dark',    sb:'#1a1d26', bg:'#0f1117', bar:'#2a2d3a', bar2:'#1a2030' },
+  { id:'morning', name:'Morning', sb:'#fffcf7', bg:'#fef8f0', bar:'#edd9b8', bar2:'#f5e8d0' },
+  { id:'ocean',   name:'Ocean',   sb:'#f0f7ff', bg:'#edf4fb', bar:'#bdd4ee', bar2:'#d0e4f8' },
+  { id:'rose',    name:'Rose',    sb:'#fff7f9', bg:'#fdf0f3', bar:'#f0c4cf', bar2:'#fad8df' },
+];
+const ACCENTS = [
+  { id:'green',   color:'#1a6b3c', light:'#e6f4ed' },
+  { id:'blue',    color:'#1a4a8a', light:'#e6eef8' },
+  { id:'purple',  color:'#5a1a8a', light:'#f0e6f8' },
+  { id:'orange',  color:'#c45a00', light:'#fef0e6' },
+  { id:'teal',    color:'#0a6a6a', light:'#e0f4f4' },
+  { id:'red',     color:'#8a1a1a', light:'#f8e6e6' },
+];
+
+let SETTINGS = JSON.parse(localStorage.getItem('lms_settings')||'{}');
+
+function applySettings(){
+  const s = SETTINGS;
+  // Theme
+  document.body.className = document.body.className.replace(/theme-\S+/g,'').trim();
+  if(s.theme && s.theme!=='light') document.body.classList.add('theme-'+s.theme);
+  // Accent color
+  if(s.accent){
+    const a = ACCENTS.find(x=>x.id===s.accent);
+    if(a){
+      document.documentElement.style.setProperty('--gd', a.color);
+      document.documentElement.style.setProperty('--gm', a.color);
+      document.documentElement.style.setProperty('--gl', a.light);
+      document.documentElement.style.setProperty('--ga', a.color);
+    }
+  }
+  // Sidebar width
+  const widths = {compact:'220px', normal:'264px', wide:'300px'};
+  if(s.sidebarWidth) document.documentElement.style.setProperty('--sw', widths[s.sidebarWidth]||'264px');
+  // Font size
+  const sizes = {small:'13px', normal:'14px', large:'15px'};
+  if(s.fontSize) document.body.style.fontSize = sizes[s.fontSize]||'14px';
+}
+
+function saveSetting(key, val){
+  SETTINGS[key] = val;
+  localStorage.setItem('lms_settings', JSON.stringify(SETTINGS));
+  applySettings();
+  updateSettingsUI();
+}
+
+function setTheme(id){ saveSetting('theme', id); }
+function setAccent(id){ saveSetting('accent', id); }
+function setSidebarWidth(w){ saveSetting('sidebarWidth', w); }
+function setFontSize(s){ saveSetting('fontSize', s); }
+function resetSettings(){
+  SETTINGS = {};
+  localStorage.removeItem('lms_settings');
+  // Reset CSS vars
+  ['--gd','--gm','--gl','--ga','--sw'].forEach(v=>document.documentElement.style.removeProperty(v));
+  document.body.style.fontSize = '';
+  applySettings();
+  updateSettingsUI();
+  toast('Settings reset to default!');
+}
+
+function buildSettingsPage(){
+  // Theme grid
+  const tg = document.getElementById('theme-grid');
+  if(!tg) return;
+  tg.innerHTML = THEMES.map(t=>`
+    <div class="theme-card ${(SETTINGS.theme||'light')===t.id?'active':''}" onclick="setTheme('${t.id}')">
+      <div class="theme-preview">
+        <div class="tp-sb" style="background:${t.sb}"></div>
+        <div class="tp-main" style="background:${t.bg}">
+          <div class="tp-bar" style="background:${t.bar};width:70%"></div>
+          <div class="tp-bar" style="background:${t.bar2};width:50%"></div>
+          <div class="tp-bar" style="background:${t.bar2};width:60%"></div>
+        </div>
+      </div>
+      <div class="tc-name">${t.name}</div>
+    </div>`).join('');
+
+  // Accent grid
+  const ag = document.getElementById('accent-grid');
+  if(ag) ag.innerHTML = ACCENTS.map(a=>`
+    <div class="accent-dot ${(SETTINGS.accent||'green')===a.id?'active':''}"
+      style="background:${a.color}" title="${a.id}" onclick="setAccent('${a.id}')"></div>`).join('');
+
+  updateSettingsUI();
+}
+
+function updateSettingsUI(){
+  // Rebuild cards with active states
+  THEMES.forEach(t=>{
+    const el = document.querySelector(`.theme-card[onclick="setTheme('${t.id}')"]`);
+    if(el) el.classList.toggle('active', (SETTINGS.theme||'light')===t.id);
+  });
+  ACCENTS.forEach(a=>{
+    const el = document.querySelector(`.accent-dot[title="${a.id}"]`);
+    if(el) el.classList.toggle('active', (SETTINGS.accent||'green')===a.id);
+  });
+  // Layout buttons
+  const sw = SETTINGS.sidebarWidth||'normal';
+  document.querySelectorAll('.layout-btn[data-w]').forEach(b=>b.classList.toggle('active',b.dataset.w===sw));
+  const fs = SETTINGS.fontSize||'normal';
+  document.querySelectorAll('.layout-btn[data-fs]').forEach(b=>b.classList.toggle('active',b.dataset.fs===fs));
+}
+
 // ══════════════════════════════════════════════════════
 // ── LANGUAGE / TRANSLATION
 // ══════════════════════════════════════════════════════
