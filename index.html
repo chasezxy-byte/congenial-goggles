@@ -639,10 +639,18 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ── CURRENT USER STATE
 let CURRENT_USER = null; // { email, displayName, isAdmin }
-const ADMIN_EMAIL = 'admin@iai.edu.org'; // change to your admin email
 
+// ── ADMIN CHECK: a user is admin if they are NOT in the teachers collection
+// This means: admin account(s) = anyone who logs in but has no teacher record
 function isAdmin(){ return CURRENT_USER?.isAdmin || false; }
 function canEdit(record){ return isAdmin() || (record?.createdByEmail === CURRENT_USER?.email); }
+
+async function detectRole(email){
+  // If this email exists in the teachers collection → they are a teacher
+  // Otherwise → they are admin
+  const teacherRecord = CACHE.teachers.find(t => t.email.toLowerCase() === email.toLowerCase());
+  return !teacherRecord; // true = admin, false = teacher
+}
 
 // ── IN-MEMORY CACHE (replaces localStorage)
 // All data is fetched from Firestore and kept here for fast UI rendering
@@ -795,7 +803,7 @@ function initApp(){
   const av = document.getElementById('user-avatar');
   if(av) av.textContent = (CURRENT_USER?.displayName||'?')[0].toUpperCase();
   const badge = document.getElementById('user-role-badge');
-  if(badge) badge.textContent = isAdmin() ? '👑 Admin' : '👤 Teacher';
+  if(badge) badge.textContent = isAdmin() ? 'Admin' : '👤 Teacher';
   ['class','subject','lesson','assessment','question','student'].forEach(t=>renderT(t));
   refreshFilters();
 }
@@ -1369,11 +1377,18 @@ async function doDel(type,id){
   const saveBtn=document.getElementById('msave');
   saveBtn.disabled=true; saveBtn.textContent='Deleting...';
   try {
-    const colKey=type==='student'?'students':type==='class'?'classs':type+'s';
-    await dbDel(colKey,id);
-    closeModal(); renderT(type); refreshFilters();
-    if(type==='student') await syncStudentCounts();
-    toast('Deleted successfully');
+    if(type==='_teacher'){
+      await dbDel('teachers',id);
+      await loadAll();
+      closeModal(); renderTeacherList();
+      toast('Teacher deleted');
+    } else {
+      const colKey=type==='student'?'students':type==='class'?'classs':type+'s';
+      await dbDel(colKey,id);
+      closeModal(); renderT(type); refreshFilters();
+      if(type==='student') await syncStudentCounts();
+      toast('Deleted successfully');
+    }
   } catch(e){ toast('Delete failed: '+e.message,'err'); }
   finally {
     saveBtn.disabled=false;
@@ -1914,23 +1929,7 @@ function confirmDelTeacher(id, name){
   confirmDel('_teacher', id, name);
 }
 
-// Hook _teacher into doDel
-const _origDoDel = doDel;
-async function doDel(type, id){
-  if(type==='_teacher'){
-    const saveBtn=document.getElementById('msave');
-    saveBtn.disabled=true; saveBtn.textContent='Deleting...';
-    try{
-      await dbDel('teachers',id);
-      await loadAll();
-      closeModal(); renderTeacherList();
-      toast('Teacher deleted');
-    } catch(e){ toast('Delete failed: '+e.message,'err'); }
-    finally{ saveBtn.disabled=false; saveBtn.style.background=''; saveBtn.onclick=saveModal; }
-    return;
-  }
-  return _origDoDel(type,id);
-}
+
 
 // ══════════════════════════════════════════════════════
 // ── COPY ASSESSMENT
@@ -2060,12 +2059,14 @@ auth.onAuthStateChanged(async user => {
     ldgEl.style.display = 'flex';
     ldgMsg.textContent  = 'Loading your data...';
     try {
+      // Load data first so we can check the teachers collection
+      await loadAll();
+      const adminFlag = await detectRole(user.email);
       CURRENT_USER = {
         email: user.email,
         displayName: user.displayName || user.email.split('@')[0],
-        isAdmin: user.email === ADMIN_EMAIL
+        isAdmin: adminFlag
       };
-      await loadAll();
       ldgEl.style.display = 'none';
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-screen').style.display   = 'block';
