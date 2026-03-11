@@ -290,7 +290,9 @@ tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
     <header class="topbar">
       <button class="tog" onclick="toggleSidebar()"><span class="material-icons">menu</span></button>
       <div class="tsp"></div>
-      <div class="fuk" title="English"></div>
+      <button id="lang-toggle" onclick="toggleLang()" style="background:none;border:1.5px solid var(--bo);border-radius:8px;padding:3px 10px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;color:var(--gd);display:flex;align-items:center;gap:5px" title="Switch Language">
+        <span id="lang-flag">🇰🇭</span><span id="lang-label">ខ្មែរ</span>
+      </button>
       <div class="ti" style="position:relative"><span class="material-icons-outlined">notifications</span><div class="nd"></div></div>
       <div class="ti"><span class="material-icons-outlined">settings</span></div>
       <span id="user-role-badge" style="font-size:11px;font-weight:700;background:var(--gl);color:var(--gd);padding:3px 10px;border-radius:20px"></span>
@@ -803,9 +805,11 @@ function initApp(){
   const av = document.getElementById('user-avatar');
   if(av) av.textContent = (CURRENT_USER?.displayName||'?')[0].toUpperCase();
   const badge = document.getElementById('user-role-badge');
-  if(badge) badge.textContent = isAdmin() ? 'Admin' : '👤 Teacher';
+  if(badge) badge.textContent = isAdmin() ? '👑 Admin' : '👤 Teacher';
   ['class','subject','lesson','assessment','question','student'].forEach(t=>renderT(t));
   refreshFilters();
+  // Apply saved language on load
+  applyLang();
 }
 
 // ── SIDEBAR
@@ -2050,6 +2054,174 @@ async function doCopyAssessment(){
 }
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
+// ══════════════════════════════════════════════════════
+// ── LANGUAGE / TRANSLATION
+// ══════════════════════════════════════════════════════
+let LANG = localStorage.getItem('lms_lang') || 'en';
+
+// en→km dictionary
+const KM = {
+  // ── Sidebar groups
+  'Learning Management':'គ្រប់គ្រងការសិក្សា',
+  'Student Management':'គ្រប់គ្រងសិស្ស',
+  'Reports':'របាយការណ៍',
+  // ── Sidebar items
+  'Class List':'បញ្ជីថ្នាក់',
+  'Subject List':'បញ្ជីមុខវិជ្ជា',
+  'Lesson List':'បញ្ជីមេរៀន',
+  'Assessment List':'បញ្ជីការវាយតម្លៃ',
+  'Question List':'បញ្ជីសំណួរ',
+  'Grades & Submissions':'ពិន្ទុ និងការដាក់ស្នើ',
+  'Student List':'បញ្ជីសិស្ស',
+  'Teacher List':'បញ្ជីគ្រូ',
+  // ── Page headers / breadcrumbs
+  'Dashboard':'ផ្ទាំងគ្រប់គ្រង',
+  // ── Create buttons
+  'Create New Class':'បង្កើតថ្នាក់ថ្មី',
+  'Create New Subject':'បង្កើតមុខវិជ្ជាថ្មី',
+  'Create New Lesson':'បង្កើតមេរៀនថ្មី',
+  'Create New Assessment':'បង្កើតការវាយតម្លៃថ្មី',
+  'Create New Question':'បង្កើតសំណួរថ្មី',
+  'Create New Student':'បង្កើតសិស្សថ្មី',
+  'Add Teacher':'បន្ថែមគ្រូ',
+  // ── Table headers
+  '#':'#',
+  'Year':'ឆ្នាំ',
+  'Campus':'សាខា',
+  'Thumbnail':'រូបភាព',
+  'Code':'លេខកូដ',
+  'QR':'QR',
+  'Class':'ថ្នាក់',
+  'Subject':'មុខវិជ្ជា',
+  'Lesson':'មេរៀន',
+  'Assessment':'ការវាយតម្លៃ',
+  'Question':'សំណួរ',
+  'Student':'សិស្ស',
+  'Teacher':'គ្រូ',
+  'Name':'ឈ្មោះ',
+  'Full Name':'ឈ្មោះពេញ',
+  'Username':'ឈ្មោះអ្នកប្រើ',
+  'Email':'អ៊ីមែល',
+  'Score':'ពិន្ទុ',
+  '%':'%',
+  'Status':'ស្ថានភាព',
+  'Action':'សកម្មភាព',
+  'Actions':'សកម្មភាព',
+  'Created By':'បង្កើតដោយ',
+  'Created At ↓':'ថ្ងៃបង្កើត',
+  'Type':'ប្រភេទ',
+  'Config':'ការកំណត់',
+  'Max Score':'ពិន្ទុអតិបរមា',
+  'Date':'កាលបរិច្ឆេទ',
+  'Valid':'សុពលភាព',
+  'Points':'ពិន្ទុ',
+  'Order':'លំដាប់',
+  'Submitted':'បានដាក់ស្នើ',
+  'Assigned Classes':'ថ្នាក់ដែលបានចាត់តាំង',
+  'Added':'បន្ថែម',
+  'Total Students':'សិស្សទាំងអស់',
+  // ── Filter labels
+  'All Classes':'ថ្នាក់ទាំងអស់',
+  'All Subjects':'មុខវិជ្ជាទាំងអស់',
+  'All Lessons':'មេរៀនទាំងអស់',
+  'All Assessments':'ការវាយតម្លៃទាំងអស់',
+  'All Statuses':'ស្ថានភាពទាំងអស់',
+  'All Years':'ឆ្នាំទាំងអស់',
+  'All Campuses':'សាខាទាំងអស់',
+  'Submitted':'បានដាក់ស្នើ',
+  'Returned':'បានត្រឡប់',
+  // ── Buttons
+  'Save':'រក្សាទុក',
+  'Cancel':'បោះបង់',
+  'Close':'បិទ',
+  'Delete':'លុប',
+  'Edit':'កែប្រែ',
+  'View':'មើល',
+  'Export All':'នាំចេញទាំងអស់',
+  'Return Assessment':'ប្រគល់ការវាយតម្លៃ',
+  'Save Grades':'រក្សាទុកពិន្ទុ',
+  'Save Teacher':'រក្សាទុកគ្រូ',
+  // ── Login screen
+  'Mentor Back Office':'Mentor Back Office',
+  'Email address':'អាសយដ្ឋានអ៊ីមែល',
+  'Password':'លេខសម្ងាត់',
+  'Login':'ចូល',
+  'Invalid email or password.':'អ៊ីមែល ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ។',
+  // ── Grades page
+  'Student':'សិស្ស',
+  'Teacher Note':'កំណត់សម្គាល់គ្រូ',
+  "Student's Answer":"ចម្លើយរបស់សិស្ស",
+  'Manual Score':'ពិន្ទុដោយដៃ',
+  'No submissions found.':'មិនមានការដាក់ស្នើ។',
+  // ── Misc
+  'Rows per page':'ជួរក្នុងមួយទំព័រ',
+  'No classes yet. Create a class first.':'មិនទាន់មានថ្នាក់។ សូមបង្កើតថ្នាក់ជាមុន។',
+  'No classes assigned':'មិនទាន់មានថ្នាក់ចាត់តាំង',
+  'Active':'សកម្ម',
+  'Inactive':'អសកម្ម',
+  'Valid':'ត្រឹមត្រូវ',
+  'Pending':'រង់ចាំ',
+  'MCQ':'ជ្រើសរើសច្រើន',
+  'Short Answer':'ចម្លើយខ្លី',
+  'True/False':'ត្រូវ/មិនត្រូវ',
+  'Mixed':'លាយ',
+  '✓ Correct':'✓ ត្រូវ',
+  '✗ Wrong':'✗ មិនត្រូវ',
+  '✏ Manual Grade':'✏ ពិន្ទុដោយដៃ',
+  'Q1':'Q1','Q2':'Q2','Q3':'Q3',
+};
+
+// reverse km→en map built automatically
+const EN = {};
+Object.entries(KM).forEach(([k,v])=>{ EN[v]=k; });
+
+function tr(text){
+  const s = text.trim();
+  if(LANG==='km') return KM[s] || s;
+  return EN[s] || s;
+}
+
+// Walk DOM and translate visible text nodes (skip scripts/styles/inputs)
+function translateDOM(root){
+  const skip = new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','CODE','PRE']);
+  const walker = document.createTreeWalker(root||document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      if(skip.has(node.parentElement?.tagName)) return NodeFilter.FILTER_REJECT;
+      if(node.textContent.trim().length < 2) return NodeFilter.FILTER_SKIP;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes=[];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    const original = node.textContent;
+    const translated = tr(original.trim());
+    if(translated !== original.trim()) node.textContent = original.replace(original.trim(), translated);
+  });
+  // Also translate placeholders
+  (root||document).querySelectorAll('[placeholder]').forEach(el=>{
+    const ph = el.getAttribute('placeholder').trim();
+    const tph = tr(ph);
+    if(tph!==ph) el.placeholder = tph;
+  });
+}
+
+function applyLang(){
+  translateDOM(document.body);
+  document.getElementById('lang-flag').textContent = LANG==='km' ? '🇺🇸' : '🇰🇭';
+  document.getElementById('lang-label').textContent = LANG==='km' ? 'English' : 'ខ្មែរ';
+  // Persist choice and re-render tables so dynamic content also gets translated
+  localStorage.setItem('lms_lang', LANG);
+}
+
+function toggleLang(){
+  LANG = LANG==='km' ? 'en' : 'km';
+  applyLang();
+  // Re-render all tables so rows get the new language
+  ['class','subject','lesson','assessment','question','student'].forEach(t=>renderT(t));
+  renderGradesTable();
+}
+
 // Bootstrap — restore session on refresh
 auth.onAuthStateChanged(async user => {
   const ldgEl  = document.getElementById('ldg');
