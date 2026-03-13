@@ -732,7 +732,6 @@ MathJax = {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-firestore-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-storage-compat.min.js"></script>
 
 <script>
 'use strict';
@@ -747,9 +746,8 @@ const firebaseConfig = {
   appId: "1:102527692497:web:bc6225ba04057ccd755ff0"
 };
 firebase.initializeApp(firebaseConfig);
-const auth    = firebase.auth();
-const db      = firebase.firestore();
-const storage = firebase.storage();
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
 // Keep user logged in after page refresh
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
@@ -2190,50 +2188,57 @@ async function doCopyAssessment(){
 
 // ── BOOTSTRAP — wait for Firebase Auth then load data
 // ══════════════════════════════════════════════════════
-// ── IMAGE UPLOAD (Firebase Storage)
+// ── IMAGE UPLOAD (Base64 — stored in Firestore, no Storage needed)
 // ══════════════════════════════════════════════════════
 function handleImgDrop(e, fieldKey){
   e.preventDefault();
   const box = document.getElementById('imgbox-'+fieldKey);
   if(box) box.classList.remove('drag');
   const file = e.dataTransfer?.files?.[0];
-  if(file && file.type.startsWith('image/')) uploadQuestionImage(file, fieldKey);
+  if(file && file.type.startsWith('image/')) processImgFile(file, fieldKey);
 }
 
 function handleImgSelect(input, fieldKey){
   const file = input.files?.[0];
-  if(file) uploadQuestionImage(file, fieldKey);
+  if(file) processImgFile(file, fieldKey);
 }
 
-async function uploadQuestionImage(file, fieldKey){
-  if(file.size > 5 * 1024 * 1024){ toast('Image must be under 5MB','err'); return; }
+function processImgFile(file, fieldKey){
+  // Limit to 1MB before compression to keep Firestore docs small
+  if(file.size > 4 * 1024 * 1024){ toast('Image too large — please use an image under 4MB','err'); return; }
   const prog = document.getElementById('imgprog-'+fieldKey);
   const bar  = document.getElementById('imgprogbar-'+fieldKey);
-  const prev = document.getElementById('imgprev-'+fieldKey);
-  const inp  = document.getElementById('mf-'+fieldKey);
   if(prog) prog.style.display='block';
+  if(bar)  bar.style.width='30%';
 
-  try {
-    const ext  = file.name.split('.').pop();
-    const path = `question-images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const ref  = storage.ref(path);
-    const task = ref.put(file);
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const original = e.target.result;
+    if(bar) bar.style.width='60%';
+    // Compress via canvas
+    const img = new Image();
+    img.onload = function(){
+      const canvas = document.createElement('canvas');
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if(w > MAX){ h = Math.round(h * MAX / w); w = MAX; }
+      if(h > MAX){ w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const base64 = canvas.toDataURL('image/jpeg', 0.75);
+      if(bar) bar.style.width='100%';
+      setTimeout(()=>{ if(prog) prog.style.display='none'; },400);
 
-    task.on('state_changed',
-      snap => {
-        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-        if(bar) bar.style.width = pct+'%';
-      },
-      err => { toast('Upload failed: '+err.message,'err'); if(prog) prog.style.display='none'; },
-      async () => {
-        const url = await task.snapshot.ref.getDownloadURL();
-        if(inp) inp.value = url;
-        if(prev) prev.innerHTML = `<img src="${url}" alt="question image"/><button class="img-remove" onclick="removeImg('${fieldKey}')" type="button">×</button>`;
-        if(prog) prog.style.display='none';
-        toast('Image uploaded!');
-      }
-    );
-  } catch(e){ toast('Upload error: '+e.message,'err'); if(prog) prog.style.display='none'; }
+      const inp  = document.getElementById('mf-'+fieldKey);
+      const prev = document.getElementById('imgprev-'+fieldKey);
+      if(inp) inp.value = base64;
+      if(prev) prev.innerHTML = `<img src="${base64}" alt="question image"/><button class="img-remove" onclick="removeImg('${fieldKey}')" type="button">×</button>`;
+      toast('Image ready!');
+    };
+    img.src = original;
+  };
+  reader.readAsDataURL(file);
 }
 
 function removeImg(fieldKey){
@@ -2241,7 +2246,6 @@ function removeImg(fieldKey){
   const prev = document.getElementById('imgprev-'+fieldKey);
   if(inp) inp.value = '';
   if(prev) prev.innerHTML = '';
-  // Note: we don't delete from Storage to avoid complexity
 }
 
 // ══════════════════════════════════════════════════════
