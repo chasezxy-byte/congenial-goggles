@@ -218,6 +218,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <div class="screen" id="s-dash">
   <div class="topbar">
     <div class="tb-title" id="dash-title">My Dashboard</div>
+    <button id="sp-lang-toggle" onclick="toggleLang()" style="margin-left:auto;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;padding:3px 10px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:5px">
+      <span id="sp-lang-flag">🇰🇭</span><span id="sp-lang-label">ខ្មែរ</span>
+    </button>
     <div class="avatar-sm" id="dash-avatar">S</div>
     <button class="tb-back" onclick="studentLogout()" title="Logout">
       <span class="material-icons">logout</span>
@@ -491,6 +494,7 @@ function renderQuestion(){
       <span class="chip green">${q.points} pts</span>
     </div>
     <div class="q-text tinymce-content">${q.title}</div>
+    ${q.image ? `<div style="margin:12px 0;text-align:center"><img src="${q.image}" style="max-width:100%;max-height:280px;border-radius:10px;border:1px solid var(--border)" alt="question image"/></div>` : ''}
     ${optHtml}
   </div>`;
   // Re-render KaTeX spans
@@ -618,6 +622,7 @@ function showReview(){
         ${isMCQ?`<span style="font-size:12px;font-weight:700;color:${isCorrect?'var(--g-dark)':'#e53935'}">${isCorrect?'✓ Correct':'✗ Wrong'}</span>`:''}
       </div>
       <div class="rq-q tinymce-content">${q.title}</div>
+      ${q.image ? `<div style="margin:10px 0;text-align:center"><img src="${q.image}" style="max-width:100%;max-height:200px;border-radius:8px;opacity:.9" alt=""/></div>` : ''}
       ${optHtml}
     </div>`;
   }).join('');
@@ -705,7 +710,93 @@ window.addEventListener('load', async ()=>{
     msg.textContent = 'Failed to connect. Please refresh.';
     console.error(e);
   }
+  applyLang();
 });
+
+// ══════════════════════════════════════════════════════
+// ── LANGUAGE / TRANSLATION
+// ══════════════════════════════════════════════════════
+let LANG = localStorage.getItem('lms_lang') || 'en';
+
+const KM_SP = {
+  'Student Login':'ចូលប្រព័ន្ធសិស្ស',
+  'Username':'ឈ្មោះអ្នកប្រើ',
+  'Password':'លេខសម្ងាត់',
+  'Login':'ចូល',
+  'Invalid username or password.':'ឈ្មោះអ្នកប្រើ ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ។',
+  'My Dashboard':'ផ្ទាំងរបស់ខ្ញុំ',
+  'Assessments':'ការវាយតម្លៃ',
+  'Completed':'បានបញ្ចប់',
+  'Pending':'រង់ចាំ',
+  'Your Assessments':'ការវាយតម្លៃរបស់អ្នក',
+  'No assessments available yet.':'មិនទាន់មានការវាយតម្លៃ។',
+  'Start':'ចាប់ផ្តើម',
+  'Review':'មើលឡើងវិញ',
+  'Retake':'ធ្វើម្តងទៀត',
+  'questions':'សំណួរ',
+  'pts':'ពិន្ទុ',
+  'Returned':'បានត្រឡប់',
+  'Submit Quiz':'ដាក់ស្នើ',
+  'Previous':'មុន',
+  'Next':'បន្ទាប់',
+  'Question':'សំណួរ',
+  'of':'នៃ',
+  'Quiz Complete!':'ការធ្វើតេស្តបានបញ្ចប់!',
+  'Your Score':'ពិន្ទុរបស់អ្នក',
+  'Back to Dashboard':'ត្រឡប់ទៅផ្ទាំង',
+  'Review Answers':'មើលចម្លើយ',
+  "Teacher's Note":'កំណត់សម្គាល់គ្រូ',
+  '✓ Correct':'✓ ត្រូវ',
+  '✗ Wrong':'✗ មិនត្រូវ',
+  'Short Answer':'ចម្លើយខ្លី',
+  '(no answer)':'(គ្មានចម្លើយ)',
+};
+
+const EN_SP = {};
+Object.entries(KM_SP).forEach(([k,v])=>{ EN_SP[v]=k; });
+
+function tr(text){
+  const s = (text||'').trim();
+  if(LANG==='km') return KM_SP[s] || s;
+  return EN_SP[s] || s;
+}
+
+function translateDOM(root){
+  const skip = new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','CODE','PRE']);
+  const walker = document.createTreeWalker(root||document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      if(skip.has(node.parentElement?.tagName)) return NodeFilter.FILTER_REJECT;
+      if((node.textContent||'').trim().length < 2) return NodeFilter.FILTER_SKIP;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes=[];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    const orig = node.textContent;
+    const translated = tr(orig.trim());
+    if(translated !== orig.trim()) node.textContent = orig.replace(orig.trim(), translated);
+  });
+  (root||document).querySelectorAll('[placeholder]').forEach(el=>{
+    const ph = (el.getAttribute('placeholder')||'').trim();
+    const tph = tr(ph);
+    if(tph!==ph) el.placeholder = tph;
+  });
+}
+
+function applyLang(){
+  translateDOM(document.body);
+  const flag = document.getElementById('sp-lang-flag');
+  const lbl  = document.getElementById('sp-lang-label');
+  if(flag) flag.textContent = LANG==='km' ? '🇺🇸' : '🇰🇭';
+  if(lbl)  lbl.textContent  = LANG==='km' ? 'English' : 'ខ្មែរ';
+  localStorage.setItem('lms_lang', LANG);
+}
+
+function toggleLang(){
+  LANG = LANG==='km' ? 'en' : 'km';
+  applyLang();
+}
 </script>
 </body>
 </html>
