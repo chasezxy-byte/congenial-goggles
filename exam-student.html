@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Exam Portal – American Intercon School</title>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gd:#1a6b3c;--gm:#2e8b57;--gl:#e6f4ed;--ga:#3dba76;
+  --ink:#0f1923;--paper:#f7f5f0;--cream:#fffef9;
+  --muted:#7a8694;--border:#dde3ec;
+  --warn:#d97706;--danger:#dc2626;
+  --r:14px;--sh:0 4px 24px rgba(0,0,0,.08);
+  --font:'Kantumruy Pro',sans-serif;
+  --display:'Playfair Display',serif
+}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:14px;min-height:100vh}
+
+/* ── SCREENS */
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.on{display:flex}
+
+/* ── LOGIN */
+#s-login{
+  background:linear-gradient(145deg,#0f1923 0%,#1a3d2b 45%,#1a6b3c 100%);
+  align-items:center;justify-content:center;padding:20px;
+  position:relative;overflow:hidden
+}
+#s-login::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.login-wrap{
+  background:var(--cream);border-radius:24px;
+  padding:40px 36px;width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  position:relative;animation:loginPop .45s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes loginPop{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+.school-brand{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:32px}
+.brand-icon{width:56px;height:56px;background:var(--gd);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,107,60,.4)}
+.brand-icon .material-icons{color:#fff;font-size:30px}
+.brand-text{text-align:left}
+.brand-text strong{display:block;font-family:var(--display);font-size:17px;color:var(--gd);line-height:1.2}
+.brand-text span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px}
+.login-wrap h2{font-family:var(--display);font-size:1.7rem;color:var(--ink);text-align:center;margin-bottom:4px}
+.login-wrap p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.fi-wrap{position:relative}
+.fi-wrap .material-icons{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:20px;pointer-events:none}
+.fg input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 16px 12px 44px;font-family:var(--font);font-size:14px;outline:none;background:#fff;transition:border-color .2s,box-shadow .2s}
+.fg input:focus{border-color:var(--gm);box-shadow:0 0 0 4px rgba(46,139,87,.1)}
+.btn-signin{width:100%;background:var(--gd);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;transition:background .2s,transform .1s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,60,.35)}
+.btn-signin:hover{background:#155c2e;box-shadow:0 6px 20px rgba(26,107,60,.45)}
+.btn-signin:active{transform:scale(.98)}
+.l-err{color:var(--danger);font-size:12px;text-align:center;margin-top:10px;display:none;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.hint{background:var(--gl);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:12px;color:var(--gd);display:flex;align-items:flex-start;gap:8px}
+.hint .material-icons{font-size:16px;margin-top:1px;flex-shrink:0}
+
+/* ── TOP BAR */
+.topbar{height:58px;background:var(--gd);color:#fff;display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:50}
+.tb-back{background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;padding:4px;border-radius:8px;transition:color .15s,background .15s}
+.tb-back:hover{background:rgba(255,255,255,.15);color:#fff}
+.tb-title{font-size:15px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;border:2px solid rgba(255,255,255,.3)}
+
+/* ── DASHBOARD */
+#s-dash{background:var(--paper)}
+.hero{background:linear-gradient(135deg,var(--ink) 0%,#1a3d2b 50%,var(--gd) 100%);color:#fff;padding:28px 20px 36px;position:relative;overflow:hidden}
+.hero::before{content:'📝';position:absolute;right:-8px;top:-8px;font-size:110px;opacity:.08;pointer-events:none}
+.hero-greeting{font-size:13px;opacity:.75;font-weight:500;margin-bottom:4px}
+.hero h2{font-family:var(--display);font-size:1.6rem;margin-bottom:4px}
+.hero-class{font-size:13px;opacity:.75;display:flex;align-items:center;gap:5px}
+.hero-class .material-icons{font-size:15px}
+.hero-stats{display:flex;gap:10px;margin-top:22px}
+.hs{background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:12px;padding:14px;flex:1;text-align:center;border:1px solid rgba(255,255,255,.1)}
+.hs-n{font-size:1.6rem;font-weight:800}
+.hs-l{font-size:11px;opacity:.75;margin-top:2px}
+.section{padding:20px}
+.section-hd{font-family:var(--display);font-size:1.1rem;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--border);padding-bottom:10px}
+.section-hd .material-icons{color:var(--gm);font-size:22px}
+
+/* EXAM CARDS */
+.exam-card{background:var(--cream);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--sh);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:14px;border:2px solid transparent;position:relative;overflow:hidden}
+.exam-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gm);border-radius:4px 0 0 4px;transform:scaleY(0);transition:transform .2s;transform-origin:center}
+.exam-card:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.12);border-color:var(--ga)}
+.exam-card:hover::before{transform:scaleY(1)}
+.exam-card.submitted{border-color:#b2dfdb;background:#f0faf8;cursor:default}
+.exam-card.submitted:hover{transform:none;box-shadow:var(--sh)}
+.exam-card.graded{border-color:var(--ga);background:#f0faf8}
+.ec-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:26px;background:var(--gl)}
+.ec-info{flex:1;min-width:0}
+.ec-name{font-size:15px;font-weight:700;margin-bottom:3px;font-family:var(--display)}
+.ec-sub{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.ec-sub .material-icons{font-size:13px}
+.ec-tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.tag-green{background:var(--gl);color:var(--gd)}
+.tag-blue{background:#dbeafe;color:#1d4ed8}
+.tag-orange{background:#fef3c7;color:#92400e}
+.tag-gray{background:#f1f5f9;color:#475569}
+.tag-red{background:#fee2e2;color:#991b1b}
+.tag-purple{background:#f3e8ff;color:#6b21a8}
+.tag .material-icons{font-size:12px}
+.ec-grade{margin-top:8px;background:var(--gl);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--gd);font-weight:600;display:flex;align-items:center;gap:6px}
+.ec-grade .material-icons{font-size:16px}
+.pending-badge{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;margin-top:8px}
+.pending-badge .material-icons{font-size:14px}
+
+/* ── EXAM SCREEN */
+#s-exam{background:var(--paper)}
+.exam-topbar{background:var(--ink);color:#fff;padding:14px 20px;flex-shrink:0;position:sticky;top:0;z-index:50}
+.etb-row1{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.etb-title{font-size:14px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.etb-timer{padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;background:rgba(255,255,255,.15);display:flex;align-items:center;gap:5px;flex-shrink:0}
+.etb-timer .material-icons{font-size:16px}
+.etb-timer.warn{background:rgba(220,38,38,.7);animation:timerPulse 1s ease infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.prog-bar{height:5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--ga);border-radius:3px;transition:width .4s ease}
+.etb-count{font-size:11px;opacity:.7;margin-top:5px}
+
+/* STORY PANEL */
+.story-panel{background:#fffce8;border:2px solid #f6e58d;border-radius:var(--r);margin:16px;padding:20px;animation:storyIn .35s ease}
+@keyframes storyIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.sp-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-family:var(--display);font-size:1.1rem;color:#78350f}
+.sp-head .material-icons{color:#d97706}
+.story-text{font-size:14px;line-height:1.9;color:#3d1a00;font-weight:500;white-space:pre-wrap;border-left:4px solid #f59e0b;padding-left:14px;max-height:320px;overflow-y:auto}
+.story-text::-webkit-scrollbar{width:4px}
+.story-text::-webkit-scrollbar-thumb{background:#f6e58d;border-radius:2px}
+.sp-close{background:none;border:none;cursor:pointer;color:#92400e;display:flex;align-items:center;gap:5px;font-family:var(--font);font-size:12px;font-weight:700;margin-top:12px;padding:6px 10px;border-radius:8px;background:#fef3c7;transition:background .15s}
+.sp-close:hover{background:#fde68a}
+
+/* QUESTION AREA */
+.q-area{padding:16px;flex:1}
+.q-card{background:var(--cream);border-radius:var(--r);padding:22px;box-shadow:var(--sh)}
+.q-meta{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.q-num-label{font-size:11px;font-weight:800;color:var(--gm);text-transform:uppercase;letter-spacing:.8px}
+.q-text{font-size:16px;font-weight:700;line-height:1.6;margin-bottom:20px;color:var(--ink)}
+
+/* OPTIONS */
+.opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border:2px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:10px;transition:all .15s;font-size:14px;font-weight:500;background:#fff;user-select:none}
+.opt:hover{border-color:var(--gm);background:var(--gl)}
+.opt.sel{border-color:var(--gd);background:var(--gl);font-weight:700}
+.opt-lt{width:32px;height:32px;border-radius:8px;background:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;border:2px solid var(--border);transition:all .15s}
+.opt.sel .opt-lt{background:var(--gd);color:#fff;border-color:var(--gd)}
+
+/* ESSAY / SHORT ANS */
+.essay-area textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:14px;font-family:var(--font);font-size:14px;outline:none;resize:vertical;min-height:140px;transition:border-color .2s,box-shadow .2s;background:#fff;line-height:1.7}
+.essay-area textarea:focus{border-color:var(--gm);box-shadow:0 0 0 4px rgba(46,139,87,.08)}
+.essay-note{font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:4px}
+.essay-note .material-icons{font-size:14px}
+
+/* NAV */
+.q-nav{display:flex;gap:10px;padding:0 16px 28px;flex-shrink:0}
+.btn-nav{flex:1;padding:13px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.btn-prev{background:var(--cream);color:var(--ink);border:2px solid var(--border)}
+.btn-prev:hover{border-color:var(--gm)}
+.btn-next{background:var(--gm);color:#fff;box-shadow:0 3px 12px rgba(46,139,87,.35)}
+.btn-next:hover{background:var(--gd)}
+.btn-submit-ex{background:var(--gd);color:#fff;box-shadow:0 3px 12px rgba(26,107,60,.4)}
+.btn-submit-ex:hover{background:#155c2e}
+
+/* VIEW STORY BUTTON */
+.btn-story{background:#fef3c7;color:#92400e;border:2px solid #fde68a;border-radius:10px;padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;margin-bottom:16px;transition:all .15s;width:100%}
+.btn-story:hover{background:#fde68a;border-color:#f59e0b}
+.btn-story .material-icons{font-size:18px;color:#d97706}
+
+/* Q NAV DOTS */
+.q-dots{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;flex-shrink:0;background:rgba(255,255,255,.6);border-top:1px solid var(--border)}
+.qdot{width:30px;height:30px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s;background:#fff}
+.qdot:hover{border-color:var(--gm)}
+.qdot.ans{background:var(--gl);border-color:var(--gm);color:var(--gd)}
+.qdot.cur{background:var(--gd);border-color:var(--gd);color:#fff}
+
+/* ── SUBMITTED */
+#s-submitted{align-items:center;justify-content:center;background:var(--paper);padding:24px;text-align:center}
+.sub-card{background:var(--cream);border-radius:24px;padding:40px 32px;width:100%;max-width:420px;box-shadow:0 16px 56px rgba(0,0,0,.1);animation:loginPop .4s ease}
+.sub-emoji{font-size:72px;display:block;margin-bottom:16px;animation:floatE 2s ease-in-out infinite}
+@keyframes floatE{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.sub-card h2{font-family:var(--display);font-size:1.8rem;color:var(--gd);margin-bottom:8px}
+.sub-card p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.sub-info{background:var(--gl);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left}
+.si-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(46,139,87,.15);font-size:13px}
+.si-row:last-child{border-bottom:none}
+.si-row span{color:var(--muted)}
+.si-row strong{color:var(--gd)}
+.btn-home{width:100%;background:var(--gd);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;box-shadow:0 4px 16px rgba(26,107,60,.3)}
+.btn-home:hover{background:#155c2e}
+
+/* ── GRADE VIEW */
+#s-grade{background:var(--paper)}
+.grade-header{background:linear-gradient(135deg,var(--gd),var(--gm));color:#fff;padding:22px 20px}
+.gh-title{font-family:var(--display);font-size:1.4rem;margin-bottom:4px}
+.gh-sub{font-size:13px;opacity:.8}
+.grade-score-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);border-radius:20px;padding:8px 16px;margin-top:12px;font-size:14px;font-weight:700}
+.grade-body{padding:16px}
+.grade-q-card{background:var(--cream);border-radius:12px;padding:18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.gq-q{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+.gq-ans{background:var(--paper);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.6;border-left:3px solid var(--border)}
+.gq-ans.essay-ans{border-left-color:var(--warn);color:var(--ink)}
+.gq-pts{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700}
+.pts-earn{color:var(--gd)}
+.pts-total{color:var(--muted)}
+.feedback-box{background:#fffce8;border:1px solid #f6e58d;border-radius:8px;padding:10px 12px;font-size:13px;color:#78350f;margin-top:8px;display:flex;align-items:flex-start;gap:6px}
+.feedback-box .material-icons{font-size:16px;color:#d97706;flex-shrink:0;margin-top:1px}
+.back-btn{width:100%;background:var(--gd);color:#fff;border:none;border-radius:10px;padding:13px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:8px;transition:background .2s}
+.back-btn:hover{background:#155c2e}
+.grade-pending{text-align:center;padding:32px;color:var(--muted)}
+.grade-pending .material-icons{font-size:52px;color:#d0d8e4;display:block;margin-bottom:10px}
+
+/* ── OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.on{display:flex}
+.modal{background:var(--cream);border-radius:20px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.24);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.modal-hd{display:flex;align-items:center;gap:10px;padding:20px 22px 14px;border-bottom:1px solid var(--border)}
+.modal-hd h3{font-family:var(--display);font-size:1.1rem;flex:1}
+.modal-cl{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:8px;display:flex;align-items:center}
+.modal-cl:hover{background:var(--border)}
+.modal-body{padding:20px 22px}
+.modal-ft{padding:14px 22px 20px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)}
+.btn-can{padding:9px 18px;border:2px solid var(--border);border-radius:8px;background:none;font-family:var(--font);font-size:13px;cursor:pointer;color:var(--ink)}
+.btn-can:hover{border-color:#999}
+.btn-go{padding:9px 20px;background:var(--gd);color:#fff;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-go:hover{background:#155c2e}
+
+/* CONFIRM START */
+.cs-info{background:var(--gl);border-radius:10px;padding:14px;margin-bottom:14px}
+.cs-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(46,139,87,.12)}
+.cs-row:last-child{border-bottom:none}
+.cs-row span{color:var(--muted)}
+.cs-row strong{color:var(--gd)}
+.cs-warn{background:#fff7ed;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;display:flex;align-items:flex-start;gap:7px;margin-top:10px}
+.cs-warn .material-icons{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:all .28s;display:flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);white-space:nowrap;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.toast .material-icons{font-size:17px;color:var(--ga)}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty .material-icons{font-size:56px;color:#d0d8e4;display:block;margin-bottom:12px}
+.empty p{font-size:14px;font-weight:600}
+.empty small{font-size:12px;margin-top:4px;display:block}
+
+@media(max-width:480px){.login-wrap{padding:30px 22px}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="screen on" id="s-login">
+  <div class="login-wrap">
+    <div class="school-brand">
+      <div class="brand-icon"><span class="material-icons">school</span></div>
+      <div class="brand-text">
+        <strong>American Intercon</strong>
+        <span>Exam Portal · Student</span>
+      </div>
+    </div>
+    <h2>Welcome Back 👋</h2>
+    <p>Sign in to take your exams</p>
+    <div class="fg">
+      <label>Username</label>
+      <div class="fi-wrap"><span class="material-icons">person</span><input type="text" id="l-user" placeholder="Enter your username" autocomplete="off"/></div>
+    </div>
+    <div class="fg">
+      <label>Password</label>
+      <div class="fi-wrap"><span class="material-icons">lock</span><input type="password" id="l-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    </div>
+    <div class="l-err" id="l-err">❌ Incorrect username or password.</div>
+    <button class="btn-signin" onclick="doLogin()"><span class="material-icons">login</span>Sign In</button>
+    <div class="hint"><span class="material-icons">info</span><span>Your username and password are provided by your teacher from the LMS.</span></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="screen" id="s-dash">
+  <div class="topbar">
+    <div class="tb-title" id="tb-name">My Exams</div>
+    <div class="tb-avatar" id="tb-av">S</div>
+    <button class="tb-back" onclick="doLogout()" title="Logout"><span class="material-icons">logout</span></button>
+  </div>
+  <div class="hero">
+    <div class="hero-greeting">Good day,</div>
+    <h2 id="h-name">Student</h2>
+    <div class="hero-class"><span class="material-icons">class</span><span id="h-class">—</span></div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-n" id="st-total">0</div><div class="hs-l">Total Exams</div></div>
+      <div class="hs"><div class="hs-n" id="st-done">0</div><div class="hs-l">Submitted</div></div>
+      <div class="hs"><div class="hs-n" id="st-graded">0</div><div class="hs-l">Graded</div></div>
+      <div class="hs"><div class="hs-n" id="st-pending">0</div><div class="hs-l">Pending</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-hd"><span class="material-icons">assignment</span>Your Exams</div>
+    <div id="exam-list"></div>
+  </div>
+</div>
+
+<!-- ══ EXAM ══ -->
+<div class="screen" id="s-exam">
+  <div class="exam-topbar">
+    <div class="etb-row1">
+      <button class="tb-back" onclick="exitExam()"><span class="material-icons">close</span></button>
+      <div class="etb-title" id="ex-title">Exam</div>
+      <div class="etb-timer" id="ex-timer"><span class="material-icons">timer</span><span id="ex-time">--:--</span></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="ex-prog" style="width:0%"></div></div>
+    <div class="etb-count" id="ex-count">Question 1 of 0</div>
+  </div>
+  <div class="q-dots" id="q-dots"></div>
+  <div id="story-panel-wrap"></div>
+  <div class="q-area" id="q-area"></div>
+  <div class="q-nav" id="q-nav"></div>
+</div>
+
+<!-- ══ SUBMITTED ══ -->
+<div class="screen" id="s-submitted">
+  <div class="sub-card">
+    <span class="sub-emoji">📨</span>
+    <h2>Submitted!</h2>
+    <p>Your exam has been submitted and is waiting for your teacher to review and grade it. Check back later!</p>
+    <div class="sub-info" id="sub-info"></div>
+    <button class="btn-home" onclick="showScreen('s-dash');loadDashboard()"><span class="material-icons">home</span>Back to Dashboard</button>
+  </div>
+</div>
+
+<!-- ══ GRADE VIEW ══ -->
+<div class="screen" id="s-grade">
+  <div class="topbar">
+    <button class="tb-back" onclick="showScreen('s-dash')"><span class="material-icons">arrow_back</span></button>
+    <div class="tb-title" id="gv-title">Exam Results</div>
+  </div>
+  <div class="grade-header">
+    <div class="gh-title" id="gv-exam">—</div>
+    <div class="gh-sub" id="gv-sub">—</div>
+    <div class="grade-score-pill" id="gv-pill">⏳ Awaiting grade</div>
+  </div>
+  <div class="grade-body" id="gv-body"></div>
+</div>
+
+<!-- ══ CONFIRM START MODAL ══ -->
+<div class="overlay" id="ov-start" onclick="if(event.target===this)closeOverlay('ov-start')">
+  <div class="modal">
+    <div class="modal-hd"><h3>📋 Ready to Start?</h3><button class="modal-cl" onclick="closeOverlay('ov-start')"><span class="material-icons">close</span></button></div>
+    <div class="modal-body" id="start-body"></div>
+    <div class="modal-ft">
+      <button class="btn-can" onclick="closeOverlay('ov-start')">Not Yet</button>
+      <button class="btn-go" id="start-go">Start Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="t-msg"></span></div>
+
+<script>
+
+<!-- ══ FIREBASE SDK (compat, CDN) ══ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════
+//  FIREBASE INIT
+// ═══════════════════════════════════
+firebase.initializeApp({
+  apiKey:            "AIzaSyDO_m3ECeswwJqGDC7Bpicnt8nQ9xb6oIc",
+  authDomain:        "ordinal-698c1.firebaseapp.com",
+  databaseURL:       "https://ordinal-698c1-default-rtdb.firebaseio.com",
+  projectId:         "ordinal-698c1",
+  storageBucket:     "ordinal-698c1.firebasestorage.app",
+  messagingSenderId: "102527692497",
+  appId:             "1:102527692497:web:bc6225ba04057ccd755ff0"
+});
+const db = firebase.firestore();
+
+// ═══════════════════════════════════
+//  DB  (Firestore — shared with LMS)
+// ═══════════════════════════════════
+const DB = {
+  get: async (k) => {
+    try {
+      const snap = await db.collection(k).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) { console.error('DB.get error:', k, e); return []; }
+  },
+  save: async (k, item) => {
+    try { await db.collection(k).doc(item.id).set(item); }
+    catch(e) { console.error('DB.save error:', k, e); }
+  },
+  set: async (k, arr) => {
+    // Batch write entire array (used for updating lists)
+    try {
+      const batch = db.batch();
+      for (const item of arr) {
+        batch.set(db.collection(k).doc(item.id), item);
+      }
+      await batch.commit();
+    } catch(e) { console.error('DB.set error:', k, e); }
+  },
+  uid: () => 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)
+};
+
+// ═══════════════════════════════════
+//  STATE
+// ═══════════════════════════════════
+let ME = null, curExam = null, curQs = [], curAnswers = [], curQ = 0, timerInterval = null, timeLeft = 0, storyVisible = false;
+
+// ═══════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════
+async function doLogin() {
+  const u = document.getElementById('l-user').value.trim().toLowerCase();
+  const p = document.getElementById('l-pass').value.trim();
+  const err = document.getElementById('l-err');
+  const students = await DB.get('students');
+  const st = students.find(s => s.username.toLowerCase() === u && s.password === p && s.status !== 'Suspended');
+  if (st) {
+    err.style.display = 'none'; ME = st;
+    await loadDashboard(); showScreen('s-dash');
+  } else {
+    err.style.display = 'block';
+    document.getElementById('l-pass').value = '';
+  }
+}
+function doLogout() {
+  if (!confirm('Log out?')) return;
+  ME = null; clearTimer();
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-pass').value = '';
+  showScreen('s-login');
+}
+
+// ═══════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════
+async function loadDashboard() {
+  document.getElementById('tb-name').textContent = ME.name.split(' ')[0] + "'s Exams";
+  document.getElementById('tb-av').textContent = ME.name[0].toUpperCase();
+  document.getElementById('h-name').textContent = ME.name;
+  document.getElementById('h-class').textContent = ME.className || '—';
+
+  const exams = (await DB.get('assessments')).filter(a => a.classId === ME.classId && a.validState === 'Valid');
+  const subs = await getMySubmissions();
+  const subIds = new Set(subs.map(s => s.assessmentId));
+  const grades = await getMyGrades();
+  const gradedIds = new Set(grades.map(g => g.assessmentId));
+  const allQuestions = await DB.get('questions');
+  const allLessons = await DB.get('lessons');
+
+  document.getElementById('st-total').textContent = exams.length;
+  document.getElementById('st-done').textContent = subs.length;
+  document.getElementById('st-graded').textContent = grades.length;
+  document.getElementById('st-pending').textContent = exams.filter(e => !subIds.has(e.id)).length;
+
+  const wrap = document.getElementById('exam-list');
+  if (!exams.length) {
+    wrap.innerHTML = `<div class="empty"><span class="material-icons">inbox</span><p>No exams available yet</p><small>Your teacher hasn't published any exams for your class yet.</small></div>`;
+    return;
+  }
+
+  wrap.innerHTML = exams.map(ex => {
+    const qs = allQuestions.filter(q => q.assessmentId === ex.id);
+    const sub = subs.find(s => s.assessmentId === ex.id);
+    const grade = grades.find(g => g.assessmentId === ex.id);
+    const lesson = allLessons.find(l => l.id === ex.lessonId) || {};
+    const hasStory = !!(lesson.story && lesson.story.trim());
+    const done = !!sub;
+    const isGraded = !!grade;
+
+    let statusTag = '';
+    let extraHtml = '';
+    if (isGraded) {
+      statusTag = `<span class="tag tag-green"><span class="material-icons">verified</span>Graded</span>`;
+      const pct = Math.round(grade.totalScore / ex.maxScore * 100);
+      extraHtml = `<div class="ec-grade"><span class="material-icons">star</span>${grade.totalScore} / ${ex.maxScore} pts &nbsp;·&nbsp; ${pct}%</div>`;
+    } else if (done) {
+      statusTag = `<span class="tag tag-orange"><span class="material-icons">schedule</span>Submitted</span>`;
+      extraHtml = `<div class="pending-badge"><span class="material-icons">hourglass_empty</span>Waiting for teacher to grade</div>`;
+    } else {
+      statusTag = `<span class="tag tag-blue"><span class="material-icons">play_circle</span>Available</span>`;
+    }
+
+    return `<div class="exam-card${done && !isGraded ? ' submitted' : ''}${isGraded ? ' graded' : ''}" onclick="${isGraded ? `viewGrade('${ex.id}')` : done ? '' : `openStartModal('${ex.id}')`}">
+      <div class="ec-icon">${isGraded ? '🏆' : done ? '📨' : hasStory ? '📖' : '📝'}</div>
+      <div class="ec-info">
+        <div class="ec-name">${ex.name}</div>
+        <div class="ec-sub"><span class="material-icons">bookmark</span>${ex.subjectName || '—'} · ${ex.lessonName || '—'}</div>
+        <div class="ec-tags">
+          ${statusTag}
+          <span class="tag tag-gray"><span class="material-icons">help_outline</span>${qs.length} Qs</span>
+          <span class="tag tag-gray"><span class="material-icons">star_border</span>${ex.maxScore} pts</span>
+          ${hasStory ? `<span class="tag tag-orange"><span class="material-icons">auto_stories</span>Reading</span>` : ''}
+          <span class="tag tag-purple"><span class="material-icons">grade</span>${ex.config || 'Mixed'}</span>
+        </div>
+        ${extraHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function getMySubmissions() { return (await DB.get('exam_submissions')).filter(s => s.studentId === ME.id); }
+async function getMyGrades() { return (await DB.get('exam_grades')).filter(g => g.studentId === ME.id); }
+
+// ═══════════════════════════════════
+//  START MODAL
+// ═══════════════════════════════════
+async function openStartModal(examId) {
+  const exams = await DB.get('assessments');
+  const ex = exams.find(a => a.id === examId);
+  if (!ex) return;
+  const qs = (await DB.get('questions')).filter(q => q.assessmentId === examId);
+  const lessons = await DB.get('lessons');
+  const lesson = lessons.find(l => l.id === ex.lessonId) || {};
+  const hasStory = !!(lesson.story && lesson.story.trim());
+  const mins = Math.ceil(qs.length * 1.5);
+  document.getElementById('start-body').innerHTML = `
+    <p style="font-size:14px;color:var(--muted);margin-bottom:12px">You are about to start <strong style="color:var(--ink)">${ex.name}</strong>. Once started, the timer will begin.</p>
+    <div class="cs-info">
+      <div class="cs-row"><span>Subject</span><strong>${ex.subjectName || '—'}</strong></div>
+      <div class="cs-row"><span>Lesson</span><strong>${ex.lessonName || '—'}</strong></div>
+      <div class="cs-row"><span>Questions</span><strong>${qs.length}</strong></div>
+      <div class="cs-row"><span>Max Score</span><strong>${ex.maxScore} pts</strong></div>
+      <div class="cs-row"><span>Type</span><strong>${ex.config || 'Mixed'}</strong></div>
+      ${hasStory ? `<div class="cs-row"><span>Reading Passage</span><strong>✅ Included</strong></div>` : ''}
+      <div class="cs-row"><span>Est. Time</span><strong>~${mins} minutes</strong></div>
+    </div>
+    <div class="cs-warn"><span class="material-icons">warning</span>All answers are manually graded by your teacher. Be thorough in your responses.</div>`;
+  document.getElementById('start-go').onclick = () => { closeOverlay('ov-start'); beginExam(examId); };
+  openOverlay('ov-start');
+}
+
+// ═══════════════════════════════════
+//  EXAM
+// ═══════════════════════════════════
+async function beginExam(examId) {
+  const exams = await DB.get('assessments');
+  const ex = exams.find(a => a.id === examId);
+  const qs = (await DB.get('questions')).filter(q => q.assessmentId === examId);
+  if (!qs.length) { toast('This exam has no questions yet.', 'warn'); return; }
+  curExam = ex; curQs = qs; curAnswers = new Array(qs.length).fill(null); curQ = 0; storyVisible = false;
+  // Cache lessons for this exam
+  const lessons = await DB.get('lessons');
+  curExam._lessonCache = lessons.find(l => l.id === ex.lessonId) || {};
+  document.getElementById('ex-title').textContent = ex.name;
+  timeLeft = qs.length * 90;
+  startTimer();
+  renderDots(); renderQuestion();
+  showScreen('s-exam');
+}
+
+function renderDots() {
+  const w = document.getElementById('q-dots');
+  w.innerHTML = curQs.map((_, i) => `<div class="qdot${i === curQ ? ' cur' : curAnswers[i] !== null ? ' ans' : ''}" onclick="jumpTo(${i})">${i + 1}</div>`).join('');
+}
+function jumpTo(i) { saveText(); curQ = i; storyVisible = false; renderDots(); renderQuestion(); }
+
+function renderQuestion() {
+  const q = curQs[curQ], total = curQs.length;
+  const pct = Math.round((curQ / total) * 100);
+  document.getElementById('ex-prog').style.width = pct + '%';
+  document.getElementById('ex-count').textContent = `Question ${curQ + 1} of ${total}`;
+
+  // Story panel (use cached lesson)
+  const lesson = curExam._lessonCache || {};
+  const hasStory = !!(lesson.story && lesson.story.trim());
+  const spWrap = document.getElementById('story-panel-wrap');
+  if (hasStory && storyVisible) {
+    spWrap.innerHTML = `<div class="story-panel">
+      <div class="sp-head"><span class="material-icons">auto_stories</span>Reading Passage</div>
+      <div class="story-text">${escHtml(lesson.story)}</div>
+      <button class="sp-close" onclick="toggleStory()"><span class="material-icons">visibility_off</span>Hide Passage</button>
+    </div>`;
+  } else { spWrap.innerHTML = ''; }
+
+  // Question card
+  const LETTERS = 'ABCDEFGH';
+  let optHtml = '';
+  if (q.type === 'MCQ' || q.type === 'True/False') {
+    optHtml = (q.options || []).map((o, i) => `<div class="opt${curAnswers[curQ] === i ? ' sel' : ''}" onclick="pickOpt(${i})"><div class="opt-lt">${LETTERS[i]}</div><span>${o}</span></div>`).join('');
+  } else {
+    optHtml = `<div class="essay-area"><textarea id="ans-text" placeholder="Write your answer here…" rows="6">${curAnswers[curQ] || ''}</textarea><div class="essay-note"><span class="material-icons">info</span>Your teacher will grade this response manually.</div></div>`;
+  }
+
+  const isLast = curQ === total - 1;
+  document.getElementById('q-area').innerHTML = `
+    ${hasStory && !storyVisible ? `<button class="btn-story" onclick="toggleStory()"><span class="material-icons">auto_stories</span>View Reading Passage for this Exam</button>` : ''}
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-num-label">Question ${curQ + 1}</span>
+        <span class="tag ${q.type === 'MCQ' ? 'tag-blue' : q.type === 'True/False' ? 'tag-green' : 'tag-orange'}">${q.type}</span>
+        <span class="tag tag-gray">${q.points} pts</span>
+      </div>
+      <div class="q-text">${q.title}</div>
+      ${optHtml}
+    </div>`;
+
+  document.getElementById('q-nav').innerHTML = `
+    ${curQ > 0 ? `<button class="btn-nav btn-prev" onclick="prevQ()"><span class="material-icons">arrow_back</span>Back</button>` : '<span></span>'}
+    ${isLast ? `<button class="btn-nav btn-submit-ex" onclick="submitExam()"><span class="material-icons">send</span>Submit Exam</button>` : `<button class="btn-nav btn-next" onclick="nextQ()">Next<span class="material-icons">arrow_forward</span></button>`}`;
+}
+
+function toggleStory() { storyVisible = !storyVisible; renderQuestion(); }
+
+function pickOpt(i) { curAnswers[curQ] = i; renderDots(); renderQuestion(); }
+function saveText() { const ta = document.getElementById('ans-text'); if (ta) curAnswers[curQ] = ta.value.trim() || null; }
+function nextQ() { saveText(); curQ++; storyVisible = false; renderDots(); renderQuestion(); window.scrollTo(0, 0); }
+function prevQ() { saveText(); curQ--; storyVisible = false; renderDots(); renderQuestion(); window.scrollTo(0, 0); }
+function exitExam() { if (confirm('Exit the exam? Your progress will be lost.')) { clearTimer(); showScreen('s-dash'); } }
+
+async function submitExam() {
+  saveText();
+  const unanswered = curAnswers.filter(a => a === null).length;
+  if (unanswered > 0 && !confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  clearTimer();
+
+  const sub = {
+    id: DB.uid(),
+    studentId: ME.id,
+    studentName: ME.name,
+    classId: ME.classId,
+    className: ME.className,
+    assessmentId: curExam.id,
+    assessmentName: curExam.name,
+    subjectName: curExam.subjectName,
+    lessonName: curExam.lessonName,
+    answers: [...curAnswers],
+    questions: curQs.map(q => ({ id: q.id, title: q.title, type: q.type, options: q.options, answer: q.answer, points: q.points })),
+    maxScore: curExam.maxScore,
+    status: 'pending',
+    submittedAt: new Date().toISOString()
+  };
+  await DB.save('exam_submissions', sub);
+
+  // Show submission screen
+  const now = new Date();
+  document.getElementById('sub-info').innerHTML = `
+    <div class="si-row"><span>Exam</span><strong>${curExam.name}</strong></div>
+    <div class="si-row"><span>Subject</span><strong>${curExam.subjectName || '—'}</strong></div>
+    <div class="si-row"><span>Questions</span><strong>${curQs.length}</strong></div>
+    <div class="si-row"><span>Submitted</span><strong>${now.toLocaleDateString()} ${now.toLocaleTimeString()}</strong></div>
+    <div class="si-row"><span>Status</span><strong style="color:var(--warn)">⏳ Awaiting Grade</strong></div>`;
+  showScreen('s-submitted');
+}
+
+// ═══════════════════════════════════
+//  GRADE VIEW
+// ═══════════════════════════════════
+async function viewGrade(examId) {
+  const exams = await DB.get('assessments');
+  const ex = exams.find(a => a.id === examId);
+  const grades = await getMyGrades();
+  const grade = grades.find(g => g.assessmentId === examId);
+  const subs = await getMySubmissions();
+  const sub = subs.find(s => s.assessmentId === examId);
+  if (!ex) return;
+  document.getElementById('gv-title').textContent = ex.name;
+  document.getElementById('gv-exam').textContent = ex.name;
+  document.getElementById('gv-sub').textContent = (ex.subjectName || '') + (ex.lessonName ? ' · ' + ex.lessonName : '');
+
+  const body = document.getElementById('gv-body');
+  if (!grade) {
+    document.getElementById('gv-pill').innerHTML = '⏳ Awaiting grade';
+    body.innerHTML = `<div class="grade-pending"><span class="material-icons">hourglass_empty</span><p style="font-weight:700;font-size:14px">Not graded yet</p><small style="font-size:13px;display:block;margin-top:6px">Your teacher hasn't graded this exam yet. Check back later.</small></div>`;
+    showScreen('s-grade'); return;
+  }
+
+  const pct = Math.round(grade.totalScore / ex.maxScore * 100);
+  const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🌟' : pct >= 50 ? '👍' : '📚';
+  document.getElementById('gv-pill').innerHTML = `${emoji} ${grade.totalScore} / ${ex.maxScore} pts &nbsp;·&nbsp; ${pct}%`;
+
+  const qs = sub ? sub.questions : [];
+  const ans = sub ? sub.answers : [];
+  const LETTERS = 'ABCDEFGH';
+
+  body.innerHTML = qs.map((q, i) => {
+    const qGrade = grade.questionGrades?.[i] || {};
+    const earned = qGrade.score ?? '—';
+    const feedback = qGrade.feedback || '';
+    const isMCQ = q.type === 'MCQ' || q.type === 'True/False';
+    let ansHtml = '';
+    if (isMCQ) {
+      const opts = q.options || [];
+      ansHtml = opts.map((o, j) => {
+        let s = '';
+        if (j === q.answer) s = ' style="background:#e6f4ed;color:#1a6b3c;font-weight:700;border-radius:6px;padding:4px 8px"';
+        else if (j === ans[i] && ans[i] !== q.answer) s = ' style="background:#fef2f2;color:#dc2626;font-weight:700;border-radius:6px;padding:4px 8px"';
+        return `<div style="font-size:13px;padding:4px 0;display:flex;align-items:center;gap:7px">
+          <span style="font-weight:700;color:var(--muted)">${LETTERS[j]}.</span>
+          <span${s}>${o}</span>
+          ${j === q.answer ? '<span class="material-icons" style="font-size:14px;color:var(--gm)">check_circle</span>' : ''}
+          ${j === ans[i] && ans[i] !== q.answer ? '<span class="material-icons" style="font-size:14px;color:var(--danger)">cancel</span>' : ''}
+        </div>`;
+      }).join('');
+    } else {
+      ansHtml = `<div class="gq-ans essay-ans">${ans[i] || '<em style="color:var(--muted)">(no answer)</em>'}</div>`;
+    }
+
+    return `<div class="grade-q-card">
+      <div class="q-meta" style="margin-bottom:8px">
+        <span class="q-num-label">Q${i + 1}</span>
+        <span class="tag ${q.type === 'MCQ' ? 'tag-blue' : q.type === 'True/False' ? 'tag-green' : 'tag-orange'}">${q.type}</span>
+      </div>
+      <div class="gq-q">${q.title}</div>
+      ${ansHtml}
+      <div class="gq-pts"><span class="pts-earn">Score: ${earned} / ${q.points} pts</span><span class="pts-total">${q.points} max</span></div>
+      ${feedback ? `<div class="feedback-box"><span class="material-icons">comment</span>${feedback}</div>` : ''}
+    </div>`;
+  }).join('') + `<button class="back-btn" onclick="showScreen('s-dash');loadDashboard()"><span class="material-icons">arrow_back</span>Back to Dashboard</button>`;
+
+  showScreen('s-grade');
+}
+
+// ═══════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════
+function startTimer() {
+  clearTimer(); updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--; updateTimerDisplay();
+    if (timeLeft <= 0) { clearTimer(); alert('Time is up! Submitting your exam.'); submitExam(); }
+  }, 1000);
+}
+function clearTimer() { clearInterval(timerInterval); timerInterval = null; }
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+  const el = document.getElementById('ex-time'); const wrap = document.getElementById('ex-timer');
+  if (el) { el.textContent = `${m}:${s.toString().padStart(2, '0')}`; }
+  if (wrap) { wrap.classList.toggle('warn', timeLeft <= 60); }
+}
+
+// ═══════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo(0, 0); }
+function openOverlay(id) { document.getElementById(id).classList.add('on'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('on'); }
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast'), i = t.querySelector('.material-icons');
+  i.textContent = type === 'warn' ? 'warning' : 'check_circle';
+  i.style.color = type === 'warn' ? '#f59e0b' : 'var(--ga)';
+  document.getElementById('t-msg').textContent = msg;
+  t.classList.add('on'); clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('on'), 3000);
+}
+function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+</script>
+</body>
+</html>
