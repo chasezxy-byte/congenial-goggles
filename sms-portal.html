@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SMS – American Intercon School</title>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gd:#1a6b3c;--gm:#2e8b57;--gl:#e6f4ed;--ga:#3dba76;--ink:#0f1923;--bg:#f4f6f8;--w:#fff;--cream:#fffef9;--muted:#8a94a6;--border:#e2e8f0;--warn:#d97706;--danger:#dc2626;--info:#1d4ed8;--r:12px;--sh:0 2px 14px rgba(0,0,0,.07);--sw:260px;--hh:60px;--font:'Kantumruy Pro',sans-serif;--display:'Playfair Display',serif}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
+#ldg{display:flex;min-height:100vh;background:var(--bg);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#ldg .spinner-lg{width:36px;height:36px;border:4px solid var(--border);border-top-color:var(--gm);border-radius:50%;animation:spin .6s linear infinite}
+#ldg p{font-size:14px;color:var(--muted);font-weight:600}
+#s-login{display:none;min-height:100vh;background:linear-gradient(145deg,#0f1923 0%,#1a3d2b 50%,#1a6b3c 100%);align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+#s-login::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.login-wrap{background:var(--cream);border-radius:24px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,.35);animation:popIn .45s cubic-bezier(.34,1.56,.64,1);position:relative;z-index:1}
+@keyframes popIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+.brand{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:34px}
+.brand-ic{width:58px;height:58px;background:var(--gd);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(26,107,60,.4)}
+.brand-ic .material-icons{color:#fff;font-size:30px}
+.brand-txt strong{display:block;font-family:var(--display);font-size:17px;color:var(--gd);line-height:1.2}
+.brand-txt span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px}
+.login-wrap h2{font-family:var(--display);font-size:1.65rem;text-align:center;margin-bottom:4px}
+.login-wrap>p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.fg{margin-bottom:16px}.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.fi-wr{position:relative}.fi-wr .material-icons{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:20px;pointer-events:none}
+.fg input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 16px 12px 44px;font-family:var(--font);font-size:14px;outline:none;background:#fff;transition:border-color .2s}
+.fg input:focus{border-color:var(--gm);box-shadow:0 0 0 4px rgba(46,139,87,.1)}
+.btn-li{width:100%;background:var(--gd);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;box-shadow:0 4px 16px rgba(26,107,60,.35)}
+.btn-li:hover{background:#155c2e}.btn-li:disabled{opacity:.6;cursor:not-allowed}
+.l-err{color:var(--danger);font-size:12px;text-align:center;margin-top:10px;display:none}
+.l-hint{background:var(--gl);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:12px;color:var(--gd)}.l-hint strong{display:block;margin-bottom:4px}
+#app{display:none;min-height:100vh}
+.sidebar{width:var(--sw);background:var(--w);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;overflow:hidden;transition:width .25s}.sidebar.col{width:64px}
+.slogo{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);min-height:var(--hh)}
+.sli{width:36px;height:36px;background:var(--gd);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.sli .material-icons{color:#fff;font-size:20px}
+.slt{white-space:nowrap;overflow:hidden}.slt strong{display:block;font-size:12px;font-weight:800;color:var(--gd)}.slt span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.snav{padding:14px 10px;overflow-y:auto;flex:1}
+.slbl{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px;margin-bottom:6px;white-space:nowrap;margin-top:12px}.slbl:first-child{margin-top:0}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-size:13px;color:var(--ink);border-radius:10px;transition:background .1s;margin-bottom:2px;white-space:nowrap;user-select:none}
+.ni .material-icons{font-size:19px;color:var(--muted);flex-shrink:0}.ni:hover{background:var(--gl);color:var(--gd)}.ni:hover .material-icons{color:var(--gm)}.ni.act{background:var(--gl);color:var(--gd);font-weight:700}.ni.act .material-icons{color:var(--gm)}
+.mw{margin-left:var(--sw);display:flex;flex-direction:column;transition:margin-left .25s;min-height:100vh}.mw.col{margin-left:64px}
+.topbar{height:var(--hh);background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;position:sticky;top:0;z-index:90}
+.tog{background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;padding:4px;border-radius:6px}.tog:hover{background:var(--bg)}
+.tsp{flex:1}
+.tb-user{display:flex;align-items:center;gap:8px;font-size:13px}.tb-user-name{font-weight:700}.tb-role{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px}.tb-role.admin{background:#f3e8ff;color:#7c3aed}.tb-role.teacher{background:var(--gl);color:var(--gd)}
+.tb-ic{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;background:var(--w)}.tb-ic:hover{border-color:var(--gm);color:var(--gd)}.tb-ic .material-icons{font-size:19px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
+.pc{flex:1;padding:24px 24px 40px}.page{display:none}.page.act{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px}.pt{font-size:1.5rem;font-weight:800;font-family:var(--display)}.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-bottom:22px}.bc .cur{color:var(--ink);font-weight:600}.bc-dot{font-size:7px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--w);border-radius:var(--r);padding:18px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;border-left:4px solid transparent;transition:transform .15s}.stat-card:hover{transform:translateY(-2px)}
+.stat-card.c-green{border-left-color:var(--gm)}.stat-card.c-orange{border-left-color:var(--warn)}.stat-card.c-blue{border-left-color:var(--info)}.stat-card.c-purple{border-left-color:#7c3aed}
+.sc-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}.sc-ic .material-icons{font-size:22px}.sc-num{font-size:1.6rem;font-weight:800;line-height:1}.sc-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+.tc{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;animation:slideUp .25s ease}@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tt{display:flex;align-items:center;padding:13px 18px;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap}.tt-title{font-size:14px;font-weight:700;margin-right:8px}
+.sw2{position:relative;flex:0 0 200px}.sw2 .material-icons{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}.sw2 input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px 8px 32px;font-family:var(--font);font-size:13px;outline:none;background:var(--bg)}.sw2 input:focus{border-color:var(--gm);background:#fff}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}thead th{padding:10px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0}tbody tr{border-bottom:1px solid var(--border);transition:background .1s}tbody tr:last-child{border-bottom:none}tbody tr:hover{background:#f9fbff}tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}.cg{background:var(--gl);color:var(--gd)}.co{background:#fff7ed;color:#c2410c}.cb{background:#dbeafe;color:#1d4ed8}.cr{background:#fee2e2;color:#991b1b}
+.nd{text-align:center;padding:52px 20px;color:var(--muted)}.nd .material-icons{font-size:48px;color:#d0d8e4;display:block;margin-bottom:8px}.nd p{font-size:13px;font-weight:600}
+.f-sel{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:var(--font);font-size:12px;background:#fff;outline:none;cursor:pointer;min-width:130px;color:var(--ink)}.f-sel:focus{border-color:var(--gm)}
+.gb-tabs{display:flex;gap:4px;margin-bottom:16px}.gb-tab{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:var(--w);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}.gb-tab.act{background:var(--gd);color:#fff;border-color:var(--gd)}.gb-tab:hover:not(.act){border-color:var(--gm);color:var(--gd)}
+.month-cell{text-align:center;min-width:70px}.score-badge{display:inline-block;padding:3px 10px;border-radius:6px;font-weight:700;font-size:12px}.score-high{background:#dcfce7;color:#166534}.score-mid{background:#fef3c7;color:#92400e}.score-low{background:#fee2e2;color:#991b1b}.score-na{color:var(--muted);font-style:italic;font-size:11px}
+.att-date-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}.att-date-bar input[type="date"]{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--font);font-size:13px;outline:none}.att-date-bar input[type="date"]:focus{border-color:var(--gm)}
+.att-status{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700;transition:all .15s;border:2px solid var(--border)}.att-status.present{background:#dcfce7;border-color:#86efac;color:#166534}.att-status.absent{background:#fee2e2;border-color:#fca5a5;color:#991b1b}.att-status.late{background:#fef3c7;border-color:#fde68a;color:#92400e}.att-status:hover{transform:scale(1.15)}
+.att-legend{display:flex;gap:16px;font-size:12px;color:var(--muted);align-items:center}.att-legend span{display:flex;align-items:center;gap:4px}.att-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.btn-save{padding:9px 20px;background:var(--gd);color:#fff;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}.btn-save:hover{background:#155c2e}.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}@media(max-width:900px){.ov-grid{grid-template-columns:1fr}}
+.mini-chart{padding:16px 18px;display:flex;flex-direction:column;gap:8px}.mini-bar-row{display:flex;align-items:center;gap:10px;font-size:12px}.mini-bar-label{width:80px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-bar-track{flex:1;height:22px;background:var(--bg);border-radius:6px;overflow:hidden}.mini-bar-fill{height:100%;border-radius:6px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:10px;font-weight:800;color:#fff;min-width:28px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}.overlay.on{display:flex}
+.modal{background:var(--cream);border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.22);animation:mIn .18s ease}@keyframes mIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--cream);z-index:1}.mhd h3{font-family:var(--display);font-size:1.1rem}
+.mcl{background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;border-radius:6px;padding:4px}.mcl:hover{background:var(--bg)}
+.mbody{padding:18px 22px}.profile-hd{display:flex;align-items:center;gap:16px;margin-bottom:20px}.profile-av{width:56px;height:56px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;flex-shrink:0}.profile-info h4{font-family:var(--display);font-size:1.1rem}.profile-info p{font-size:12px;color:var(--muted)}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}.ps-card{background:var(--bg);border-radius:8px;padding:12px;text-align:center}.ps-card .ps-num{font-size:1.3rem;font-weight:800;color:var(--gd)}.ps-card .ps-lbl{font-size:11px;color:var(--muted)}
+.ib{width:31px;height:31px;border:1.5px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;background:var(--w)}.ib:hover{border-color:var(--gm);color:var(--gd)}.ib .material-icons{font-size:16px}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transform:translateY(70px);opacity:0;transition:all .28s;display:flex;align-items:center;gap:7px;box-shadow:0 4px 20px rgba(0,0,0,.18)}.toast.on{transform:translateY(0);opacity:1}.toast .material-icons{font-size:17px;color:var(--ga)}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);gap:10px;font-size:13px}.spinner{width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--gm);border-radius:50%;animation:spin .6s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.tt-right{margin-left:auto;display:flex;align-items:center;gap:7px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:3px}
+@media(max-width:700px){.sidebar{display:none}.mw{margin-left:0!important}}
+</style>
+</head>
+<body>
+<div id="ldg"><div class="spinner-lg"></div><p>Loading...</p></div>
+<div id="s-login">
+  <div class="login-wrap">
+    <div class="brand"><div class="brand-ic"><span class="material-icons">school</span></div><div class="brand-txt"><strong>American Intercon</strong><span>School Management System</span></div></div>
+    <h2>SMS Portal</h2>
+    <p>Sign in with your teacher or admin account</p>
+    <div class="fg"><label>Email</label><div class="fi-wr"><span class="material-icons">email</span><input type="email" id="l-user" placeholder="teacher@school.com" autocomplete="off"/></div></div>
+    <div class="fg"><label>Password</label><div class="fi-wr"><span class="material-icons">lock</span><input type="password" id="l-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/></div></div>
+    <div class="l-err" id="l-err">Invalid email or password.</div>
+    <button class="btn-li" id="btn-login" onclick="doLogin()"><span class="material-icons">login</span>Sign In</button>
+    <div class="l-hint"><strong>🔑 Same credentials as the LMS</strong><div style="opacity:.85">Use your Firebase email &amp; password from the Mentor Back Office</div></div>
+  </div>
+</div>
+<div id="app">
+  <aside class="sidebar" id="sb"><div class="slogo"><div class="sli"><span class="material-icons">school</span></div><div class="slt"><strong>AIS · SMS</strong><span>Management</span></div></div>
+    <div class="snav"><div class="slbl">Overview</div><div class="ni act" onclick="nav('dashboard',this)"><span class="material-icons">dashboard</span><span>Dashboard</span></div><div class="slbl">Academics</div><div class="ni" onclick="nav('gradebook',this)"><span class="material-icons">menu_book</span><span>Gradebook</span></div><div class="ni" onclick="nav('attendance',this)"><span class="material-icons">fact_check</span><span>Attendance</span></div><div class="slbl">People</div><div class="ni" onclick="nav('students',this)"><span class="material-icons">people</span><span>Students</span></div><div class="ni" onclick="nav('classes',this)"><span class="material-icons">class</span><span>Classes</span></div></div>
+  </aside>
+  <div class="mw" id="mw">
+    <header class="topbar"><button class="tog" onclick="toggleSb()"><span class="material-icons">menu</span></button><div class="tsp"></div><div class="tb-user"><span class="tb-user-name" id="tb-username"></span><span class="tb-role" id="tb-role"></span></div><div class="tb-ic" title="Refresh" onclick="refreshCurrent()"><span class="material-icons">refresh</span></div><div class="av" id="tb-av" title="Logout" onclick="doLogout()">?</div></header>
+    <main class="pc">
+      <div class="page act" id="page-dashboard"><div class="ph"><div><div class="pt">Dashboard</div><div class="bc"><span class="cur">Overview</span></div></div></div><div class="stat-grid" id="dash-stats"></div><div class="ov-grid" id="dash-grids"></div></div>
+      <div class="page" id="page-gradebook"><div class="ph"><div><div class="pt">Gradebook</div><div class="bc"><span>SMS</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Gradebook</span></div></div></div><div class="gb-tabs"><button class="gb-tab act" onclick="switchGbTab('monthly',this)">📊 Monthly Summary</button><button class="gb-tab" onclick="switchGbTab('detailed',this)">📋 Detailed Exams</button></div><div class="tc"><div class="tt"><div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search students..." oninput="gbSearch=this.value;renderGradebook()"/></div><select class="f-sel" id="gb-class" onchange="renderGradebook()"><option value="">All Classes</option></select><select class="f-sel" id="gb-subject" onchange="renderGradebook()"><option value="">All Subjects</option></select></div><div class="tw" id="gb-table-wrap"><div class="loading"><div class="spinner"></div>Loading...</div></div></div></div>
+      <div class="page" id="page-attendance"><div class="ph"><div><div class="pt">Attendance</div><div class="bc"><span>SMS</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Attendance</span></div></div></div><div class="att-date-bar"><input type="date" id="att-date" onchange="renderAttendance()"/><select class="f-sel" id="att-class" onchange="renderAttendance()"><option value="">All Classes</option></select><div class="att-legend"><span><div class="att-dot" style="background:#86efac"></div> Present</span><span><div class="att-dot" style="background:#fca5a5"></div> Absent</span><span><div class="att-dot" style="background:#fde68a"></div> Late</span></div><div class="tt-right"><button class="btn-save" id="att-save-btn" onclick="saveAttendance()"><span class="material-icons" style="font-size:16px">save</span>Save</button></div></div><div class="tc"><div class="tw" id="att-table-wrap"><div class="loading"><div class="spinner"></div>Loading...</div></div></div></div>
+      <div class="page" id="page-students"><div class="ph"><div><div class="pt">Student Roster</div><div class="bc"><span>SMS</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Students</span></div></div></div><div class="tc"><div class="tt"><div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search students..." oninput="stuSearch=this.value;renderStudents()"/></div><select class="f-sel" id="stu-class" onchange="renderStudents()"><option value="">All Classes</option></select></div><div class="tw" id="stu-table-wrap"><div class="loading"><div class="spinner"></div>Loading...</div></div></div></div>
+      <div class="page" id="page-classes"><div class="ph"><div><div class="pt">Classes</div><div class="bc"><span>SMS</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Classes</span></div></div></div><div class="tc"><div class="tw" id="cls-table-wrap"><div class="loading"><div class="spinner"></div>Loading...</div></div></div></div>
+    </main>
+  </div>
+</div>
+<div class="overlay" id="ov-profile" onclick="if(event.target===this)closeOverlay('ov-profile')"><div class="modal"><div class="mhd"><h3>👤 Student Profile</h3><button class="mcl" onclick="closeOverlay('ov-profile')"><span class="material-icons">close</span></button></div><div class="mbody" id="profile-body"></div></div></div>
+<div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="t-msg"></span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
+<script>
+'use strict';
+firebase.initializeApp({apiKey:"AIzaSyDO_m3ECeswwJqGDC7Bpicnt8nQ9xb6oIc",authDomain:"ordinal-698c1.firebaseapp.com",databaseURL:"https://ordinal-698c1-default-rtdb.firebaseio.com",projectId:"ordinal-698c1",storageBucket:"ordinal-698c1.firebasestorage.app",messagingSenderId:"102527692497",appId:"1:102527692497:web:bc6225ba04057ccd755ff0"});
+const fireDb=firebase.firestore(),auth=firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+function _clean(o){if(o===undefined)return null;if(o===null||typeof o!=='object')return o;if(Array.isArray(o))return o.map(v=>v===undefined?null:_clean(v));const r={};for(const[k,v]of Object.entries(o)){if(v!==undefined)r[k]=_clean(v);}return r;}
+const DB={
+  get:async k=>{try{const s=await fireDb.collection(k).get();return s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){console.error('DB.get:',k,e);return[];}},
+  save:async(k,item)=>{try{await fireDb.collection(k).doc(item.id).set(_clean(item));}catch(e){console.error('DB.save:',k,e);}},
+  uid:()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)
+};
+
+let CACHE={};
+async function load(k,force){if(!force&&CACHE[k])return CACHE[k];CACHE[k]=await DB.get(k);return CACHE[k];}
+function clearCache(){CACHE={};}
+
+let CURRENT_USER=null,currentPage='dashboard',gbMode='monthly',gbSearch='',stuSearch='',attData={};
+
+function myClassIds(){if(!CURRENT_USER)return[];if(CURRENT_USER.isAdmin)return null;return CURRENT_USER.classIds||[];}
+function scopeByClass(arr,field='classId'){const ids=myClassIds();if(ids===null)return arr;return arr.filter(r=>ids.includes(r[field]));}
+function scopeClasses(cls){const ids=myClassIds();if(ids===null)return cls;return cls.filter(c=>ids.includes(c.id));}
+
+// ── AUTH
+async function doLogin(){
+  const u=document.getElementById('l-user').value.trim(),p=document.getElementById('l-pass').value.trim();
+  if(!u||!p){document.getElementById('l-err').style.display='block';return;}
+  const btn=document.getElementById('btn-login');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle"></div> Signing in...';
+  document.getElementById('l-err').style.display='none';
+  try{await auth.signInWithEmailAndPassword(u,p);}catch(e){
+    document.getElementById('l-err').textContent='❌ '+(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'?'Invalid email or password.':e.message);
+    document.getElementById('l-err').style.display='block';btn.disabled=false;btn.innerHTML='<span class="material-icons">login</span>Sign In';
+  }
+}
+function doLogout(){if(confirm('Log out?'))auth.signOut();}
+
+auth.onAuthStateChanged(async user=>{
+  const ldg=document.getElementById('ldg'),msg=ldg.querySelector('p');
+  if(user){
+    ldg.style.display='flex';msg.textContent='Loading your data...';
+    try{
+      const teachers=await DB.get('teachers');CACHE.teachers=teachers;
+      const rec=teachers.find(t=>t.email&&t.email.toLowerCase()===user.email.toLowerCase());
+      CURRENT_USER={email:user.email,displayName:rec?rec.name:(user.displayName||user.email.split('@')[0]),isAdmin:!rec,classIds:rec?(rec.classIds||[]):null};
+      ldg.style.display='none';document.getElementById('s-login').style.display='none';document.getElementById('app').style.display='block';
+      await initApp();
+    }catch(e){msg.textContent='Error: '+e.message;console.error(e);}
+  }else{CURRENT_USER=null;ldg.style.display='none';document.getElementById('s-login').style.display='flex';document.getElementById('app').style.display='none';}
+});
+
+async function initApp(){
+  document.getElementById('tb-username').textContent=CURRENT_USER.displayName;
+  const r=document.getElementById('tb-role');r.textContent=CURRENT_USER.isAdmin?'👑 Admin':'👤 Teacher';r.className='tb-role '+(CURRENT_USER.isAdmin?'admin':'teacher');
+  document.getElementById('tb-av').textContent=(CURRENT_USER.displayName||'?')[0].toUpperCase();
+  document.getElementById('att-date').value=new Date().toISOString().slice(0,10);
+  await populateFilters();await renderDashboard();
+}
+async function refreshCurrent(){clearCache();await populateFilters();if(currentPage==='dashboard')await renderDashboard();else if(currentPage==='gradebook')await renderGradebook();else if(currentPage==='attendance')await renderAttendance();else if(currentPage==='students')await renderStudents();else if(currentPage==='classes')await renderClasses();toast('Refreshed!');}
+function toggleSb(){document.getElementById('sb').classList.toggle('col');document.getElementById('mw').classList.toggle('col');}
+async function nav(id,el){currentPage=id;document.querySelectorAll('.page').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));document.getElementById('page-'+id).classList.add('act');if(el)el.classList.add('act');if(id==='dashboard')await renderDashboard();else if(id==='gradebook')await renderGradebook();else if(id==='attendance')await renderAttendance();else if(id==='students')await renderStudents();else if(id==='classes')await renderClasses();}
+
+async function populateFilters(){
+  const mc=scopeClasses(await load('classs'));const subs=await load('subjects');
+  ['gb-class','att-class','stu-class'].forEach(id=>{const s=document.getElementById(id);if(!s)return;const c=s.value;s.innerHTML='<option value="">All Classes</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');s.value=c;});
+  const g=document.getElementById('gb-subject');if(g){const c=g.value;g.innerHTML='<option value="">All Subjects</option>'+subs.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');g.value=c;}
+}
+
+// ── DASHBOARD
+async function renderDashboard(){
+  const students=scopeByClass(await load('students')),classes=scopeClasses(await load('classs')),exams=scopeByClass(await load('assessments')),grades=scopeByClass(await load('exam_grades')),subs=scopeByClass(await load('exam_submissions')),att=scopeByClass(await load('attendance'));
+  const today=new Date().toISOString().slice(0,10),pt=att.filter(a=>a.date===today&&a.status==='present').length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-card c-blue"><div class="sc-ic" style="background:#dbeafe"><span class="material-icons" style="color:var(--info)">people</span></div><div><div class="sc-num">${students.length}</div><div class="sc-lbl">Students</div></div></div>
+    <div class="stat-card c-green"><div class="sc-ic" style="background:var(--gl)"><span class="material-icons" style="color:var(--gm)">class</span></div><div><div class="sc-num">${classes.length}</div><div class="sc-lbl">Classes</div></div></div>
+    <div class="stat-card c-purple"><div class="sc-ic" style="background:#f3e8ff"><span class="material-icons" style="color:#7c3aed">assignment</span></div><div><div class="sc-num">${exams.filter(e=>e.validState==='Valid').length}</div><div class="sc-lbl">Active Exams</div></div></div>
+    <div class="stat-card c-green"><div class="sc-ic" style="background:var(--gl)"><span class="material-icons" style="color:var(--gm)">verified</span></div><div><div class="sc-num">${grades.length}</div><div class="sc-lbl">Graded</div></div></div>
+    <div class="stat-card c-orange"><div class="sc-ic" style="background:#fff7ed"><span class="material-icons" style="color:var(--warn)">pending_actions</span></div><div><div class="sc-num">${subs.filter(s=>s.status==='pending').length}</div><div class="sc-lbl">Pending</div></div></div>
+    <div class="stat-card c-green"><div class="sc-ic" style="background:var(--gl)"><span class="material-icons" style="color:var(--gm)">check_circle</span></div><div><div class="sc-num">${pt}</div><div class="sc-lbl">Present Today</div></div></div>`;
+  const ca=classes.map(c=>{const cg=grades.filter(g=>g.classId===c.id);return{name:c.name,avg:cg.length?Math.round(cg.reduce((s,g)=>s+(g.totalScore/g.maxScore*100),0)/cg.length):0};}).sort((a,b)=>b.avg-a.avg);
+  const rg=grades.slice(-8).reverse();
+  document.getElementById('dash-grids').innerHTML=`<div class="tc"><div class="tt"><span class="tt-title">📊 Class Averages</span></div><div class="mini-chart">${ca.length?ca.map(c=>`<div class="mini-bar-row"><div class="mini-bar-label">${c.name}</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${c.avg}%;background:${c.avg>=70?'var(--gm)':c.avg>=50?'var(--warn)':'var(--danger)'}">${c.avg}%</div></div></div>`).join(''):'<div class="nd"><p>No data</p></div>'}</div></div>
+    <div class="tc"><div class="tt"><span class="tt-title">🏆 Recent Grades</span></div>${rg.length?rg.map(g=>{const p=Math.round(g.totalScore/g.maxScore*100);return`<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px"><div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd)">${(g.studentName||'?')[0]}</div><div style="flex:1"><div style="font-weight:600">${g.studentName||'—'}</div><div style="font-size:11px;color:var(--muted)">${g.assessmentName||'—'}</div></div><span class="score-badge ${p>=70?'score-high':p>=50?'score-mid':'score-low'}">${p}%</span></div>`;}).join(''):'<div class="nd"><span class="material-icons">grading</span><p>No grades yet</p></div>'}</div>`;
+}
+
+// ── GRADEBOOK
+function switchGbTab(m,b){gbMode=m;document.querySelectorAll('.gb-tab').forEach(t=>t.classList.remove('act'));b.classList.add('act');renderGradebook();}
+async function renderGradebook(){
+  let stu=scopeByClass(await load('students')),gr=scopeByClass(await load('exam_grades'));
+  const cf=document.getElementById('gb-class').value,sf=document.getElementById('gb-subject').value,st=document.getElementById('gb-subject').selectedOptions[0]?.text;
+  if(cf){stu=stu.filter(s=>s.classId===cf);gr=gr.filter(g=>g.classId===cf);}
+  if(gbSearch)stu=stu.filter(s=>(s.name||'').toLowerCase().includes(gbSearch.toLowerCase()));
+  if(sf)gr=gr.filter(g=>g.subjectName===st);
+  const w=document.getElementById('gb-table-wrap');
+  if(gbMode==='monthly'){
+    const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],yr=new Date().getFullYear();
+    w.innerHTML=`<table><thead><tr><th>#</th><th>Student</th><th>Class</th>${M.map(m=>`<th class="month-cell">${m}</th>`).join('')}<th class="month-cell">Overall</th></tr></thead><tbody>${stu.length?stu.map((s,i)=>{const mg=gr.filter(g=>g.studentId===s.id);const ms=M.map((_,mi)=>{const mgs=mg.filter(g=>{const d=new Date(g.gradedAt);return d.getMonth()===mi&&d.getFullYear()===yr;});return mgs.length?Math.round(mgs.reduce((a,g)=>a+(g.totalScore/g.maxScore*100),0)/mgs.length):null;});const al=ms.filter(v=>v!==null);const ov=al.length?Math.round(al.reduce((a,b)=>a+b,0)/al.length):null;return`<tr><td>${i+1}</td><td><div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openProfile('${s.id}')"><div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px">${(s.name||'?')[0]}</div><strong>${s.name}</strong></div></td><td>${s.className||'—'}</td>${ms.map(v=>v!==null?`<td class="month-cell"><span class="score-badge ${v>=70?'score-high':v>=50?'score-mid':'score-low'}">${v}%</span></td>`:`<td class="month-cell"><span class="score-na">—</span></td>`).join('')}<td class="month-cell">${ov!==null?`<strong style="color:${ov>=70?'var(--gd)':ov>=50?'var(--warn)':'var(--danger)'};font-size:14px">${ov}%</strong>`:'<span class="score-na">—</span>'}</td></tr>`;}).join(''):`<tr><td colspan="${M.length+4}"><div class="nd"><span class="material-icons">menu_book</span><p>No students</p></div></td></tr>`}</tbody></table>`;
+  }else{
+    let ex=scopeByClass((await load('assessments')).filter(e=>e.validState==='Valid'));if(cf)ex=ex.filter(e=>e.classId===cf);if(sf)ex=ex.filter(e=>e.subjectName===st);
+    w.innerHTML=`<table><thead><tr><th>#</th><th>Student</th><th>Class</th>${ex.map(e=>`<th class="month-cell" title="${e.name}" style="max-width:90px;overflow:hidden;text-overflow:ellipsis">${e.name.length>12?e.name.slice(0,12)+'…':e.name}</th>`).join('')}<th class="month-cell">Avg</th></tr></thead><tbody>${stu.length?stu.map((s,i)=>{const mg=gr.filter(g=>g.studentId===s.id);const es=ex.map(e=>{const g=mg.find(g=>g.assessmentId===e.id);return g?Math.round(g.totalScore/g.maxScore*100):null;});const sc=es.filter(v=>v!==null);const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null;return`<tr><td>${i+1}</td><td><div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openProfile('${s.id}')"><div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px">${(s.name||'?')[0]}</div><strong>${s.name}</strong></div></td><td>${s.className||'—'}</td>${es.map(v=>v!==null?`<td class="month-cell"><span class="score-badge ${v>=70?'score-high':v>=50?'score-mid':'score-low'}">${v}%</span></td>`:`<td class="month-cell"><span class="score-na">—</span></td>`).join('')}<td class="month-cell">${avg!==null?`<strong style="color:${avg>=70?'var(--gd)':avg>=50?'var(--warn)':'var(--danger)'};font-size:14px">${avg}%</strong>`:'<span class="score-na">—</span>'}</td></tr>`;}).join(''):`<tr><td colspan="${ex.length+4}"><div class="nd"><span class="material-icons">menu_book</span><p>No students</p></div></td></tr>`}</tbody></table>`;
+  }
+}
+
+// ── ATTENDANCE
+async function renderAttendance(){
+  let stu=scopeByClass(await load('students'));const cf=document.getElementById('att-class').value,date=document.getElementById('att-date').value;
+  const existing=await load('attendance',true);if(cf)stu=stu.filter(s=>s.classId===cf);
+  attData={};stu.forEach(s=>{const r=existing.find(a=>a.studentId===s.id&&a.date===date);attData[s.id]=r?r.status:'present';});
+  const pc=Object.values(attData).filter(v=>v==='present').length,ac=Object.values(attData).filter(v=>v==='absent').length,lc=Object.values(attData).filter(v=>v==='late').length;
+  document.getElementById('att-table-wrap').innerHTML=`<div style="padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:16px;font-size:13px;color:var(--muted)"><strong style="color:var(--ink)">${date}</strong><span>✅ ${pc}</span><span>❌ ${ac}</span><span>⏰ ${lc}</span></div><table><thead><tr><th>#</th><th>Student</th><th>Class</th><th style="text-align:center">Status</th></tr></thead><tbody>${stu.length?stu.map((s,i)=>{const st=attData[s.id]||'present';return`<tr><td>${i+1}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px">${(s.name||'?')[0]}</div><strong>${s.name}</strong></div></td><td>${s.className||'—'}</td><td style="text-align:center"><div style="display:flex;gap:6px;justify-content:center"><div class="att-status ${st==='present'?'present':''}" onclick="setAtt('${s.id}','present')">✓</div><div class="att-status ${st==='absent'?'absent':''}" onclick="setAtt('${s.id}','absent')">✗</div><div class="att-status ${st==='late'?'late':''}" onclick="setAtt('${s.id}','late')">L</div></div></td></tr>`;}).join(''):`<tr><td colspan="4"><div class="nd"><span class="material-icons">people</span><p>No students</p></div></td></tr>`}</tbody></table>`;
+}
+function setAtt(sid,status){attData[sid]=status;renderAttendance();}
+async function saveAttendance(){
+  const date=document.getElementById('att-date').value;if(!date){toast('Select a date','warn');return;}
+  const stu=await load('students'),btn=document.getElementById('att-save-btn');btn.disabled=true;btn.innerHTML='Saving...';
+  for(const[sid,status]of Object.entries(attData)){const s=stu.find(x=>x.id===sid)||{};await DB.save('attendance',{id:`${date}_${sid}`,studentId:sid,studentName:s.name||'',classId:s.classId||'',className:s.className||'',date,status,savedAt:new Date().toISOString(),savedBy:CURRENT_USER?.email||''});}
+  btn.disabled=false;btn.innerHTML='<span class="material-icons" style="font-size:16px">save</span>Save';clearCache();toast('Attendance saved for '+date+'!');
+}
+
+// ── STUDENTS
+async function renderStudents(){
+  let stu=scopeByClass(await load('students'));const gr=scopeByClass(await load('exam_grades')),su=scopeByClass(await load('exam_submissions')),cf=document.getElementById('stu-class').value;
+  if(cf)stu=stu.filter(s=>s.classId===cf);if(stuSearch)stu=stu.filter(s=>(s.name||'').toLowerCase().includes(stuSearch.toLowerCase()));
+  document.getElementById('stu-table-wrap').innerHTML=`<table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Username</th><th>Status</th><th>Exams</th><th>Avg</th><th></th></tr></thead><tbody>${stu.length?stu.map((s,i)=>{const mg=gr.filter(g=>g.studentId===s.id),ms=su.filter(x=>x.studentId===s.id);let a='—';if(mg.length)a=Math.round(mg.reduce((t,g)=>t+(g.totalScore/g.maxScore*100),0)/mg.length)+'%';return`<tr><td>${i+1}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px">${(s.name||'?')[0]}</div><strong>${s.name}</strong></div></td><td>${s.className||'—'}</td><td style="color:var(--muted)">${s.username||'—'}</td><td><span class="chip ${!s.status||s.status==='Active'?'cg':'cr'}">${s.status||'Active'}</span></td><td>${ms.length}</td><td><strong style="color:${a==='—'?'var(--muted)':parseInt(a)>=70?'var(--gd)':parseInt(a)>=50?'var(--warn)':'var(--danger)'}">${a}</strong></td><td><div class="ib" onclick="openProfile('${s.id}')"><span class="material-icons">visibility</span></div></td></tr>`;}).join(''):`<tr><td colspan="8"><div class="nd"><span class="material-icons">people</span><p>No students</p></div></td></tr>`}</tbody></table>`;
+}
+
+// ── CLASSES
+async function renderClasses(){
+  const cls=scopeClasses(await load('classs')),stu=await load('students'),ex=await load('assessments');
+  document.getElementById('cls-table-wrap').innerHTML=`<table><thead><tr><th>#</th><th>Class</th><th>Students</th><th>Active Exams</th></tr></thead><tbody>${cls.length?cls.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.name}</strong></td><td><span class="chip cb">${stu.filter(s=>s.classId===c.id).length}</span></td><td><span class="chip cg">${ex.filter(e=>e.classId===c.id&&e.validState==='Valid').length}</span></td></tr>`).join(''):`<tr><td colspan="4"><div class="nd"><span class="material-icons">class</span><p>No classes</p></div></td></tr>`}</tbody></table>`;
+}
+
+// ── PROFILE
+async function openProfile(sid){
+  const stu=await load('students'),s=stu.find(x=>x.id===sid);if(!s)return;
+  const gr=await load('exam_grades'),su=await load('exam_submissions'),at=await load('attendance');
+  const mg=gr.filter(g=>g.studentId===sid),ms=su.filter(x=>x.studentId===sid),ma=at.filter(a=>a.studentId===sid);
+  const pd=ma.filter(a=>a.status==='present').length,td=ma.length,ar=td?Math.round(pd/td*100):0;
+  let avg=0;if(mg.length)avg=Math.round(mg.reduce((t,g)=>t+(g.totalScore/g.maxScore*100),0)/mg.length);
+  document.getElementById('profile-body').innerHTML=`<div class="profile-hd"><div class="profile-av">${(s.name||'?')[0]}</div><div class="profile-info"><h4>${s.name}</h4><p>${s.className||'—'} · ${s.username||'—'} · ${s.status||'Active'}</p></div></div>
+    <div class="profile-stats"><div class="ps-card"><div class="ps-num">${ms.length}</div><div class="ps-lbl">Exams</div></div><div class="ps-card"><div class="ps-num" style="color:${avg>=70?'var(--gd)':avg>=50?'var(--warn)':'var(--danger)'}">${avg||'—'}%</div><div class="ps-lbl">Avg Score</div></div><div class="ps-card"><div class="ps-num" style="color:${ar>=80?'var(--gd)':ar>=60?'var(--warn)':'var(--danger)'}">${ar}%</div><div class="ps-lbl">Attendance</div></div></div>
+    <div class="tc" style="margin-bottom:16px"><div class="tt"><span class="tt-title">📊 Exam Results</span></div>${mg.length?`<table><thead><tr><th>Exam</th><th>Subject</th><th>Score</th><th>%</th><th>Date</th></tr></thead><tbody>${mg.map(g=>{const p=Math.round(g.totalScore/g.maxScore*100);return`<tr><td><strong>${g.assessmentName||'—'}</strong></td><td>${g.subjectName||'—'}</td><td>${g.totalScore}/${g.maxScore}</td><td><span class="score-badge ${p>=70?'score-high':p>=50?'score-mid':'score-low'}">${p}%</span></td><td style="color:var(--muted);font-size:12px">${new Date(g.gradedAt).toLocaleDateString()}</td></tr>`;}).join('')}</tbody></table>`:`<div class="nd"><p>No grades</p></div>`}</div>
+    <div class="tc"><div class="tt"><span class="tt-title">📅 Attendance</span></div><div style="padding:16px;display:flex;gap:20px;font-size:13px"><span>Days: <strong>${td}</strong></span><span>Present: <strong style="color:var(--gd)">${pd}</strong></span><span>Absent: <strong style="color:var(--danger)">${ma.filter(a=>a.status==='absent').length}</strong></span><span>Late: <strong style="color:var(--warn)">${ma.filter(a=>a.status==='late').length}</strong></span><span>Rate: <strong style="color:${ar>=80?'var(--gd)':ar>=60?'var(--warn)':'var(--danger)'}">${ar}%</strong></span></div></div>`;
+  openOverlay('ov-profile');
+}
+
+function openOverlay(id){document.getElementById(id).classList.add('on');}
+function closeOverlay(id){document.getElementById(id).classList.remove('on');}
+function toast(msg,type='ok'){const t=document.getElementById('toast'),ic=t.querySelector('.material-icons');ic.textContent=type==='warn'?'warning':'check_circle';ic.style.color=type==='warn'?'#f59e0b':'var(--ga)';document.getElementById('t-msg').textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000);}
+</script>
+</body>
+</html>
