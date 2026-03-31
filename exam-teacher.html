@@ -242,11 +242,11 @@ async function renderCurrent(){
 }
 
 // Scope data to teacher's classes (admin sees all)
-function scope(arr){if(!ME||ME.isAdmin)return arr;const ids=ME.classIds||[];return arr.filter(r=>ids.includes(r.classId));}
+function scope(arr,field='classId'){if(!ME||ME.isAdmin)return arr;const ids=ME.classIds||[];return arr.filter(r=>ids.includes(r[field])||r.createdByEmail===ME.email);}
 
 // ── DASHBOARD
 async function renderDash(){
-  const cls=scope(await load(C.classes)),sub=scope(await load(C.subjects)),ex=scope(await load(C.exams)),qs=scope(await load(C.questions)),stu=scope(await load(C.students)),subs=scope(await load(C.subs));
+  const cls=scope(await load(C.classes),'id'),sub=scope(await load(C.subjects)),ex=scope(await load(C.exams)),qs=scope(await load(C.questions)),stu=scope(await load(C.students)),subs=scope(await load(C.subs));
   const pending=subs.filter(s=>s.status==='pending').length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">school</span></div><div><div class="st-n">${cls.length}</div><div class="st-l">Classes</div></div></div>
@@ -260,7 +260,7 @@ async function renderDash(){
 
 // ── CLASSES
 async function renderClasses(){
-  const cls=scope(await load(C.classes,true));
+  const cls=scope(await load(C.classes,true),'id');
   document.getElementById('t-classes').innerHTML=cls.length?`<table><thead><tr><th>#</th><th>Name</th><th>Created</th><th></th></tr></thead><tbody>${cls.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.name}</strong></td><td style="color:var(--mu);font-size:12px">${c.createdAt||'—'}</td><td><div class="ab"><div class="ib" onclick="openEdit('class','${c.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.classes}','${c.id}','${esc(c.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">school</span><p>No classes yet</p></div>`;
 }
 
