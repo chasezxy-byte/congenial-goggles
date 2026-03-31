@@ -385,6 +385,18 @@ const db = firebase.firestore();
 // ═══════════════════════════════════
 //  DB  (Firestore — shared with LMS)
 // ═══════════════════════════════════
+// Helper: Firestore rejects `undefined` — recursively strip it
+function _clean(obj) {
+  if (obj === undefined) return null;
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(v => v === undefined ? null : _clean(v));
+  const out = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined) out[k] = _clean(v);
+  }
+  return out;
+}
+
 const DB = {
   get: async (k) => {
     try {
@@ -393,15 +405,14 @@ const DB = {
     } catch(e) { console.error('DB.get error:', k, e); return []; }
   },
   save: async (k, item) => {
-    try { await db.collection(k).doc(item.id).set(item); }
+    try { await db.collection(k).doc(item.id).set(_clean(item)); }
     catch(e) { console.error('DB.save error:', k, e); }
   },
   set: async (k, arr) => {
-    // Batch write entire array (used for updating lists)
     try {
       const batch = db.batch();
       for (const item of arr) {
-        batch.set(db.collection(k).doc(item.id), item);
+        batch.set(db.collection(k).doc(item.id), _clean(item));
       }
       await batch.commit();
     } catch(e) { console.error('DB.set error:', k, e); }
