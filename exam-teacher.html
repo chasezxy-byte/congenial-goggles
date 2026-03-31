@@ -4,26 +4,21 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Exam Portal – Teacher</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--p:#2563eb;--p2:#1d4ed8;--pl:#eff6ff;--ink:#1e293b;--bg:#f8fafc;--w:#fff;--mu:#94a3b8;--bo:#e2e8f0;--ok:#16a34a;--okl:#dcfce7;--wa:#d97706;--wal:#fef3c7;--da:#dc2626;--dal:#fee2e2;--r:10px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--f:'DM Sans',sans-serif;--sw:240px;--hh:56px}
+:root{--p:#2563eb;--p2:#1d4ed8;--pl:#eff6ff;--ink:#1e293b;--bg:#f8fafc;--w:#fff;--mu:#94a3b8;--bo:#e2e8f0;--ok:#16a34a;--okl:#dcfce7;--wa:#d97706;--wal:#fef3c7;--da:#dc2626;--dal:#fee2e2;--r:10px;--sh:0 1px 3px rgba(0,0,0,.06);--f:'Kantumruy Pro',sans-serif;--sw:240px;--hh:56px}
 body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px}
-
-/* ── LOADING */
-#ldg{display:flex;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:var(--bg)}
+#ldg{display:flex;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .spin{width:28px;height:28px;border:3px solid var(--bo);border-top-color:var(--p);border-radius:50%;animation:sp .5s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 #ldg p{font-size:13px;color:var(--mu)}
-
-/* ── LOGIN */
 #login{display:none;min-height:100vh;background:var(--bg);align-items:center;justify-content:center;padding:20px}
 .lbox{background:var(--w);border:1px solid var(--bo);border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
 .lbox h1{font-size:20px;font-weight:700;margin-bottom:4px;text-align:center}
 .lbox .sub{font-size:13px;color:var(--mu);text-align:center;margin-bottom:28px}
-.fg{margin-bottom:16px}
-.fg label{display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px}
+.fg{margin-bottom:16px}.fg label{display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px}
 .fg input,.fg select,.fg textarea{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:10px 12px;font-family:var(--f);font-size:14px;outline:none;transition:border-color .15s;background:var(--w)}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--p)}
 .fg textarea{resize:vertical;min-height:80px}
@@ -32,88 +27,51 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px}
 .btn-w{width:100%;justify-content:center}
 .btn-o{background:transparent;color:var(--ink);border:1.5px solid var(--bo)}.btn-o:hover{border-color:var(--p);color:var(--p);background:transparent}
 .btn-sm{padding:7px 14px;font-size:12px}
-.btn-da{background:var(--da)}.btn-da:hover{background:#b91c1c}
 .lerr{color:var(--da);font-size:12px;text-align:center;margin-top:8px;display:none}
-
-/* ── APP */
 #app{display:none;min-height:100vh}
 .sb{width:var(--sw);background:var(--w);border-right:1px solid var(--bo);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
 .sb-hd{padding:16px;border-bottom:1px solid var(--bo);display:flex;align-items:center;gap:10px}
-.sb-hd .material-icons-outlined{font-size:24px;color:var(--p)}
-.sb-hd strong{font-size:14px;font-weight:700}
-.sb-hd span{font-size:10px;color:var(--mu);display:block;text-transform:uppercase;letter-spacing:.8px}
+.sb-hd .material-icons-outlined{font-size:24px;color:var(--p)}.sb-hd strong{font-size:14px;font-weight:700}.sb-hd span{font-size:10px;color:var(--mu);display:block;text-transform:uppercase;letter-spacing:.8px}
 .sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
 .sb-lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:8px 12px 4px}
 .si{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#64748b;margin-bottom:2px;transition:all .1s}
-.si .material-icons-outlined{font-size:18px}
-.si:hover{background:var(--pl);color:var(--p)}
-.si.act{background:var(--pl);color:var(--p);font-weight:700}
+.si .material-icons-outlined{font-size:18px}.si:hover{background:var(--pl);color:var(--p)}.si.act{background:var(--pl);color:var(--p);font-weight:700}
 .sb-ft{padding:12px 16px;border-top:1px solid var(--bo);font-size:11px;color:var(--mu);display:flex;align-items:center;gap:8px}
 .sb-ft .av{width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}
 .mw{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
 .tb{height:var(--hh);background:var(--w);border-bottom:1px solid var(--bo);display:flex;align-items:center;padding:0 24px;gap:10px;position:sticky;top:0;z-index:50}
-.tb-t{font-size:15px;font-weight:700;flex:1}
-.tb-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:var(--pl);color:var(--p)}
-.pc{flex:1;padding:24px}
-.page{display:none}.page.act{display:block}
-
-/* ── CARDS & TABLES */
+.tb-t{font-size:15px;font-weight:700;flex:1}.tb-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:var(--pl);color:var(--p)}
+.pc{flex:1;padding:24px}.page{display:none}.page.act{display:block}
 .card{background:var(--w);border:1px solid var(--bo);border-radius:var(--r);overflow:hidden}
-.card-hd{display:flex;align-items:center;padding:14px 18px;gap:10px;border-bottom:1px solid var(--bo)}
-.card-hd h3{font-size:14px;font-weight:700;flex:1}
-.search-w{position:relative;width:220px}
-.search-w .material-icons-outlined{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--mu)}
-.search-w input{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:7px 10px 7px 32px;font-family:var(--f);font-size:12px;outline:none;background:var(--bg)}.search-w input:focus{border-color:var(--p);background:var(--w)}
+.card-hd{display:flex;align-items:center;padding:14px 18px;gap:10px;border-bottom:1px solid var(--bo)}.card-hd h3{font-size:14px;font-weight:700;flex:1}
+.tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);border-bottom:1px solid var(--bo);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--bo);transition:background .1s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#f8faff}
+tbody tr{border-bottom:1px solid var(--bo);transition:background .1s}tbody tr:last-child{border-bottom:none}tbody tr:hover{background:#f8faff}
 tbody td{padding:10px 14px;font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
-.c-ok{background:var(--okl);color:var(--ok)}
-.c-wa{background:var(--wal);color:var(--wa)}
-.c-da{background:var(--dal);color:var(--da)}
-.c-bl{background:var(--pl);color:var(--p)}
-.empty{text-align:center;padding:48px 20px;color:var(--mu)}
-.empty .material-icons-outlined{font-size:40px;display:block;margin-bottom:8px;color:var(--bo)}
+.c-ok{background:var(--okl);color:var(--ok)}.c-wa{background:var(--wal);color:var(--wa)}.c-da{background:var(--dal);color:var(--da)}.c-bl{background:var(--pl);color:var(--p)}
+.empty{text-align:center;padding:48px 20px;color:var(--mu)}.empty .material-icons-outlined{font-size:40px;display:block;margin-bottom:8px;color:var(--bo)}
 .ab{display:flex;gap:4px}
-.ib{width:28px;height:28px;border:1.5px solid var(--bo);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);transition:all .1s;background:var(--w)}.ib:hover{border-color:var(--p);color:var(--p)}.ib .material-icons-outlined{font-size:15px}
-.ib.del:hover{border-color:var(--da);color:var(--da)}
-
-/* ── STATS */
+.ib{width:28px;height:28px;border:1.5px solid var(--bo);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);transition:all .1s;background:var(--w)}.ib:hover{border-color:var(--p);color:var(--p)}.ib .material-icons-outlined{font-size:15px}.ib.del:hover{border-color:var(--da);color:var(--da)}
 .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
 .st{background:var(--w);border:1px solid var(--bo);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:12px}
-.st-ic{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.st-ic .material-icons-outlined{font-size:20px}
-.st-n{font-size:1.5rem;font-weight:800;line-height:1}
-.st-l{font-size:11px;color:var(--mu)}
-
-/* ── MODAL */
-.ov{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
-.ov.on{display:flex}
+.st-ic{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center}.st-ic .material-icons-outlined{font-size:20px}
+.st-n{font-size:1.5rem;font-weight:800;line-height:1}.st-l{font-size:11px;color:var(--mu)}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}.ov.on{display:flex}
 .mdl{background:var(--w);border-radius:12px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:mIn .15s ease}
 @keyframes mIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
-.mdl-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bo)}
-.mdl-hd h3{font-size:15px;font-weight:700}
+.mdl-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bo)}.mdl-hd h3{font-size:15px;font-weight:700}
 .mdl-cl{background:none;border:none;cursor:pointer;color:var(--mu);display:flex;padding:4px;border-radius:6px}.mdl-cl:hover{background:var(--bg)}
-.mdl-body{padding:20px}
-.mdl-ft{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--bo)}
+.mdl-body{padding:20px}.mdl-ft{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--bo)}
 .opts-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.opt-row{display:flex;align-items:center;gap:8px}
-.opt-row input{flex:1}
-.opt-row .ib{flex-shrink:0}
+.opt-row{display:flex;align-items:center;gap:8px}.opt-row input{flex:1}
 .opt-correct{width:22px;height:22px;border-radius:50%;border:2px solid var(--bo);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .opt-correct.sel{background:var(--ok);border-color:var(--ok);color:#fff}
-.opt-correct .material-icons-outlined{font-size:14px;display:none}
-.opt-correct.sel .material-icons-outlined{display:block}
-
-/* ── TOAST */
+.opt-correct .material-icons-outlined{font-size:14px;display:none}.opt-correct.sel .material-icons-outlined{display:block}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.toast.on{transform:translateY(0);opacity:1}
-.toast .material-icons-outlined{font-size:16px}
-
-.tw{overflow-x:auto}
+.toast.on{transform:translateY(0);opacity:1}.toast .material-icons-outlined{font-size:16px}
+.phd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.phd h2{font-size:18px;font-weight:700}
 @media(max-width:700px){.sb{display:none}.mw{margin-left:0}}
 </style>
 </head>
@@ -130,9 +88,8 @@ tbody td{padding:10px 14px;font-size:13px}
     <p style="font-size:11px;color:var(--mu);text-align:center;margin-top:16px">Same credentials as the Mentor Back Office</p>
   </div>
 </div>
-
 <div id="app">
-  <aside class="sb" id="sb">
+  <aside class="sb">
     <div class="sb-hd"><span class="material-icons-outlined">quiz</span><div><strong>Exam Portal</strong><span>Teacher Panel</span></div></div>
     <div class="sb-nav">
       <div class="sb-lbl">Overview</div>
@@ -153,24 +110,18 @@ tbody td{padding:10px 14px;font-size:13px}
   <div class="mw">
     <div class="tb"><span class="tb-t" id="tb-t">Dashboard</span><span class="tb-badge" id="tb-badge"></span></div>
     <div class="pc">
-
       <div class="page act" id="p-dash"><div class="stats" id="dash-stats"></div><div class="card"><div class="card-hd"><h3>Recent Activity</h3></div><div class="tw" id="dash-recent"></div></div></div>
-      <div class="page" id="p-classes"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Classes</h2><button class="btn btn-sm" onclick="openModal('class')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Class</button></div><div class="card"><div class="tw" id="t-classes"></div></div></div>
-      <div class="page" id="p-subjects"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Subjects</h2><button class="btn btn-sm" onclick="openModal('subject')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Subject</button></div><div class="card"><div class="tw" id="t-subjects"></div></div></div>
-      <div class="page" id="p-lessons"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Lessons & Stories</h2><button class="btn btn-sm" onclick="openModal('lesson')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Lesson</button></div><div class="card"><div class="tw" id="t-lessons"></div></div></div>
-      <div class="page" id="p-exams"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Exams</h2><button class="btn btn-sm" onclick="openModal('exam')"><span class="material-icons-outlined" style="font-size:16px">add</span>Create Exam</button></div><div class="card"><div class="tw" id="t-exams"></div></div></div>
-      <div class="page" id="p-questions"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Questions</h2><button class="btn btn-sm" onclick="openModal('question')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Question</button></div><div class="card"><div class="tw" id="t-questions"></div></div></div>
-      <div class="page" id="p-students"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Students</h2><button class="btn btn-sm" onclick="openModal('student')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Student</button></div><div class="card"><div class="tw" id="t-students"></div></div></div>
-      <div class="page" id="p-submissions"><div style="margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Submissions & Grades</h2></div><div class="card"><div class="tw" id="t-subs"></div></div></div>
-
+      <div class="page" id="p-classes"><div class="phd"><h2>Classes</h2><button class="btn btn-sm" onclick="openModal('class')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Class</button></div><div class="card"><div class="tw" id="t-classes"></div></div></div>
+      <div class="page" id="p-subjects"><div class="phd"><h2>Subjects</h2><button class="btn btn-sm" onclick="openModal('subject')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Subject</button></div><div class="card"><div class="tw" id="t-subjects"></div></div></div>
+      <div class="page" id="p-lessons"><div class="phd"><h2>Lessons & Stories</h2><button class="btn btn-sm" onclick="openModal('lesson')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Lesson</button></div><div class="card"><div class="tw" id="t-lessons"></div></div></div>
+      <div class="page" id="p-exams"><div class="phd"><h2>Exams</h2><button class="btn btn-sm" onclick="openModal('exam')"><span class="material-icons-outlined" style="font-size:16px">add</span>Create Exam</button></div><div class="card"><div class="tw" id="t-exams"></div></div></div>
+      <div class="page" id="p-questions"><div class="phd"><h2>Questions</h2><button class="btn btn-sm" onclick="openModal('question')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Question</button></div><div class="card"><div class="tw" id="t-questions"></div></div></div>
+      <div class="page" id="p-students"><div class="phd"><h2>Students</h2><button class="btn btn-sm" onclick="openModal('student')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Student</button></div><div class="card"><div class="tw" id="t-students"></div></div></div>
+      <div class="page" id="p-submissions"><div class="phd"><h2>Submissions & Grades</h2></div><div class="card"><div class="tw" id="t-subs"></div></div></div>
     </div>
   </div>
 </div>
-
-<!-- MODAL -->
-<div class="ov" id="ov" onclick="if(event.target===this)closeModal()">
-  <div class="mdl"><div class="mdl-hd"><h3 id="mdl-title">Add</h3><button class="mdl-cl" onclick="closeModal()"><span class="material-icons-outlined">close</span></button></div><div class="mdl-body" id="mdl-body"></div><div class="mdl-ft" id="mdl-ft"></div></div>
-</div>
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()"><div class="mdl"><div class="mdl-hd"><h3 id="mdl-title">Add</h3><button class="mdl-cl" onclick="closeModal()"><span class="material-icons-outlined">close</span></button></div><div class="mdl-body" id="mdl-body"></div><div class="mdl-ft" id="mdl-ft"></div></div></div>
 <div class="toast" id="toast"><span class="material-icons-outlined">check_circle</span><span id="t-msg"></span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -183,28 +134,37 @@ const db=firebase.firestore(),auth=firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 function _c(o){if(o===undefined)return null;if(o===null||typeof o!=='object')return o;if(Array.isArray(o))return o.map(v=>v===undefined?null:_c(v));const r={};for(const[k,v]of Object.entries(o))if(v!==undefined)r[k]=_c(v);return r;}
-const uid=()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+const genId=()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
 
-// ── COLLECTIONS (all prefixed with exam_ to stay separate from LMS)
-const C={
-  classes:'exam_classes',subjects:'exam_subjects',lessons:'exam_lessons',
-  exams:'exam_assessments',questions:'exam_questions',students:'exam_students',
-  subs:'exam_submissions',grades:'exam_grades',teachers:'teachers' // shared teachers collection for auth
-};
-let D={};// cached data
-async function load(k,force){if(!force&&D[k])return D[k];try{const s=await db.collection(k).get();D[k]=s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){D[k]=[];}return D[k];}
-async function save(col,item){await db.collection(col).doc(item.id).set(_c(item));D[col]=null;}// invalidate cache
-async function del(col,id){await db.collection(col).doc(id).delete();D[col]=null;}
-function clearD(){D={};}
+const COL={classes:'exam_classes',subjects:'exam_subjects',lessons:'exam_lessons',exams:'exam_assessments',questions:'exam_questions',students:'exam_students',subs:'exam_submissions',grades:'exam_grades',teachers:'teachers'};
 
-let ME=null,curPage='dash',editId=null,editType=null;
+// ── CACHE: force=true always re-fetches from Firestore
+let CACHE={};
+async function load(col,force){
+  if(!force && CACHE[col]) return CACHE[col];
+  try{ const s=await db.collection(col).get(); CACHE[col]=s.docs.map(d=>({id:d.id,...d.data()})); }
+  catch(e){ CACHE[col]=[]; console.error('load',col,e); }
+  return CACHE[col];
+}
+async function save(col,item){ await db.collection(col).doc(item.id).set(_c(item)); delete CACHE[col]; }
+async function remove(col,id){ await db.collection(col).doc(id).delete(); delete CACHE[col]; }
+
+let ME=null, curPage='dash', editId=null, editType=null;
+
+// ── SCOPING: admin sees all, teacher sees own classIds + anything they created
+function scope(arr, idField='classId'){
+  if(!ME || ME.isAdmin) return arr;
+  const ids = ME.classIds || [];
+  return arr.filter(r => ids.includes(r[idField]) || r.createdByEmail===ME.email);
+}
 
 // ── AUTH
 async function doLogin(){
-  const u=document.getElementById('l-u').value.trim(),p=document.getElementById('l-p').value.trim();
+  const u=document.getElementById('l-u').value.trim(), p=document.getElementById('l-p').value.trim();
   if(!u||!p){showErr('Enter email and password');return;}
   const btn=document.getElementById('l-btn');btn.disabled=true;btn.textContent='Signing in...';hideErr();
-  try{await auth.signInWithEmailAndPassword(u,p);}catch(e){showErr(e.code==='auth/invalid-credential'?'Invalid email or password':e.message);btn.disabled=false;btn.innerHTML='<span class="material-icons-outlined" style="font-size:18px">login</span>Sign In';}
+  try{await auth.signInWithEmailAndPassword(u,p);}
+  catch(e){showErr(e.code==='auth/invalid-credential'?'Invalid email or password':e.message);btn.disabled=false;btn.innerHTML='<span class="material-icons-outlined" style="font-size:18px">login</span>Sign In';}
 }
 function showErr(m){const e=document.getElementById('lerr');e.textContent='❌ '+m;e.style.display='block';}
 function hideErr(){document.getElementById('lerr').style.display='none';}
@@ -214,39 +174,36 @@ auth.onAuthStateChanged(async user=>{
   const ldg=document.getElementById('ldg');
   if(user){
     ldg.querySelector('p').textContent='Loading data...';
-    const teachers=await load(C.teachers);
-    const rec=teachers.find(t=>t.email&&t.email.toLowerCase()===user.email.toLowerCase());
-    ME={email:user.email,name:rec?rec.name:(user.displayName||user.email.split('@')[0]),isAdmin:!rec,classIds:rec?(rec.classIds||[]):null};
+    const teachers=await load(COL.teachers,true);
+    const rec=teachers.find(t=>t.email && t.email.toLowerCase()===user.email.toLowerCase());
+    ME={email:user.email, name:rec?rec.name:(user.displayName||user.email.split('@')[0]), isAdmin:!rec, classIds:rec?(rec.classIds||[]):null};
     ldg.style.display='none';document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';
     document.getElementById('sb-av').textContent=(ME.name||'?')[0].toUpperCase();
     document.getElementById('sb-name').textContent=ME.name;
     document.getElementById('tb-badge').textContent=ME.isAdmin?'Admin':'Teacher';
-    await renderCurrent();
-  }else{ME=null;ldg.style.display='none';document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';}
+    await render();
+  }else{
+    ME=null;ldg.style.display='none';document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';
+  }
 });
 
 // ── NAV
-function go(p,el){curPage=p;document.querySelectorAll('.page').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.si').forEach(x=>x.classList.remove('act'));document.getElementById('p-'+p).classList.add('act');if(el)el.classList.add('act');
-  const titles={dash:'Dashboard',classes:'Classes',subjects:'Subjects',lessons:'Lessons & Stories',exams:'Exams',questions:'Questions',students:'Students',submissions:'Submissions'};
-  document.getElementById('tb-t').textContent=titles[p]||p;renderCurrent();}
-
-async function renderCurrent(){
-  if(curPage==='dash')await renderDash();
-  else if(curPage==='classes')await renderClasses();
-  else if(curPage==='subjects')await renderSubjects();
-  else if(curPage==='lessons')await renderLessons();
-  else if(curPage==='exams')await renderExams();
-  else if(curPage==='questions')await renderQuestions();
-  else if(curPage==='students')await renderStudents();
-  else if(curPage==='submissions')await renderSubs();
+const TITLES={dash:'Dashboard',classes:'Classes',subjects:'Subjects',lessons:'Lessons & Stories',exams:'Exams',questions:'Questions',students:'Students',submissions:'Submissions'};
+function go(p,el){curPage=p;document.querySelectorAll('.page').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.si').forEach(x=>x.classList.remove('act'));document.getElementById('p-'+p).classList.add('act');if(el)el.classList.add('act');document.getElementById('tb-t').textContent=TITLES[p]||p;render();}
+async function render(){
+  if(curPage==='dash') await renderDash();
+  else if(curPage==='classes') await renderClasses();
+  else if(curPage==='subjects') await renderSubjects();
+  else if(curPage==='lessons') await renderLessons();
+  else if(curPage==='exams') await renderExams();
+  else if(curPage==='questions') await renderQuestions();
+  else if(curPage==='students') await renderStudents();
+  else if(curPage==='submissions') await renderSubs();
 }
-
-// Scope data to teacher's classes (admin sees all)
-function scope(arr,field='classId'){if(!ME||ME.isAdmin)return arr;const ids=ME.classIds||[];return arr.filter(r=>ids.includes(r[field])||r.createdByEmail===ME.email);}
 
 // ── DASHBOARD
 async function renderDash(){
-  const cls=scope(await load(C.classes),'id'),sub=scope(await load(C.subjects)),ex=scope(await load(C.exams)),qs=scope(await load(C.questions)),stu=scope(await load(C.students)),subs=scope(await load(C.subs));
+  const cls=scope(await load(COL.classes,true),'id'), ex=scope(await load(COL.exams,true)), qs=scope(await load(COL.questions,true)), stu=scope(await load(COL.students,true)), subs=scope(await load(COL.subs,true));
   const pending=subs.filter(s=>s.status==='pending').length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">school</span></div><div><div class="st-n">${cls.length}</div><div class="st-l">Classes</div></div></div>
@@ -258,148 +215,127 @@ async function renderDash(){
   document.getElementById('dash-recent').innerHTML=recent.length?`<table><thead><tr><th>Student</th><th>Exam</th><th>Status</th><th>Date</th></tr></thead><tbody>${recent.map(s=>`<tr><td>${s.studentName||'—'}</td><td>${s.assessmentName||'—'}</td><td><span class="chip ${s.status==='graded'?'c-ok':'c-wa'}">${s.status}</span></td><td style="color:var(--mu);font-size:12px">${new Date(s.submittedAt).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">inbox</span><p>No submissions yet</p></div>`;
 }
 
-// ── CLASSES
+// ── RENDER TABLES
 async function renderClasses(){
-  const cls=scope(await load(C.classes,true),'id');
-  document.getElementById('t-classes').innerHTML=cls.length?`<table><thead><tr><th>#</th><th>Name</th><th>Created</th><th></th></tr></thead><tbody>${cls.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.name}</strong></td><td style="color:var(--mu);font-size:12px">${c.createdAt||'—'}</td><td><div class="ab"><div class="ib" onclick="openEdit('class','${c.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.classes}','${c.id}','${esc(c.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">school</span><p>No classes yet</p></div>`;
+  const d=scope(await load(COL.classes,true),'id');
+  document.getElementById('t-classes').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Name</th><th>Created</th><th></th></tr></thead><tbody>${d.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.name}</strong></td><td style="color:var(--mu);font-size:12px">${c.createdAt||'—'}</td><td><div class="ab"><div class="ib" onclick="openEdit('class','${c.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.classes}','${c.id}','${esc(c.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">school</span><p>No classes yet</p></div>`;
 }
-
-// ── SUBJECTS
 async function renderSubjects(){
-  const data=scope(await load(C.subjects,true)),cls=await load(C.classes);
-  document.getElementById('t-subjects').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th></th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td>${s.className||'—'}</td><td><strong>${s.name}</strong></td><td><div class="ab"><div class="ib" onclick="openEdit('subject','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.subjects}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">category</span><p>No subjects yet</p></div>`;
+  const d=scope(await load(COL.subjects,true));
+  document.getElementById('t-subjects').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th></th></tr></thead><tbody>${d.map((s,i)=>`<tr><td>${i+1}</td><td>${s.className||'—'}</td><td><strong>${s.name}</strong></td><td><div class="ab"><div class="ib" onclick="openEdit('subject','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.subjects}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">category</span><p>No subjects yet</p></div>`;
 }
-
-// ── LESSONS
 async function renderLessons(){
-  const data=scope(await load(C.lessons,true));
-  document.getElementById('t-lessons').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Story</th><th></th></tr></thead><tbody>${data.map((l,i)=>`<tr><td>${i+1}</td><td>${l.className||'—'}</td><td>${l.subjectName||'—'}</td><td><strong>${l.name}</strong></td><td>${l.story?'<span class="chip c-ok">✓ Has story</span>':'<span style="color:var(--mu)">—</span>'}</td><td><div class="ab"><div class="ib" onclick="openEdit('lesson','${l.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.lessons}','${l.id}','${esc(l.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">auto_stories</span><p>No lessons yet</p></div>`;
+  const d=scope(await load(COL.lessons,true));
+  document.getElementById('t-lessons').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Story</th><th></th></tr></thead><tbody>${d.map((l,i)=>`<tr><td>${i+1}</td><td>${l.className||'—'}</td><td>${l.subjectName||'—'}</td><td><strong>${l.name}</strong></td><td>${l.story?'<span class="chip c-ok">✓</span>':'—'}</td><td><div class="ab"><div class="ib" onclick="openEdit('lesson','${l.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.lessons}','${l.id}','${esc(l.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">auto_stories</span><p>No lessons yet</p></div>`;
 }
-
-// ── EXAMS
 async function renderExams(){
-  const data=scope(await load(C.exams,true)),qs=await load(C.questions);
-  document.getElementById('t-exams').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Exam</th><th>Type</th><th>Qs</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>${data.map((e,i)=>{const qc=qs.filter(q=>q.assessmentId===e.id).length;return`<tr><td>${i+1}</td><td>${e.className||'—'}</td><td>${e.subjectName||'—'}</td><td>${e.lessonName||'—'}</td><td><strong>${e.name}</strong></td><td><span class="chip c-bl">${e.config||'Mixed'}</span></td><td>${qc}</td><td>${e.maxScore||0}</td><td><span class="chip ${e.validState==='Valid'?'c-ok':'c-wa'}">${e.validState||'Pending'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('exam','${e.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.exams}','${e.id}','${esc(e.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`}).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">assignment</span><p>No exams yet</p></div>`;
+  const d=scope(await load(COL.exams,true)),qs=await load(COL.questions,true);
+  document.getElementById('t-exams').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Exam</th><th>Type</th><th>Qs</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>${d.map((e,i)=>{const qc=qs.filter(q=>q.assessmentId===e.id).length;return`<tr><td>${i+1}</td><td>${e.className||'—'}</td><td>${e.subjectName||'—'}</td><td>${e.lessonName||'—'}</td><td><strong>${e.name}</strong></td><td><span class="chip c-bl">${e.config||'Mixed'}</span></td><td>${qc}</td><td>${e.maxScore||0}</td><td><span class="chip ${e.validState==='Valid'?'c-ok':'c-wa'}">${e.validState||'Pending'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('exam','${e.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.exams}','${e.id}','${esc(e.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`}).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">assignment</span><p>No exams yet</p></div>`;
 }
-
-// ── QUESTIONS
 async function renderQuestions(){
-  const data=scope(await load(C.questions,true));
-  document.getElementById('t-questions').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Exam</th><th>Question</th><th>Type</th><th>Pts</th><th></th></tr></thead><tbody>${data.map((q,i)=>`<tr><td>${i+1}</td><td>${q.assessmentName||'—'}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${q.title}</strong></td><td><span class="chip c-bl">${q.type}</span></td><td>${q.points}</td><td><div class="ab"><div class="ib" onclick="openEdit('question','${q.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.questions}','${q.id}','Q${i+1}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">help_outline</span><p>No questions yet</p></div>`;
+  const d=scope(await load(COL.questions,true));
+  document.getElementById('t-questions').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Exam</th><th>Question</th><th>Type</th><th>Pts</th><th></th></tr></thead><tbody>${d.map((q,i)=>`<tr><td>${i+1}</td><td>${q.assessmentName||'—'}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${q.title}</strong></td><td><span class="chip c-bl">${q.type}</span></td><td>${q.points}</td><td><div class="ab"><div class="ib" onclick="openEdit('question','${q.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.questions}','${q.id}','Q${i+1}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">help_outline</span><p>No questions yet</p></div>`;
 }
-
-// ── STUDENTS
 async function renderStudents(){
-  const data=scope(await load(C.students,true));
-  document.getElementById('t-students').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Class</th><th>Status</th><th></th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.name}</strong></td><td style="color:var(--mu)">${s.username||'—'}</td><td>${s.className||'—'}</td><td><span class="chip ${s.status==='Suspended'?'c-da':'c-ok'}">${s.status||'Active'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('student','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.students}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">people</span><p>No students yet</p></div>`;
+  const d=scope(await load(COL.students,true));
+  document.getElementById('t-students').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Class</th><th>Status</th><th></th></tr></thead><tbody>${d.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.name}</strong></td><td style="color:var(--mu)">${s.username||'—'}</td><td>${s.className||'—'}</td><td><span class="chip ${s.status==='Suspended'?'c-da':'c-ok'}">${s.status||'Active'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('student','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${COL.students}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">people</span><p>No students yet</p></div>`;
 }
-
-// ── SUBMISSIONS
 async function renderSubs(){
-  const data=scope(await load(C.subs,true)).sort((a,b)=>a.status==='pending'?-1:1);
-  document.getElementById('t-subs').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Student</th><th>Exam</th><th>Submitted</th><th>Status</th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.studentName||'—'}</strong></td><td>${s.assessmentName||'—'}</td><td style="color:var(--mu);font-size:12px">${new Date(s.submittedAt).toLocaleString()}</td><td><span class="chip ${s.status==='graded'?'c-ok':'c-wa'}">${s.status}</span></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">pending_actions</span><p>No submissions yet</p></div>`;
+  const d=scope(await load(COL.subs,true)).sort((a,b)=>a.status==='pending'?-1:1);
+  document.getElementById('t-subs').innerHTML=d.length?`<table><thead><tr><th>#</th><th>Student</th><th>Exam</th><th>Submitted</th><th>Status</th></tr></thead><tbody>${d.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.studentName||'—'}</strong></td><td>${s.assessmentName||'—'}</td><td style="color:var(--mu);font-size:12px">${new Date(s.submittedAt).toLocaleString()}</td><td><span class="chip ${s.status==='graded'?'c-ok':'c-wa'}">${s.status}</span></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">pending_actions</span><p>No submissions yet</p></div>`;
 }
 
 // ══════════════════════════════════
-//  MODAL — Create / Edit forms
+//  MODAL
 // ══════════════════════════════════
 function openModal(type){editId=null;editType=type;buildForm(type,null);}
 async function openEdit(type,id){
   editType=type;editId=id;
-  const col={class:C.classes,subject:C.subjects,lesson:C.lessons,exam:C.exams,question:C.questions,student:C.students}[type];
-  const data=await load(col);const rec=data.find(r=>r.id===id);
-  buildForm(type,rec);
+  const col={class:COL.classes,subject:COL.subjects,lesson:COL.lessons,exam:COL.exams,question:COL.questions,student:COL.students}[type];
+  const data=await load(col,true);
+  buildForm(type,data.find(r=>r.id===id));
 }
 
 async function buildForm(type,rec){
-  const isEdit=!!rec;const title=isEdit?'Edit':'Add';
-  document.getElementById('mdl-title').textContent=`${title} ${type.charAt(0).toUpperCase()+type.slice(1)}`;
+  document.getElementById('mdl-title').textContent=(rec?'Edit':'Add')+' '+type.charAt(0).toUpperCase()+type.slice(1);
   const body=document.getElementById('mdl-body'),ft=document.getElementById('mdl-ft');
-  const cls=await load(C.classes),subs=await load(C.subjects),les=await load(C.lessons),exams=await load(C.exams);
-  const myCls=scope(cls);
+  const cls=scope(await load(COL.classes,true),'id'), subs=await load(COL.subjects,true), les=await load(COL.lessons,true), exams=await load(COL.exams,true);
 
   if(type==='class'){
     body.innerHTML=`<div class="fg"><label>Class Name</label><input id="f-name" value="${rec?.name||''}"/></div>`;
   }else if(type==='subject'){
-    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject Name</label><input id="f-name" value="${rec?.name||''}"/></div>`;
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class">${cls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject Name</label><input id="f-name" value="${rec?.name||''}"/></div>`;
   }else if(type==='lesson'){
-    const filtSubs=rec?subs:subs.filter(s=>myCls.some(c=>c.id===s.classId));
-    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class" onchange="updateLessonSubs()">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject">${filtSubs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="fg"><label>Lesson Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Reading Passage / Story (optional)</label><textarea id="f-story" rows="6">${rec?.story||''}</textarea></div>`;
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class">${cls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject">${subs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name} (${s.className||''})</option>`).join('')}</select></div><div class="fg"><label>Lesson Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Reading Passage / Story (optional)</label><textarea id="f-story" rows="6">${rec?.story||''}</textarea></div>`;
   }else if(type==='exam'){
-    const filtLes=les.filter(l=>myCls.some(c=>c.id===l.classId));
-    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class" onchange="updateExamLessons()">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject" onchange="updateExamLessons()">${subs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="fg"><label>Lesson</label><select id="f-lesson">${filtLes.map(l=>`<option value="${l.id}" ${rec?.lessonId===l.id?'selected':''}>${l.name}</option>`).join('')}</select></div><div class="fg"><label>Exam Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Max Score</label><input type="number" id="f-score" value="${rec?.maxScore||0}"/></div><div class="fg"><label>Type</label><select id="f-config"><option ${rec?.config==='MCQ'?'selected':''}>MCQ</option><option ${rec?.config==='Essay'?'selected':''}>Essay</option><option ${rec?.config==='Mixed'?'selected':''}>Mixed</option><option ${rec?.config==='True/False'?'selected':''}>True/False</option></select></div><div class="fg"><label>Status</label><select id="f-status"><option value="Valid" ${rec?.validState==='Valid'?'selected':''}>Valid</option><option value="Pending" ${rec?.validState==='Pending'||!rec?'selected':''}>Pending</option></select></div>`;
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class">${cls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject">${subs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="fg"><label>Lesson</label><select id="f-lesson"><option value="">— None —</option>${les.map(l=>`<option value="${l.id}" ${rec?.lessonId===l.id?'selected':''}>${l.name}</option>`).join('')}</select></div><div class="fg"><label>Exam Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Max Score</label><input type="number" id="f-score" value="${rec?.maxScore||0}"/></div><div class="fg"><label>Type</label><select id="f-config"><option ${rec?.config==='MCQ'?'selected':''}>MCQ</option><option ${rec?.config==='Essay'?'selected':''}>Essay</option><option ${rec?.config==='Mixed'?'selected':''}>Mixed</option><option ${rec?.config==='True/False'?'selected':''}>True/False</option></select></div><div class="fg"><label>Status</label><select id="f-status"><option value="Valid" ${rec?.validState==='Valid'?'selected':''}>Valid</option><option value="Pending" ${!rec||rec?.validState==='Pending'?'selected':''}>Pending</option></select></div>`;
   }else if(type==='question'){
-    const qType=rec?.type||'MCQ';
-    const opts=rec?.options||['','','',''];
-    const ans=rec?.answer??0;
-    body.innerHTML=`<div class="fg"><label>Exam</label><select id="f-exam">${exams.map(e=>`<option value="${e.id}" ${rec?.assessmentId===e.id?'selected':''}>${e.name} (${e.className||''})</option>`).join('')}</select></div><div class="fg"><label>Type</label><select id="f-qtype" onchange="toggleQType()"><option ${qType==='MCQ'?'selected':''}>MCQ</option><option ${qType==='True/False'?'selected':''}>True/False</option><option ${qType==='Essay'?'selected':''}>Essay</option></select></div><div class="fg"><label>Question</label><textarea id="f-title" rows="3">${rec?.title||''}</textarea></div><div class="fg"><label>Points</label><input type="number" id="f-pts" value="${rec?.points||1}"/></div><div id="opts-area"><label style="font-size:12px;font-weight:600;color:var(--mu);margin-bottom:6px;display:block">Options (click circle to mark correct)</label><div class="opts-grid" id="opts-grid">${opts.map((o,i)=>`<div class="opt-row"><div class="opt-correct${i===ans?' sel':''}" onclick="pickAns(${i})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="${o}" placeholder="Option ${i+1}"/><div class="ib del" onclick="removeOpt(this)"><span class="material-icons-outlined">close</span></div></div>`).join('')}</div><button class="btn btn-o btn-sm" style="margin-top:8px" onclick="addOpt()"><span class="material-icons-outlined" style="font-size:14px">add</span>Add Option</button></div>`;
+    const qType=rec?.type||'MCQ', opts=rec?.options||['','','',''], ans=rec?.answer??0;
+    body.innerHTML=`<div class="fg"><label>Exam</label><select id="f-exam">${exams.map(e=>`<option value="${e.id}" ${rec?.assessmentId===e.id?'selected':''}>${e.name} (${e.className||''})</option>`).join('')}</select></div><div class="fg"><label>Type</label><select id="f-qtype" onchange="toggleQType()"><option ${qType==='MCQ'?'selected':''}>MCQ</option><option ${qType==='True/False'?'selected':''}>True/False</option><option ${qType==='Essay'?'selected':''}>Essay</option></select></div><div class="fg"><label>Question</label><textarea id="f-title" rows="3">${rec?.title||''}</textarea></div><div class="fg"><label>Points</label><input type="number" id="f-pts" value="${rec?.points||1}"/></div><div id="opts-area"><label style="font-size:12px;font-weight:600;color:var(--mu);margin-bottom:6px;display:block">Options (click circle = correct answer)</label><div class="opts-grid" id="opts-grid">${opts.map((o,i)=>`<div class="opt-row"><div class="opt-correct${i===ans?' sel':''}" onclick="pickAns(${i})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="${o}" placeholder="Option ${i+1}"/><div class="ib del" onclick="this.closest('.opt-row').remove()"><span class="material-icons-outlined">close</span></div></div>`).join('')}</div><button class="btn btn-o btn-sm" style="margin-top:8px" onclick="addOpt()"><span class="material-icons-outlined" style="font-size:14px">add</span>Add Option</button></div>`;
     if(qType==='Essay')document.getElementById('opts-area').style.display='none';
   }else if(type==='student'){
-    body.innerHTML=`<div class="fg"><label>Full Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Username</label><input id="f-user" value="${rec?.username||''}"/></div><div class="fg"><label>Password</label><input id="f-pass" value="${rec?.password||''}"/></div><div class="fg"><label>Class</label><select id="f-class">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="f-sstatus"><option value="Active" ${rec?.status==='Active'||!rec?'selected':''}>Active</option><option value="Suspended" ${rec?.status==='Suspended'?'selected':''}>Suspended</option></select></div>`;
+    body.innerHTML=`<div class="fg"><label>Full Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Username</label><input id="f-user" value="${rec?.username||''}"/></div><div class="fg"><label>Password</label><input id="f-pass" value="${rec?.password||''}"/></div><div class="fg"><label>Class</label><select id="f-class">${cls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="f-sstatus"><option value="Active" ${!rec||rec?.status==='Active'?'selected':''}>Active</option><option value="Suspended" ${rec?.status==='Suspended'?'selected':''}>Suspended</option></select></div>`;
   }
   ft.innerHTML=`<button class="btn btn-o" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveForm()"><span class="material-icons-outlined" style="font-size:16px">save</span>Save</button>`;
   document.getElementById('ov').classList.add('on');
 }
 
-// Question helpers
 function toggleQType(){const t=document.getElementById('f-qtype').value;document.getElementById('opts-area').style.display=t==='Essay'?'none':'block';if(t==='True/False'){document.getElementById('opts-grid').innerHTML=`<div class="opt-row"><div class="opt-correct sel" onclick="pickAns(0)"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="True" readonly/></div><div class="opt-row"><div class="opt-correct" onclick="pickAns(1)"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="False" readonly/></div>`;}}
-function addOpt(){const g=document.getElementById('opts-grid');const n=g.children.length;g.insertAdjacentHTML('beforeend',`<div class="opt-row"><div class="opt-correct" onclick="pickAns(${n})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="" placeholder="Option ${n+1}"/><div class="ib del" onclick="removeOpt(this)"><span class="material-icons-outlined">close</span></div></div>`);}
-function removeOpt(btn){btn.closest('.opt-row').remove();}
-function pickAns(idx){document.querySelectorAll('#opts-grid .opt-correct').forEach((el,i)=>{el.classList.toggle('sel',i===idx);});}
-function updateLessonSubs(){/* could filter subjects by class */}
-function updateExamLessons(){/* could filter lessons by class */}
+function addOpt(){const g=document.getElementById('opts-grid'),n=g.children.length;g.insertAdjacentHTML('beforeend',`<div class="opt-row"><div class="opt-correct" onclick="pickAns(${n})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="" placeholder="Option ${n+1}"/><div class="ib del" onclick="this.closest('.opt-row').remove()"><span class="material-icons-outlined">close</span></div></div>`);}
+function pickAns(idx){document.querySelectorAll('#opts-grid .opt-correct').forEach((el,i)=>el.classList.toggle('sel',i===idx));}
 
-// ── SAVE
+// ── SAVE (ALL records get createdByEmail so scope() works)
 async function saveForm(){
-  const t=editType,cls=await load(C.classes),subs=await load(C.subjects),les=await load(C.lessons),exams=await load(C.exams);
+  const t=editType;
+  const cls=await load(COL.classes), subs=await load(COL.subjects), les=await load(COL.lessons), exams=await load(COL.exams);
   const now=new Date().toISOString().slice(0,10);
+  const base={createdBy:ME.name, createdByEmail:ME.email}; // ← EVERY record gets this
+
   try{
     if(t==='class'){
       const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name','wa');return;}
-      const id=editId||uid();
-      await save(C.classes,{id,name,createdAt:editId?(await load(C.classes)).find(c=>c.id===editId)?.createdAt||now:now,createdBy:ME.name,createdByEmail:ME.email});
+      await save(COL.classes,{...base, id:editId||genId(), name, createdAt:editId?((await load(COL.classes)).find(c=>c.id===editId)?.createdAt||now):now});
     }else if(t==='subject'){
-      const classId=document.getElementById('f-class').value,name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name','wa');return;}
+      const classId=document.getElementById('f-class').value, name=document.getElementById('f-name').value.trim();
+      if(!name){toast('Enter a name','wa');return;}
       const cl=cls.find(c=>c.id===classId)||{};
-      await save(C.subjects,{id:editId||uid(),name,classId,className:cl.name||'',createdAt:now,createdBy:ME.name});
+      await save(COL.subjects,{...base, id:editId||genId(), name, classId, className:cl.name||'', createdAt:now});
     }else if(t==='lesson'){
-      const classId=document.getElementById('f-class').value,subjectId=document.getElementById('f-subject').value,name=document.getElementById('f-name').value.trim(),story=document.getElementById('f-story').value.trim();
+      const classId=document.getElementById('f-class').value, subjectId=document.getElementById('f-subject').value, name=document.getElementById('f-name').value.trim(), story=document.getElementById('f-story').value.trim();
       if(!name){toast('Enter a name','wa');return;}
-      const cl=cls.find(c=>c.id===classId)||{},su=subs.find(s=>s.id===subjectId)||{};
-      await save(C.lessons,{id:editId||uid(),name,classId,className:cl.name||'',subjectId,subjectName:su.name||'',story,createdAt:now,createdBy:ME.name});
+      const cl=cls.find(c=>c.id===classId)||{}, su=subs.find(s=>s.id===subjectId)||{};
+      await save(COL.lessons,{...base, id:editId||genId(), name, classId, className:cl.name||'', subjectId, subjectName:su.name||'', story, createdAt:now});
     }else if(t==='exam'){
-      const classId=document.getElementById('f-class').value,subjectId=document.getElementById('f-subject').value,lessonId=document.getElementById('f-lesson').value,name=document.getElementById('f-name').value.trim(),maxScore=parseInt(document.getElementById('f-score').value)||0,config=document.getElementById('f-config').value,validState=document.getElementById('f-status').value;
+      const classId=document.getElementById('f-class').value, subjectId=document.getElementById('f-subject').value, lessonId=document.getElementById('f-lesson').value, name=document.getElementById('f-name').value.trim(), maxScore=parseInt(document.getElementById('f-score').value)||0, config=document.getElementById('f-config').value, validState=document.getElementById('f-status').value;
       if(!name){toast('Enter a name','wa');return;}
-      const cl=cls.find(c=>c.id===classId)||{},su=subs.find(s=>s.id===subjectId)||{},le=les.find(l=>l.id===lessonId)||{};
-      await save(C.exams,{id:editId||uid(),name,classId,className:cl.name||'',subjectId,subjectName:su.name||'',lessonId,lessonName:le.name||'',maxScore,config,validState,createdAt:now,createdBy:ME.name});
+      const cl=cls.find(c=>c.id===classId)||{}, su=subs.find(s=>s.id===subjectId)||{}, le=les.find(l=>l.id===lessonId)||{};
+      await save(COL.exams,{...base, id:editId||genId(), name, classId, className:cl.name||'', subjectId, subjectName:su.name||'', lessonId, lessonName:le.name||'', maxScore, config, validState, createdAt:now});
     }else if(t==='question'){
-      const assessmentId=document.getElementById('f-exam').value,type=document.getElementById('f-qtype').value,title=document.getElementById('f-title').value.trim(),points=parseInt(document.getElementById('f-pts').value)||1;
+      const assessmentId=document.getElementById('f-exam').value, type=document.getElementById('f-qtype').value, title=document.getElementById('f-title').value.trim(), points=parseInt(document.getElementById('f-pts').value)||1;
       if(!title){toast('Enter a question','wa');return;}
       const ex=exams.find(e=>e.id===assessmentId)||{};
-      let options=null,answer=null;
+      let options=null, answer=null;
       if(type!=='Essay'){
         options=[...document.querySelectorAll('#opts-grid .opt-input')].map(i=>i.value.trim());
         answer=[...document.querySelectorAll('#opts-grid .opt-correct')].findIndex(el=>el.classList.contains('sel'));
         if(answer<0)answer=0;
       }
-      await save(C.questions,{id:editId||uid(),title,type,points,options,answer,assessmentId,assessmentName:ex.name||'',classId:ex.classId||'',className:ex.className||'',subjectName:ex.subjectName||'',lessonName:ex.lessonName||'',createdAt:now,createdBy:ME.name});
+      await save(COL.questions,{...base, id:editId||genId(), title, type, points, options, answer, assessmentId, assessmentName:ex.name||'', classId:ex.classId||'', className:ex.className||'', subjectName:ex.subjectName||'', lessonName:ex.lessonName||'', createdAt:now});
     }else if(t==='student'){
-      const name=document.getElementById('f-name').value.trim(),username=document.getElementById('f-user').value.trim(),password=document.getElementById('f-pass').value.trim(),classId=document.getElementById('f-class').value,status=document.getElementById('f-sstatus').value;
+      const name=document.getElementById('f-name').value.trim(), username=document.getElementById('f-user').value.trim(), password=document.getElementById('f-pass').value.trim(), classId=document.getElementById('f-class').value, status=document.getElementById('f-sstatus').value;
       if(!name||!username){toast('Enter name and username','wa');return;}
       const cl=cls.find(c=>c.id===classId)||{};
-      await save(C.students,{id:editId||uid(),name,username,password,classId,className:cl.name||'',status,createdAt:now,createdBy:ME.name});
+      await save(COL.students,{...base, id:editId||genId(), name, username, password, classId, className:cl.name||'', status, createdAt:now});
     }
-    clearD();closeModal();await renderCurrent();toast(editId?'Updated!':'Created!');
+    closeModal(); await render(); toast(editId?'Updated!':'Created!');
   }catch(e){toast('Error: '+e.message,'da');}
 }
 
-// ── DELETE
 async function confirmDel(col,id,name){
-  if(!confirm(`Delete "${name}"? This cannot be undone.`))return;
-  try{await del(col,id);clearD();await renderCurrent();toast('Deleted!');}catch(e){toast('Error: '+e.message,'da');}
+  if(!confirm('Delete "'+name+'"?'))return;
+  try{await remove(col,id);await render();toast('Deleted!');}catch(e){toast('Error: '+e.message,'da');}
 }
 
-// ── HELPERS
 function closeModal(){document.getElementById('ov').classList.remove('on');editId=null;editType=null;}
 function esc(s){return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
 function toast(msg,type){const t=document.getElementById('toast'),ic=t.querySelector('.material-icons-outlined');ic.textContent=type==='wa'?'warning':type==='da'?'error':'check_circle';ic.style.color=type==='wa'?'var(--wa)':type==='da'?'var(--da)':'var(--ok)';document.getElementById('t-msg').textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000);}
