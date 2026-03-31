@@ -432,7 +432,7 @@ async function doLogin() {
   const u = document.getElementById('l-user').value.trim().toLowerCase();
   const p = document.getElementById('l-pass').value.trim();
   const err = document.getElementById('l-err');
-  const students = await DB.get('students');
+  const students = await DB.get('exam_students');
   const st = students.find(s => s.username.toLowerCase() === u && s.password === p && s.status !== 'Suspended');
   if (st) {
     err.style.display = 'none'; ME = st;
@@ -459,13 +459,13 @@ async function loadDashboard() {
   document.getElementById('h-name').textContent = ME.name;
   document.getElementById('h-class').textContent = ME.className || '—';
 
-  const exams = (await DB.get('assessments')).filter(a => a.classId === ME.classId && a.validState === 'Valid');
+  const exams = (await DB.get('exam_assessments')).filter(a => a.classId === ME.classId && a.validState === 'Valid');
   const subs = await getMySubmissions();
   const subIds = new Set(subs.map(s => s.assessmentId));
   const grades = await getMyGrades();
   const gradedIds = new Set(grades.map(g => g.assessmentId));
-  const allQuestions = await DB.get('questions');
-  const allLessons = await DB.get('lessons');
+  const allQuestions = await DB.get('exam_questions');
+  const allLessons = await DB.get('exam_lessons');
 
   document.getElementById('st-total').textContent = exams.length;
   document.getElementById('st-done').textContent = subs.length;
@@ -525,11 +525,11 @@ async function getMyGrades() { return (await DB.get('exam_grades')).filter(g => 
 //  START MODAL
 // ═══════════════════════════════════
 async function openStartModal(examId) {
-  const exams = await DB.get('assessments');
+  const exams = await DB.get('exam_assessments');
   const ex = exams.find(a => a.id === examId);
   if (!ex) return;
-  const qs = (await DB.get('questions')).filter(q => q.assessmentId === examId);
-  const lessons = await DB.get('lessons');
+  const qs = (await DB.get('exam_questions')).filter(q => q.assessmentId === examId);
+  const lessons = await DB.get('exam_lessons');
   const lesson = lessons.find(l => l.id === ex.lessonId) || {};
   const hasStory = !!(lesson.story && lesson.story.trim());
   const mins = Math.ceil(qs.length * 1.5);
@@ -553,13 +553,13 @@ async function openStartModal(examId) {
 //  EXAM
 // ═══════════════════════════════════
 async function beginExam(examId) {
-  const exams = await DB.get('assessments');
+  const exams = await DB.get('exam_assessments');
   const ex = exams.find(a => a.id === examId);
-  const qs = (await DB.get('questions')).filter(q => q.assessmentId === examId);
+  const qs = (await DB.get('exam_questions')).filter(q => q.assessmentId === examId);
   if (!qs.length) { toast('This exam has no questions yet.', 'warn'); return; }
   curExam = ex; curQs = qs; curAnswers = new Array(qs.length).fill(null); curQ = 0; storyVisible = false;
   // Cache lessons for this exam
-  const lessons = await DB.get('lessons');
+  const lessons = await DB.get('exam_lessons');
   curExam._lessonCache = lessons.find(l => l.id === ex.lessonId) || {};
   document.getElementById('ex-title').textContent = ex.name;
   timeLeft = qs.length * 90;
@@ -666,7 +666,7 @@ async function submitExam() {
 //  GRADE VIEW
 // ═══════════════════════════════════
 async function viewGrade(examId) {
-  const exams = await DB.get('assessments');
+  const exams = await DB.get('exam_assessments');
   const ex = exams.find(a => a.id === examId);
   const grades = await getMyGrades();
   const grade = grades.find(g => g.assessmentId === examId);

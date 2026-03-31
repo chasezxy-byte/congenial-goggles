@@ -3,986 +3,406 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Exam Grading Portal – American Intercon School</title>
-<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet"/>
+<title>Exam Portal – Teacher</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gd:#1a6b3c;--gm:#2e8b57;--gl:#e6f4ed;--ga:#3dba76;
-  --ink:#0f1923;--bg:#f4f6f8;--w:#fff;--cream:#fffef9;
-  --muted:#8a94a6;--border:#e2e8f0;
-  --warn:#d97706;--danger:#dc2626;--info:#1d4ed8;
-  --r:12px;--sh:0 2px 14px rgba(0,0,0,.07);
-  --sw:260px;--hh:60px;
-  --font:'Kantumruy Pro',sans-serif;
-  --display:'Playfair Display',serif
-}
-body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
+:root{--p:#2563eb;--p2:#1d4ed8;--pl:#eff6ff;--ink:#1e293b;--bg:#f8fafc;--w:#fff;--mu:#94a3b8;--bo:#e2e8f0;--ok:#16a34a;--okl:#dcfce7;--wa:#d97706;--wal:#fef3c7;--da:#dc2626;--dal:#fee2e2;--r:10px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--f:'DM Sans',sans-serif;--sw:240px;--hh:56px}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px}
+
+/* ── LOADING */
+#ldg{display:flex;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:var(--bg)}
+.spin{width:28px;height:28px;border:3px solid var(--bo);border-top-color:var(--p);border-radius:50%;animation:sp .5s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#ldg p{font-size:13px;color:var(--mu)}
 
 /* ── LOGIN */
-#s-login{display:flex;min-height:100vh;background:linear-gradient(145deg,#0f1923 0%,#1a3d2b 50%,#1a6b3c 100%);align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
-#s-login::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.login-wrap{background:var(--cream);border-radius:24px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,.35);animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
-@keyframes popIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
-.brand{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:34px}
-.brand-ic{width:58px;height:58px;background:var(--gd);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(26,107,60,.4)}
-.brand-ic .material-icons{color:#fff;font-size:30px}
-.brand-txt strong{display:block;font-family:var(--display);font-size:17px;color:var(--gd);line-height:1.2}
-.brand-txt span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px}
-.login-wrap h2{font-family:var(--display);font-size:1.65rem;text-align:center;margin-bottom:4px}
-.login-wrap p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+#login{display:none;min-height:100vh;background:var(--bg);align-items:center;justify-content:center;padding:20px}
+.lbox{background:var(--w);border:1px solid var(--bo);border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.lbox h1{font-size:20px;font-weight:700;margin-bottom:4px;text-align:center}
+.lbox .sub{font-size:13px;color:var(--mu);text-align:center;margin-bottom:28px}
 .fg{margin-bottom:16px}
-.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
-.fi-wr{position:relative}
-.fi-wr .material-icons{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:20px;pointer-events:none}
-.fg input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 16px 12px 44px;font-family:var(--font);font-size:14px;outline:none;background:#fff;transition:border-color .2s,box-shadow .2s}
-.fg input:focus{border-color:var(--gm);box-shadow:0 0 0 4px rgba(46,139,87,.1)}
-.btn-li{width:100%;background:var(--gd);color:#fff;border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,60,.35)}
-.btn-li:hover{background:#155c2e}
-.l-err{color:var(--danger);font-size:12px;text-align:center;margin-top:10px;display:none}
-.l-hint{background:var(--gl);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:12px;color:var(--gd)}
-.l-hint strong{display:block;margin-bottom:4px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:10px 12px;font-family:var(--f);font-size:14px;outline:none;transition:border-color .15s;background:var(--w)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--p)}
+.fg textarea{resize:vertical;min-height:80px}
+.btn{background:var(--p);color:#fff;border:none;border-radius:8px;padding:11px 20px;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.btn:hover{background:var(--p2)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-w{width:100%;justify-content:center}
+.btn-o{background:transparent;color:var(--ink);border:1.5px solid var(--bo)}.btn-o:hover{border-color:var(--p);color:var(--p);background:transparent}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-da{background:var(--da)}.btn-da:hover{background:#b91c1c}
+.lerr{color:var(--da);font-size:12px;text-align:center;margin-top:8px;display:none}
 
-/* ── APP LAYOUT */
+/* ── APP */
 #app{display:none;min-height:100vh}
-.sidebar{width:var(--sw);background:var(--w);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;overflow:hidden;transition:width .25s}
-.sidebar.col{width:64px}
-.slogo{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);min-height:var(--hh)}
-.sli{width:36px;height:36px;background:var(--gd);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sli .material-icons{color:#fff;font-size:20px}
-.slt{white-space:nowrap;overflow:hidden}
-.slt strong{display:block;font-size:12px;font-weight:800;color:var(--gd)}
-.slt span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.snav{padding:14px 10px;overflow-y:auto;flex:1}
-.slbl{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px;margin-bottom:6px;white-space:nowrap}
-.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-size:13px;color:var(--ink);border-radius:10px;transition:background .1s,color .1s;margin-bottom:2px;white-space:nowrap;user-select:none}
-.ni .material-icons{font-size:19px;color:var(--muted);flex-shrink:0;transition:color .1s}
-.ni:hover{background:var(--gl);color:var(--gd)}
-.ni:hover .material-icons{color:var(--gm)}
-.ni.act{background:var(--gl);color:var(--gd);font-weight:700}
-.ni.act .material-icons{color:var(--gm)}
-.ni .badge{background:var(--danger);color:#fff;border-radius:20px;font-size:10px;font-weight:800;padding:2px 7px;margin-left:auto;flex-shrink:0}
-.mw{margin-left:var(--sw);display:flex;flex-direction:column;transition:margin-left .25s;min-height:100vh}
-.mw.col{margin-left:64px}
-.topbar{height:var(--hh);background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;position:sticky;top:0;z-index:90}
-.tog{background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;padding:4px;border-radius:6px}
-.tog:hover{background:var(--bg)}
-.tsp{flex:1}
-.tb-ic{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;background:var(--w)}
-.tb-ic:hover{border-color:var(--gm);color:var(--gd)}
-.tb-ic .material-icons{font-size:19px}
-.av{width:34px;height:34px;border-radius:50%;background:var(--gm);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
-
-/* ── PAGES */
-.pc{flex:1;padding:24px 24px 40px}
+.sb{width:var(--sw);background:var(--w);border-right:1px solid var(--bo);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+.sb-hd{padding:16px;border-bottom:1px solid var(--bo);display:flex;align-items:center;gap:10px}
+.sb-hd .material-icons-outlined{font-size:24px;color:var(--p)}
+.sb-hd strong{font-size:14px;font-weight:700}
+.sb-hd span{font-size:10px;color:var(--mu);display:block;text-transform:uppercase;letter-spacing:.8px}
+.sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.sb-lbl{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase;padding:8px 12px 4px}
+.si{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#64748b;margin-bottom:2px;transition:all .1s}
+.si .material-icons-outlined{font-size:18px}
+.si:hover{background:var(--pl);color:var(--p)}
+.si.act{background:var(--pl);color:var(--p);font-weight:700}
+.sb-ft{padding:12px 16px;border-top:1px solid var(--bo);font-size:11px;color:var(--mu);display:flex;align-items:center;gap:8px}
+.sb-ft .av{width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}
+.mw{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.tb{height:var(--hh);background:var(--w);border-bottom:1px solid var(--bo);display:flex;align-items:center;padding:0 24px;gap:10px;position:sticky;top:0;z-index:50}
+.tb-t{font-size:15px;font-weight:700;flex:1}
+.tb-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:var(--pl);color:var(--p)}
+.pc{flex:1;padding:24px}
 .page{display:none}.page.act{display:block}
-.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-.pt{font-size:1.5rem;font-weight:800;font-family:var(--display)}
-.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-bottom:22px}
-.bc .cur{color:var(--ink);font-weight:600}
-.bc-dot{font-size:7px}
-.btn-c{background:var(--ink);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
-.btn-c:hover{background:#2d2d4e}
-.btn-c .material-icons{font-size:17px}
 
-/* ── STAT CARDS */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--w);border-radius:var(--r);padding:18px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;border-left:4px solid transparent}
-.stat-card.c-green{border-left-color:var(--gm)}
-.stat-card.c-orange{border-left-color:var(--warn)}
-.stat-card.c-blue{border-left-color:var(--info)}
-.stat-card.c-red{border-left-color:var(--danger)}
-.sc-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
-.sc-ic .material-icons{font-size:22px}
-.sc-num{font-size:1.6rem;font-weight:800;line-height:1}
-.sc-lbl{font-size:11px;color:var(--muted);margin-top:3px}
-
-/* ── TABLE CARD */
-.tc{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;animation:slideUp .25s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.tt{display:flex;align-items:center;padding:13px 18px;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.sw2{position:relative;flex:0 0 200px}
-.sw2 .material-icons{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}
-.sw2 input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px 8px 32px;font-family:var(--font);font-size:13px;outline:none;transition:border-color .2s;background:var(--bg)}
-.sw2 input:focus{border-color:var(--gm);background:#fff}
-.tt-right{margin-left:auto;display:flex;align-items:center;gap:7px}
-.ib{width:31px;height:31px;border:1.5px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .15s;background:var(--w)}
-.ib:hover{border-color:var(--gm);color:var(--gd)}
-.ib .material-icons{font-size:16px}
-.tw{overflow-x:auto}
+/* ── CARDS & TABLES */
+.card{background:var(--w);border:1px solid var(--bo);border-radius:var(--r);overflow:hidden}
+.card-hd{display:flex;align-items:center;padding:14px 18px;gap:10px;border-bottom:1px solid var(--bo)}
+.card-hd h3{font-size:14px;font-weight:700;flex:1}
+.search-w{position:relative;width:220px}
+.search-w .material-icons-outlined{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--mu)}
+.search-w input{width:100%;border:1.5px solid var(--bo);border-radius:8px;padding:7px 10px 7px 32px;font-family:var(--f);font-size:12px;outline:none;background:var(--bg)}.search-w input:focus{border-color:var(--p);background:var(--w)}
 table{width:100%;border-collapse:collapse}
-thead th{padding:10px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);border-bottom:1px solid var(--bo);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--bo);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#f9fbff}
-tbody td{padding:11px 13px;font-size:13px;vertical-align:middle}
-.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
-.cg{background:var(--gl);color:var(--gd)}
-.co{background:#fff7ed;color:#c2410c}
-.cb{background:#dbeafe;color:#1d4ed8}
-.cr{background:#fee2e2;color:#991b1b}
-.ab{display:flex;gap:5px}
-.ab .ib{width:27px;height:27px}
-.ab .ib .material-icons{font-size:14px}
-.ab .ib.grade-btn{background:var(--gd);border-color:var(--gd);color:#fff}
-.ab .ib.grade-btn:hover{background:#155c2e}
-.nd{text-align:center;padding:52px 20px;color:var(--muted)}
-.nd .material-icons{font-size:48px;color:#d0d8e4;display:block;margin-bottom:8px}
-.nd p{font-size:13px;font-weight:600}
+tbody tr:hover{background:#f8faff}
+tbody td{padding:10px 14px;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
+.c-ok{background:var(--okl);color:var(--ok)}
+.c-wa{background:var(--wal);color:var(--wa)}
+.c-da{background:var(--dal);color:var(--da)}
+.c-bl{background:var(--pl);color:var(--p)}
+.empty{text-align:center;padding:48px 20px;color:var(--mu)}
+.empty .material-icons-outlined{font-size:40px;display:block;margin-bottom:8px;color:var(--bo)}
+.ab{display:flex;gap:4px}
+.ib{width:28px;height:28px;border:1.5px solid var(--bo);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);transition:all .1s;background:var(--w)}.ib:hover{border-color:var(--p);color:var(--p)}.ib .material-icons-outlined{font-size:15px}
+.ib.del:hover{border-color:var(--da);color:var(--da)}
 
-/* ── FILTER ROW */
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 18px;border-bottom:1px solid var(--border);background:var(--bg)}
-.fr-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-.csd{position:relative;display:inline-flex;flex-direction:column;font-family:var(--font);min-width:130px}
-.csd-btn{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px 7px 12px;font-size:12px;background:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:border-color .2s;color:var(--ink);width:100%;text-align:left}
-.csd-btn:hover,.csd.open .csd-btn{border-color:var(--gm)}
-.csd-label{flex:1;overflow:hidden;text-overflow:ellipsis}
-.csd-label.ph{color:var(--muted)}
-.csd-arr{font-size:18px;color:var(--muted);transition:transform .2s;line-height:1;margin-left:auto}
-.csd.open .csd-arr{transform:rotate(180deg)}
-.csd-panel{position:absolute;top:calc(100% + 4px);left:0;min-width:100%;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:502;display:none;max-height:220px;overflow-y:auto;animation:csdIn .13s ease}
-@keyframes csdIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.csd-opt{padding:8px 14px;font-size:12px;cursor:pointer;transition:background .1s;white-space:nowrap;color:var(--ink);display:flex;align-items:center;gap:7px}
-.csd-opt:hover{background:var(--gl);color:var(--gd)}
-.csd-opt.sel{color:var(--gd);font-weight:700;background:#eef8f3}
-.csd-opt.sel::after{content:'✓';margin-left:auto;font-size:11px;color:var(--gm)}
-.csd-sep{height:1px;background:var(--border);margin:3px 0}
-
-/* ── GRADING PANEL */
-#app-grade{display:none;min-height:100vh;background:var(--bg);flex-direction:column}
-#app-grade.on{display:flex}
-.gp-topbar{height:var(--hh);background:var(--gd);color:#fff;display:flex;align-items:center;padding:0 22px;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:90}
-.gp-back{background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;padding:4px;border-radius:8px}
-.gp-back:hover{background:rgba(255,255,255,.15);color:#fff}
-.gp-title{font-size:15px;font-weight:700;flex:1}
-.gp-save{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
-.gp-save:hover{background:rgba(255,255,255,.35)}
-.gp-body{display:flex;flex:1;gap:0;min-height:0}
-
-/* STUDENT LIST PANEL */
-.gp-list{width:280px;background:var(--w);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
-.gp-list-hd{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--muted);background:var(--bg)}
-.stu-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px}
-.stu-item:hover{background:var(--gl)}
-.stu-item.sel{background:var(--gl);border-left:3px solid var(--gm)}
-.stu-av{width:34px;height:34px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
-.stu-info{flex:1;min-width:0}
-.stu-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stu-status{font-size:11px;color:var(--muted);margin-top:2px}
-.stu-tick{font-size:16px;margin-left:auto;flex-shrink:0}
-
-/* GRADING AREA */
-.gp-main{flex:1;overflow-y:auto;padding:20px}
-.gp-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);flex-direction:column;gap:10px}
-.gp-empty .material-icons{font-size:56px;color:#d0d8e4}
-.gp-stu-hd{background:var(--w);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.gsh-av{width:46px;height:46px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0}
-.gsh-name{font-size:16px;font-weight:800;font-family:var(--display)}
-.gsh-meta{font-size:12px;color:var(--muted)}
-.total-score-bar{margin-left:auto;text-align:right;flex-shrink:0}
-.tsb-num{font-size:1.4rem;font-weight:800;color:var(--gd)}
-.tsb-lbl{font-size:11px;color:var(--muted)}
-
-/* QUESTION GRADING CARD */
-.gq-card{background:var(--w);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
-.gq-meta{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.gq-num{font-size:11px;font-weight:800;color:var(--gm);text-transform:uppercase;letter-spacing:.8px}
-.gq-q{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--ink);line-height:1.5}
-
-/* MCQ DISPLAY */
-.mcq-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-.mcq-opt{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;font-size:13px;border:1.5px solid transparent;background:var(--bg)}
-.mcq-opt.is-correct{background:#e6f4ed;color:var(--gd);border-color:#b7dfce;font-weight:700}
-.mcq-opt.is-wrong{background:#fee2e2;color:var(--danger);border-color:#fca5a5}
-.mcq-opt .material-icons{font-size:15px}
-.mcq-stu-ans{font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;background:#fef3c7;color:#92400e;margin-left:6px}
-
-/* ESSAY DISPLAY */
-.essay-box{background:var(--bg);border-radius:8px;padding:14px;font-size:13px;line-height:1.8;color:var(--ink);margin-bottom:12px;border-left:4px solid var(--warn);min-height:60px;white-space:pre-wrap}
-.essay-empty{color:var(--muted);font-style:italic}
-
-/* SCORING ROW */
-.score-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);margin-top:12px}
-.score-lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;flex-shrink:0}
-.score-inputs{display:flex;align-items:center;gap:8px;flex:1}
-.score-input{width:72px;border:2px solid var(--border);border-radius:8px;padding:7px 10px;font-family:var(--font);font-size:14px;font-weight:700;outline:none;text-align:center;transition:border-color .2s}
-.score-input:focus{border-color:var(--gm)}
-.score-max{font-size:13px;color:var(--muted);font-weight:600}
-.score-quick{display:flex;gap:5px}
-.sq-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--bg);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--ink)}
-.sq-btn:hover{border-color:var(--gm);color:var(--gd);background:var(--gl)}
-.sq-btn.active{background:var(--gm);color:#fff;border-color:var(--gm)}
-.feedback-row{margin-top:10px}
-.feedback-row label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
-.feedback-row textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--font);font-size:13px;outline:none;resize:none;min-height:64px;transition:border-color .2s;background:var(--w)}
-.feedback-row textarea:focus{border-color:var(--gm)}
-
-/* STORY PREVIEW */
-.story-preview{background:#fffce8;border:2px solid #f6e58d;border-radius:10px;padding:16px;margin-bottom:16px}
-.sp-hd{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-weight:700;color:#78350f;font-family:var(--display);font-size:1rem}
-.sp-hd .material-icons{color:#d97706}
-.sp-body{font-size:13px;line-height:1.85;color:#3d1a00;border-left:4px solid #f59e0b;padding-left:12px;white-space:pre-wrap;max-height:200px;overflow-y:auto}
-
-/* SAVE ACTIONS */
-.gp-actions{padding:16px 20px;background:var(--w);border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;position:sticky;bottom:0}
-.btn-save-grade{padding:11px 24px;background:var(--gd);color:#fff;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;box-shadow:0 3px 12px rgba(26,107,60,.3)}
-.btn-save-grade:hover{background:#155c2e}
-.btn-skip{padding:11px 18px;border:1.5px solid var(--border);border-radius:10px;background:none;font-family:var(--font);font-size:14px;cursor:pointer;color:var(--ink)}
-.btn-skip:hover{border-color:#999}
-
-/* ── STORY EDITOR (in lesson table) */
-.story-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#fef3c7;color:#92400e;cursor:pointer;transition:background .15s;border:none;font-family:var(--font)}
-.story-badge:hover{background:#fde68a}
+/* ── STATS */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.st{background:var(--w);border:1px solid var(--bo);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:12px}
+.st-ic{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.st-ic .material-icons-outlined{font-size:20px}
+.st-n{font-size:1.5rem;font-weight:800;line-height:1}
+.st-l{font-size:11px;color:var(--mu)}
 
 /* ── MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
-.overlay.on{display:flex}
-.modal{background:var(--cream);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.22);animation:mIn .18s ease;display:flex;flex-direction:column}
-@keyframes mIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
-.mhd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--cream);z-index:1}
-.mhd h3{font-family:var(--display);font-size:1.1rem}
-.mcl{background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;border-radius:6px;padding:4px}
-.mcl:hover{background:var(--bg)}
-.mbody{padding:18px 22px;flex:1}
-.mft{display:flex;gap:8px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--cream)}
-.btn-can{padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;background:none;font-family:var(--font);font-size:13px;cursor:pointer;color:var(--ink)}
-.btn-can:hover{border-color:#999}
-.btn-sv{padding:8px 18px;background:var(--gm);color:#fff;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
-.btn-sv:hover{background:var(--gd)}
-.mfg{margin-bottom:14px}
-.mfg label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.mfg input,.mfg textarea,.mfg select{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font);font-size:13px;outline:none;transition:border-color .2s;color:var(--ink)}
-.mfg input:focus,.mfg textarea:focus{border-color:var(--gm)}
-.mfg textarea{resize:vertical;min-height:180px;line-height:1.7}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.ov.on{display:flex}
+.mdl{background:var(--w);border-radius:12px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:mIn .15s ease}
+@keyframes mIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.mdl-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bo)}
+.mdl-hd h3{font-size:15px;font-weight:700}
+.mdl-cl{background:none;border:none;cursor:pointer;color:var(--mu);display:flex;padding:4px;border-radius:6px}.mdl-cl:hover{background:var(--bg)}
+.mdl-body{padding:20px}
+.mdl-ft{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--bo)}
+.opts-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt-row{display:flex;align-items:center;gap:8px}
+.opt-row input{flex:1}
+.opt-row .ib{flex-shrink:0}
+.opt-correct{width:22px;height:22px;border-radius:50%;border:2px solid var(--bo);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.opt-correct.sel{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt-correct .material-icons-outlined{font-size:14px;display:none}
+.opt-correct.sel .material-icons-outlined{display:block}
 
 /* ── TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transform:translateY(70px);opacity:0;transition:all .28s;display:flex;align-items:center;gap:7px;box-shadow:0 4px 20px rgba(0,0,0,.18)}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .toast.on{transform:translateY(0);opacity:1}
-.toast .material-icons{font-size:17px;color:var(--ga)}
+.toast .material-icons-outlined{font-size:16px}
 
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:3px}
-@media(max-width:900px){.gp-list{width:220px}}
-@media(max-width:700px){.gp-list{display:none}.sidebar{display:none}.mw{margin-left:0!important}}
+.tw{overflow-x:auto}
+@media(max-width:700px){.sb{display:none}.mw{margin-left:0}}
 </style>
 </head>
 <body>
-
-<!-- ══ LOGIN ══ -->
-<div id="s-login">
-  <div class="login-wrap">
-    <div class="brand">
-      <div class="brand-ic"><span class="material-icons">school</span></div>
-      <div class="brand-txt">
-        <strong>American Intercon</strong>
-        <span>Exam Portal · Teacher</span>
-      </div>
-    </div>
-    <h2>Teacher Sign In</h2>
-    <p>Access the grading and exam management portal</p>
-    <div class="fg">
-      <label>Username</label>
-      <div class="fi-wr"><span class="material-icons">person</span><input type="text" id="l-user" placeholder="Enter username" autocomplete="off"/></div>
-    </div>
-    <div class="fg">
-      <label>Password</label>
-      <div class="fi-wr"><span class="material-icons">lock</span><input type="password" id="l-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    </div>
-    <div class="l-err" id="l-err">❌ Invalid username or password.</div>
-    <button class="btn-li" onclick="doLogin()"><span class="material-icons">login</span>Sign In</button>
-    <div class="l-hint">
-      <strong>🔑 Default credentials</strong>
-      <div style="opacity:.85">Same as Mentor Back Office — admin / admin123</div>
-    </div>
+<div id="ldg"><div class="spin"></div><p>Loading...</p></div>
+<div id="login">
+  <div class="lbox">
+    <h1>Exam Portal</h1>
+    <p class="sub">Teacher & Admin — Sign in to manage exams</p>
+    <div class="fg"><label>Email</label><input type="email" id="l-u" placeholder="you@school.com"/></div>
+    <div class="fg"><label>Password</label><input type="password" id="l-p" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="lerr" id="lerr"></div>
+    <button class="btn btn-w" id="l-btn" onclick="doLogin()"><span class="material-icons-outlined" style="font-size:18px">login</span>Sign In</button>
+    <p style="font-size:11px;color:var(--mu);text-align:center;margin-top:16px">Same credentials as the Mentor Back Office</p>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
 <div id="app">
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sb">
-    <div class="slogo">
-      <div class="sli"><span class="material-icons">grading</span></div>
-      <div class="slt"><strong>Exam Portal</strong><span>Teacher</span></div>
+  <aside class="sb" id="sb">
+    <div class="sb-hd"><span class="material-icons-outlined">quiz</span><div><strong>Exam Portal</strong><span>Teacher Panel</span></div></div>
+    <div class="sb-nav">
+      <div class="sb-lbl">Overview</div>
+      <div class="si act" onclick="go('dash',this)"><span class="material-icons-outlined">space_dashboard</span>Dashboard</div>
+      <div class="sb-lbl">Manage</div>
+      <div class="si" onclick="go('classes',this)"><span class="material-icons-outlined">school</span>Classes</div>
+      <div class="si" onclick="go('subjects',this)"><span class="material-icons-outlined">category</span>Subjects</div>
+      <div class="si" onclick="go('lessons',this)"><span class="material-icons-outlined">auto_stories</span>Lessons & Stories</div>
+      <div class="si" onclick="go('exams',this)"><span class="material-icons-outlined">assignment</span>Exams</div>
+      <div class="si" onclick="go('questions',this)"><span class="material-icons-outlined">help_outline</span>Questions</div>
+      <div class="sb-lbl">People</div>
+      <div class="si" onclick="go('students',this)"><span class="material-icons-outlined">people</span>Students</div>
+      <div class="sb-lbl">Results</div>
+      <div class="si" onclick="go('submissions',this)"><span class="material-icons-outlined">pending_actions</span>Submissions</div>
     </div>
-    <div class="snav">
-      <div class="slbl">Overview</div>
-      <div class="ni act" id="ni-overview" onclick="nav('overview',this)"><span class="material-icons">dashboard</span><span>Dashboard</span></div>
-      <div class="ni" id="ni-grade-queue" onclick="nav('grade-queue',this)"><span class="material-icons">pending_actions</span><span>Grade Queue</span><span class="badge" id="queue-badge">0</span></div>
-      <div class="slbl" style="margin-top:12px">Content</div>
-      <div class="ni" id="ni-lessons" onclick="nav('lessons',this)"><span class="material-icons">chrome_reader_mode</span><span>Lesson Stories</span></div>
-      <div class="ni" id="ni-exams" onclick="nav('exams',this)"><span class="material-icons">assignment</span><span>Exams</span></div>
-      <div class="ni" id="ni-students" onclick="nav('students',this)"><span class="material-icons">people</span><span>Students</span></div>
-    </div>
+    <div class="sb-ft"><div class="av" id="sb-av">?</div><div id="sb-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div><span class="material-icons-outlined" style="cursor:pointer;font-size:18px" onclick="doLogout()" title="Logout">logout</span></div>
   </aside>
+  <div class="mw">
+    <div class="tb"><span class="tb-t" id="tb-t">Dashboard</span><span class="tb-badge" id="tb-badge"></span></div>
+    <div class="pc">
 
-  <div class="mw" id="mw">
-    <header class="topbar">
-      <button class="tog" onclick="toggleSb()"><span class="material-icons">menu</span></button>
-      <div class="tsp"></div>
-      <div class="tb-ic" title="Refresh" onclick="refreshAll()"><span class="material-icons">refresh</span></div>
-      <div class="av" title="Logout" onclick="doLogout()">K</div>
-    </header>
-    <main class="pc">
+      <div class="page act" id="p-dash"><div class="stats" id="dash-stats"></div><div class="card"><div class="card-hd"><h3>Recent Activity</h3></div><div class="tw" id="dash-recent"></div></div></div>
+      <div class="page" id="p-classes"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Classes</h2><button class="btn btn-sm" onclick="openModal('class')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Class</button></div><div class="card"><div class="tw" id="t-classes"></div></div></div>
+      <div class="page" id="p-subjects"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Subjects</h2><button class="btn btn-sm" onclick="openModal('subject')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Subject</button></div><div class="card"><div class="tw" id="t-subjects"></div></div></div>
+      <div class="page" id="p-lessons"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Lessons & Stories</h2><button class="btn btn-sm" onclick="openModal('lesson')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Lesson</button></div><div class="card"><div class="tw" id="t-lessons"></div></div></div>
+      <div class="page" id="p-exams"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Exams</h2><button class="btn btn-sm" onclick="openModal('exam')"><span class="material-icons-outlined" style="font-size:16px">add</span>Create Exam</button></div><div class="card"><div class="tw" id="t-exams"></div></div></div>
+      <div class="page" id="p-questions"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Questions</h2><button class="btn btn-sm" onclick="openModal('question')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Question</button></div><div class="card"><div class="tw" id="t-questions"></div></div></div>
+      <div class="page" id="p-students"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Students</h2><button class="btn btn-sm" onclick="openModal('student')"><span class="material-icons-outlined" style="font-size:16px">add</span>Add Student</button></div><div class="card"><div class="tw" id="t-students"></div></div></div>
+      <div class="page" id="p-submissions"><div style="margin-bottom:14px"><h2 style="font-size:18px;font-weight:700">Submissions & Grades</h2></div><div class="card"><div class="tw" id="t-subs"></div></div></div>
 
-      <!-- OVERVIEW -->
-      <div class="page act" id="page-overview">
-        <div class="ph"><div><div class="pt">Dashboard</div><div class="bc"><span class="cur">Overview</span></div></div></div>
-        <div class="stat-grid" id="overview-stats"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="overview-grids"></div>
-      </div>
-
-      <!-- GRADE QUEUE -->
-      <div class="page" id="page-grade-queue">
-        <div class="ph"><div><div class="pt">Grade Queue</div><div class="bc"><span>Exam Portal</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Grade Queue</span></div></div></div>
-        <div class="tc">
-          <div class="tt">
-            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search submissions..." oninput="filterQueue(this.value)"/></div>
-            <div class="csd" id="f-q-exam" data-onchange="renderQueue()" style="min-width:160px"></div>
-            <div class="csd" id="f-q-class" data-onchange="renderQueue()" style="min-width:140px"></div>
-            <div class="tt-right">
-              <div class="ib" title="Refresh" onclick="refreshAll();toast('Refreshed!')"><span class="material-icons">refresh</span></div>
-            </div>
-          </div>
-          <div class="tw"><table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Exam</th><th>Subject</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="tb-queue"></tbody></table></div>
-        </div>
-      </div>
-
-      <!-- LESSON STORIES -->
-      <div class="page" id="page-lessons">
-        <div class="ph"><div><div class="pt">Lesson Stories</div><div class="bc"><span>Exam Portal</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Lesson Stories</span></div></div>
-          <button class="btn-c" onclick="openStoryModal(null)"><span class="material-icons">add</span>Add Story</button></div>
-        <div class="tc">
-          <div class="tt">
-            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search lessons..." oninput="filterLessons(this.value)"/></div>
-            <div class="csd" id="f-l-class" data-onchange="renderLessons()" style="min-width:140px"></div>
-          </div>
-          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson Name</th><th>Story</th><th>Action</th></tr></thead><tbody id="tb-lessons"></tbody></table></div>
-        </div>
-      </div>
-
-      <!-- EXAMS -->
-      <div class="page" id="page-exams">
-        <div class="ph"><div><div class="pt">Exams</div><div class="bc"><span>Exam Portal</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Exams</span></div></div></div>
-        <div class="tc">
-          <div class="tt">
-            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search exams..." oninput="filterExams(this.value)"/></div>
-            <div class="csd" id="f-e-class" data-onchange="renderExams()" style="min-width:140px"></div>
-            <div class="csd" id="f-e-status" data-onchange="renderExams()" style="min-width:130px"></div>
-          </div>
-          <div class="tw"><table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Exam Name</th><th>Type</th><th>Questions</th><th>Status</th><th>Submissions</th><th>Graded</th></tr></thead><tbody id="tb-exams"></tbody></table></div>
-        </div>
-      </div>
-
-      <!-- STUDENTS -->
-      <div class="page" id="page-students">
-        <div class="ph"><div><div class="pt">Student Results</div><div class="bc"><span>Exam Portal</span><span class="material-icons bc-dot">fiber_manual_record</span><span class="cur">Students</span></div></div></div>
-        <div class="tc">
-          <div class="tt">
-            <div class="sw2"><span class="material-icons">search</span><input type="text" placeholder="Search students..." oninput="filterStudents(this.value)"/></div>
-            <div class="csd" id="f-s-class" data-onchange="renderStudents()" style="min-width:140px"></div>
-          </div>
-          <div class="tw"><table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Exams Done</th><th>Graded</th><th>Pending Grade</th><th>Avg Score %</th></tr></thead><tbody id="tb-students"></tbody></table></div>
-        </div>
-      </div>
-
-    </main>
-  </div>
-</div>
-
-<!-- ══ GRADING PANEL (full-screen) ══ -->
-<div id="app-grade">
-  <div class="gp-topbar">
-    <button class="gp-back" onclick="closeGrade()"><span class="material-icons">arrow_back</span></button>
-    <div class="gp-title" id="gp-title">Grading</div>
-    <button class="gp-save" onclick="saveCurrentGrade()"><span class="material-icons">save</span>Save Grade</button>
-  </div>
-  <div class="gp-body">
-    <div class="gp-list" id="gp-list"></div>
-    <div class="gp-main" id="gp-main">
-      <div class="gp-empty"><span class="material-icons">people</span><span>Select a student from the left to begin grading</span></div>
     </div>
   </div>
 </div>
 
-<!-- ══ STORY MODAL ══ -->
-<div class="overlay" id="ov-story" onclick="if(event.target===this)closeOverlay('ov-story')">
-  <div class="modal">
-    <div class="mhd"><h3>✍️ Edit Reading Story</h3><button class="mcl" onclick="closeOverlay('ov-story')"><span class="material-icons">close</span></button></div>
-    <div class="mbody">
-      <div class="mfg"><label>Lesson</label><input type="text" id="sm-lesson" readonly style="background:var(--bg);color:var(--muted)"/></div>
-      <div class="mfg"><label>Story / Reading Passage *</label><textarea id="sm-story" placeholder="Paste or type the reading passage here. Students will see this alongside the exam questions…" style="min-height:240px"></textarea></div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:4px"><span class="material-icons" style="font-size:14px">info</span>Leave blank to remove the story from this lesson.</div>
-    </div>
-    <div class="mft">
-      <button class="btn-can" onclick="closeOverlay('ov-story')">Cancel</button>
-      <button class="btn-sv" onclick="saveStory()">Save Story</button>
-    </div>
-  </div>
+<!-- MODAL -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()">
+  <div class="mdl"><div class="mdl-hd"><h3 id="mdl-title">Add</h3><button class="mdl-cl" onclick="closeModal()"><span class="material-icons-outlined">close</span></button></div><div class="mdl-body" id="mdl-body"></div><div class="mdl-ft" id="mdl-ft"></div></div>
 </div>
+<div class="toast" id="toast"><span class="material-icons-outlined">check_circle</span><span id="t-msg"></span></div>
 
-<!-- ══ TOAST ══ -->
-<div class="toast" id="toast"><span class="material-icons">check_circle</span><span id="t-msg"></span></div>
-
-
-<!-- ══ FIREBASE SDK (compat, CDN) ══ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.0/firebase-auth-compat.min.js"></script>
 <script>
 'use strict';
-// ═══════════════════════════════════
-//  FIREBASE INIT
-// ═══════════════════════════════════
-firebase.initializeApp({
-  apiKey:            "AIzaSyDO_m3ECeswwJqGDC7Bpicnt8nQ9xb6oIc",
-  authDomain:        "ordinal-698c1.firebaseapp.com",
-  databaseURL:       "https://ordinal-698c1-default-rtdb.firebaseio.com",
-  projectId:         "ordinal-698c1",
-  storageBucket:     "ordinal-698c1.firebasestorage.app",
-  messagingSenderId: "102527692497",
-  appId:             "1:102527692497:web:bc6225ba04057ccd755ff0"
-});
-const db = firebase.firestore();
+firebase.initializeApp({apiKey:"AIzaSyDO_m3ECeswwJqGDC7Bpicnt8nQ9xb6oIc",authDomain:"ordinal-698c1.firebaseapp.com",projectId:"ordinal-698c1",storageBucket:"ordinal-698c1.firebasestorage.app",messagingSenderId:"102527692497",appId:"1:102527692497:web:bc6225ba04057ccd755ff0"});
+const db=firebase.firestore(),auth=firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// ═══════════════════════════════════
-//  DB  (Firestore — shared with LMS)
-// ═══════════════════════════════════
-const DB = {
-  get: async (k) => {
-    try {
-      const snap = await db.collection(k).get();
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    } catch(e) { console.error('DB.get error:', k, e); return []; }
-  },
-  save: async (k, item) => {
-    try { await db.collection(k).doc(item.id).set(item); }
-    catch(e) { console.error('DB.save error:', k, e); }
-  },
-  set: async (k, arr) => {
-    try {
-      const batch = db.batch();
-      for (const item of arr) {
-        batch.set(db.collection(k).doc(item.id), item);
-      }
-      await batch.commit();
-    } catch(e) { console.error('DB.set error:', k, e); }
-  },
-  uid: () => 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)
+function _c(o){if(o===undefined)return null;if(o===null||typeof o!=='object')return o;if(Array.isArray(o))return o.map(v=>v===undefined?null:_c(v));const r={};for(const[k,v]of Object.entries(o))if(v!==undefined)r[k]=_c(v);return r;}
+const uid=()=>'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+
+// ── COLLECTIONS (all prefixed with exam_ to stay separate from LMS)
+const C={
+  classes:'exam_classes',subjects:'exam_subjects',lessons:'exam_lessons',
+  exams:'exam_assessments',questions:'exam_questions',students:'exam_students',
+  subs:'exam_submissions',grades:'exam_grades',teachers:'teachers' // shared teachers collection for auth
 };
+let D={};// cached data
+async function load(k,force){if(!force&&D[k])return D[k];try{const s=await db.collection(k).get();D[k]=s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){D[k]=[];}return D[k];}
+async function save(col,item){await db.collection(col).doc(item.id).set(_c(item));D[col]=null;}// invalidate cache
+async function del(col,id){await db.collection(col).doc(id).delete();D[col]=null;}
+function clearD(){D={};}
 
-// ═══════════════════════════════════
-//  STATE
-// ═══════════════════════════════════
-let gradeExamId = null, gradeSubs = [], gradeCurSubIdx = null, gradeScores = [], gradeFeedbacks = [];
-let queueFilter = '', lessonFilter = '', examFilter = '', studentFilter = '';
+let ME=null,curPage='dash',editId=null,editType=null;
 
-// ═══════════════════════════════════
-//  AUTH
-// ═══════════════════════════════════
-function doLogin() {
-  const u = document.getElementById('l-user').value.trim();
-  const p = document.getElementById('l-pass').value.trim();
-  if (u === 'admin' && p === 'admin123') {
-    document.getElementById('l-err').style.display = 'none';
-    document.getElementById('s-login').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    initApp();
-  } else {
-    document.getElementById('l-err').style.display = 'block';
+// ── AUTH
+async function doLogin(){
+  const u=document.getElementById('l-u').value.trim(),p=document.getElementById('l-p').value.trim();
+  if(!u||!p){showErr('Enter email and password');return;}
+  const btn=document.getElementById('l-btn');btn.disabled=true;btn.textContent='Signing in...';hideErr();
+  try{await auth.signInWithEmailAndPassword(u,p);}catch(e){showErr(e.code==='auth/invalid-credential'?'Invalid email or password':e.message);btn.disabled=false;btn.innerHTML='<span class="material-icons-outlined" style="font-size:18px">login</span>Sign In';}
+}
+function showErr(m){const e=document.getElementById('lerr');e.textContent='❌ '+m;e.style.display='block';}
+function hideErr(){document.getElementById('lerr').style.display='none';}
+function doLogout(){if(confirm('Log out?'))auth.signOut();}
+
+auth.onAuthStateChanged(async user=>{
+  const ldg=document.getElementById('ldg');
+  if(user){
+    ldg.querySelector('p').textContent='Loading data...';
+    const teachers=await load(C.teachers);
+    const rec=teachers.find(t=>t.email&&t.email.toLowerCase()===user.email.toLowerCase());
+    ME={email:user.email,name:rec?rec.name:(user.displayName||user.email.split('@')[0]),isAdmin:!rec,classIds:rec?(rec.classIds||[]):null};
+    ldg.style.display='none';document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';
+    document.getElementById('sb-av').textContent=(ME.name||'?')[0].toUpperCase();
+    document.getElementById('sb-name').textContent=ME.name;
+    document.getElementById('tb-badge').textContent=ME.isAdmin?'Admin':'Teacher';
+    await renderCurrent();
+  }else{ME=null;ldg.style.display='none';document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';}
+});
+
+// ── NAV
+function go(p,el){curPage=p;document.querySelectorAll('.page').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.si').forEach(x=>x.classList.remove('act'));document.getElementById('p-'+p).classList.add('act');if(el)el.classList.add('act');
+  const titles={dash:'Dashboard',classes:'Classes',subjects:'Subjects',lessons:'Lessons & Stories',exams:'Exams',questions:'Questions',students:'Students',submissions:'Submissions'};
+  document.getElementById('tb-t').textContent=titles[p]||p;renderCurrent();}
+
+async function renderCurrent(){
+  if(curPage==='dash')await renderDash();
+  else if(curPage==='classes')await renderClasses();
+  else if(curPage==='subjects')await renderSubjects();
+  else if(curPage==='lessons')await renderLessons();
+  else if(curPage==='exams')await renderExams();
+  else if(curPage==='questions')await renderQuestions();
+  else if(curPage==='students')await renderStudents();
+  else if(curPage==='submissions')await renderSubs();
+}
+
+// Scope data to teacher's classes (admin sees all)
+function scope(arr){if(!ME||ME.isAdmin)return arr;const ids=ME.classIds||[];return arr.filter(r=>ids.includes(r.classId));}
+
+// ── DASHBOARD
+async function renderDash(){
+  const cls=scope(await load(C.classes)),sub=scope(await load(C.subjects)),ex=scope(await load(C.exams)),qs=scope(await load(C.questions)),stu=scope(await load(C.students)),subs=scope(await load(C.subs));
+  const pending=subs.filter(s=>s.status==='pending').length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">school</span></div><div><div class="st-n">${cls.length}</div><div class="st-l">Classes</div></div></div>
+    <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">assignment</span></div><div><div class="st-n">${ex.length}</div><div class="st-l">Exams</div></div></div>
+    <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">help_outline</span></div><div><div class="st-n">${qs.length}</div><div class="st-l">Questions</div></div></div>
+    <div class="st"><div class="st-ic" style="background:var(--pl)"><span class="material-icons-outlined" style="color:var(--p)">people</span></div><div><div class="st-n">${stu.length}</div><div class="st-l">Students</div></div></div>
+    <div class="st"><div class="st-ic" style="background:${pending?'var(--wal)':'var(--okl)'}"><span class="material-icons-outlined" style="color:${pending?'var(--wa)':'var(--ok)'}">${pending?'pending_actions':'check_circle'}</span></div><div><div class="st-n">${pending}</div><div class="st-l">Pending</div></div></div>`;
+  const recent=subs.slice(-5).reverse();
+  document.getElementById('dash-recent').innerHTML=recent.length?`<table><thead><tr><th>Student</th><th>Exam</th><th>Status</th><th>Date</th></tr></thead><tbody>${recent.map(s=>`<tr><td>${s.studentName||'—'}</td><td>${s.assessmentName||'—'}</td><td><span class="chip ${s.status==='graded'?'c-ok':'c-wa'}">${s.status}</span></td><td style="color:var(--mu);font-size:12px">${new Date(s.submittedAt).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">inbox</span><p>No submissions yet</p></div>`;
+}
+
+// ── CLASSES
+async function renderClasses(){
+  const cls=scope(await load(C.classes,true));
+  document.getElementById('t-classes').innerHTML=cls.length?`<table><thead><tr><th>#</th><th>Name</th><th>Created</th><th></th></tr></thead><tbody>${cls.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.name}</strong></td><td style="color:var(--mu);font-size:12px">${c.createdAt||'—'}</td><td><div class="ab"><div class="ib" onclick="openEdit('class','${c.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.classes}','${c.id}','${esc(c.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">school</span><p>No classes yet</p></div>`;
+}
+
+// ── SUBJECTS
+async function renderSubjects(){
+  const data=scope(await load(C.subjects,true)),cls=await load(C.classes);
+  document.getElementById('t-subjects').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th></th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td>${s.className||'—'}</td><td><strong>${s.name}</strong></td><td><div class="ab"><div class="ib" onclick="openEdit('subject','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.subjects}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">category</span><p>No subjects yet</p></div>`;
+}
+
+// ── LESSONS
+async function renderLessons(){
+  const data=scope(await load(C.lessons,true));
+  document.getElementById('t-lessons').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Story</th><th></th></tr></thead><tbody>${data.map((l,i)=>`<tr><td>${i+1}</td><td>${l.className||'—'}</td><td>${l.subjectName||'—'}</td><td><strong>${l.name}</strong></td><td>${l.story?'<span class="chip c-ok">✓ Has story</span>':'<span style="color:var(--mu)">—</span>'}</td><td><div class="ab"><div class="ib" onclick="openEdit('lesson','${l.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.lessons}','${l.id}','${esc(l.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">auto_stories</span><p>No lessons yet</p></div>`;
+}
+
+// ── EXAMS
+async function renderExams(){
+  const data=scope(await load(C.exams,true)),qs=await load(C.questions);
+  document.getElementById('t-exams').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Lesson</th><th>Exam</th><th>Type</th><th>Qs</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>${data.map((e,i)=>{const qc=qs.filter(q=>q.assessmentId===e.id).length;return`<tr><td>${i+1}</td><td>${e.className||'—'}</td><td>${e.subjectName||'—'}</td><td>${e.lessonName||'—'}</td><td><strong>${e.name}</strong></td><td><span class="chip c-bl">${e.config||'Mixed'}</span></td><td>${qc}</td><td>${e.maxScore||0}</td><td><span class="chip ${e.validState==='Valid'?'c-ok':'c-wa'}">${e.validState||'Pending'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('exam','${e.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.exams}','${e.id}','${esc(e.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`}).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">assignment</span><p>No exams yet</p></div>`;
+}
+
+// ── QUESTIONS
+async function renderQuestions(){
+  const data=scope(await load(C.questions,true));
+  document.getElementById('t-questions').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Exam</th><th>Question</th><th>Type</th><th>Pts</th><th></th></tr></thead><tbody>${data.map((q,i)=>`<tr><td>${i+1}</td><td>${q.assessmentName||'—'}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${q.title}</strong></td><td><span class="chip c-bl">${q.type}</span></td><td>${q.points}</td><td><div class="ab"><div class="ib" onclick="openEdit('question','${q.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.questions}','${q.id}','Q${i+1}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">help_outline</span><p>No questions yet</p></div>`;
+}
+
+// ── STUDENTS
+async function renderStudents(){
+  const data=scope(await load(C.students,true));
+  document.getElementById('t-students').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Class</th><th>Status</th><th></th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.name}</strong></td><td style="color:var(--mu)">${s.username||'—'}</td><td>${s.className||'—'}</td><td><span class="chip ${s.status==='Suspended'?'c-da':'c-ok'}">${s.status||'Active'}</span></td><td><div class="ab"><div class="ib" onclick="openEdit('student','${s.id}')"><span class="material-icons-outlined">edit</span></div><div class="ib del" onclick="confirmDel('${C.students}','${s.id}','${esc(s.name)}')"><span class="material-icons-outlined">delete</span></div></div></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">people</span><p>No students yet</p></div>`;
+}
+
+// ── SUBMISSIONS
+async function renderSubs(){
+  const data=scope(await load(C.subs,true)).sort((a,b)=>a.status==='pending'?-1:1);
+  document.getElementById('t-subs').innerHTML=data.length?`<table><thead><tr><th>#</th><th>Student</th><th>Exam</th><th>Submitted</th><th>Status</th></tr></thead><tbody>${data.map((s,i)=>`<tr><td>${i+1}</td><td><strong>${s.studentName||'—'}</strong></td><td>${s.assessmentName||'—'}</td><td style="color:var(--mu);font-size:12px">${new Date(s.submittedAt).toLocaleString()}</td><td><span class="chip ${s.status==='graded'?'c-ok':'c-wa'}">${s.status}</span></td></tr>`).join('')}</tbody></table>`:`<div class="empty"><span class="material-icons-outlined">pending_actions</span><p>No submissions yet</p></div>`;
+}
+
+// ══════════════════════════════════
+//  MODAL — Create / Edit forms
+// ══════════════════════════════════
+function openModal(type){editId=null;editType=type;buildForm(type,null);}
+async function openEdit(type,id){
+  editType=type;editId=id;
+  const col={class:C.classes,subject:C.subjects,lesson:C.lessons,exam:C.exams,question:C.questions,student:C.students}[type];
+  const data=await load(col);const rec=data.find(r=>r.id===id);
+  buildForm(type,rec);
+}
+
+async function buildForm(type,rec){
+  const isEdit=!!rec;const title=isEdit?'Edit':'Add';
+  document.getElementById('mdl-title').textContent=`${title} ${type.charAt(0).toUpperCase()+type.slice(1)}`;
+  const body=document.getElementById('mdl-body'),ft=document.getElementById('mdl-ft');
+  const cls=await load(C.classes),subs=await load(C.subjects),les=await load(C.lessons),exams=await load(C.exams);
+  const myCls=scope(cls);
+
+  if(type==='class'){
+    body.innerHTML=`<div class="fg"><label>Class Name</label><input id="f-name" value="${rec?.name||''}"/></div>`;
+  }else if(type==='subject'){
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject Name</label><input id="f-name" value="${rec?.name||''}"/></div>`;
+  }else if(type==='lesson'){
+    const filtSubs=rec?subs:subs.filter(s=>myCls.some(c=>c.id===s.classId));
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class" onchange="updateLessonSubs()">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject">${filtSubs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="fg"><label>Lesson Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Reading Passage / Story (optional)</label><textarea id="f-story" rows="6">${rec?.story||''}</textarea></div>`;
+  }else if(type==='exam'){
+    const filtLes=les.filter(l=>myCls.some(c=>c.id===l.classId));
+    body.innerHTML=`<div class="fg"><label>Class</label><select id="f-class" onchange="updateExamLessons()">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Subject</label><select id="f-subject" onchange="updateExamLessons()">${subs.map(s=>`<option value="${s.id}" ${rec?.subjectId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="fg"><label>Lesson</label><select id="f-lesson">${filtLes.map(l=>`<option value="${l.id}" ${rec?.lessonId===l.id?'selected':''}>${l.name}</option>`).join('')}</select></div><div class="fg"><label>Exam Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Max Score</label><input type="number" id="f-score" value="${rec?.maxScore||0}"/></div><div class="fg"><label>Type</label><select id="f-config"><option ${rec?.config==='MCQ'?'selected':''}>MCQ</option><option ${rec?.config==='Essay'?'selected':''}>Essay</option><option ${rec?.config==='Mixed'?'selected':''}>Mixed</option><option ${rec?.config==='True/False'?'selected':''}>True/False</option></select></div><div class="fg"><label>Status</label><select id="f-status"><option value="Valid" ${rec?.validState==='Valid'?'selected':''}>Valid</option><option value="Pending" ${rec?.validState==='Pending'||!rec?'selected':''}>Pending</option></select></div>`;
+  }else if(type==='question'){
+    const qType=rec?.type||'MCQ';
+    const opts=rec?.options||['','','',''];
+    const ans=rec?.answer??0;
+    body.innerHTML=`<div class="fg"><label>Exam</label><select id="f-exam">${exams.map(e=>`<option value="${e.id}" ${rec?.assessmentId===e.id?'selected':''}>${e.name} (${e.className||''})</option>`).join('')}</select></div><div class="fg"><label>Type</label><select id="f-qtype" onchange="toggleQType()"><option ${qType==='MCQ'?'selected':''}>MCQ</option><option ${qType==='True/False'?'selected':''}>True/False</option><option ${qType==='Essay'?'selected':''}>Essay</option></select></div><div class="fg"><label>Question</label><textarea id="f-title" rows="3">${rec?.title||''}</textarea></div><div class="fg"><label>Points</label><input type="number" id="f-pts" value="${rec?.points||1}"/></div><div id="opts-area"><label style="font-size:12px;font-weight:600;color:var(--mu);margin-bottom:6px;display:block">Options (click circle to mark correct)</label><div class="opts-grid" id="opts-grid">${opts.map((o,i)=>`<div class="opt-row"><div class="opt-correct${i===ans?' sel':''}" onclick="pickAns(${i})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="${o}" placeholder="Option ${i+1}"/><div class="ib del" onclick="removeOpt(this)"><span class="material-icons-outlined">close</span></div></div>`).join('')}</div><button class="btn btn-o btn-sm" style="margin-top:8px" onclick="addOpt()"><span class="material-icons-outlined" style="font-size:14px">add</span>Add Option</button></div>`;
+    if(qType==='Essay')document.getElementById('opts-area').style.display='none';
+  }else if(type==='student'){
+    body.innerHTML=`<div class="fg"><label>Full Name</label><input id="f-name" value="${rec?.name||''}"/></div><div class="fg"><label>Username</label><input id="f-user" value="${rec?.username||''}"/></div><div class="fg"><label>Password</label><input id="f-pass" value="${rec?.password||''}"/></div><div class="fg"><label>Class</label><select id="f-class">${myCls.map(c=>`<option value="${c.id}" ${rec?.classId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="f-sstatus"><option value="Active" ${rec?.status==='Active'||!rec?'selected':''}>Active</option><option value="Suspended" ${rec?.status==='Suspended'?'selected':''}>Suspended</option></select></div>`;
   }
-}
-function doLogout() { if (confirm('Log out?')) location.reload(); }
-
-// ═══════════════════════════════════
-//  INIT
-// ═══════════════════════════════════
-async function initApp() {
-  await buildFilters(); await renderOverview(); await renderQueue(); await renderLessons(); await renderExams(); await renderStudents(); await updateQueueBadge();
-}
-async function refreshAll() {
-  await buildFilters(); await renderOverview(); await renderQueue(); await renderLessons(); await renderExams(); await renderStudents(); await updateQueueBadge();
+  ft.innerHTML=`<button class="btn btn-o" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveForm()"><span class="material-icons-outlined" style="font-size:16px">save</span>Save</button>`;
+  document.getElementById('ov').classList.add('on');
 }
 
-async function updateQueueBadge() {
-  const pending = (await DB.get('exam_submissions')).filter(s => s.status === 'pending').length;
-  const b = document.getElementById('queue-badge');
-  if (b) { b.textContent = pending; b.style.display = pending ? '' : 'none'; }
-}
+// Question helpers
+function toggleQType(){const t=document.getElementById('f-qtype').value;document.getElementById('opts-area').style.display=t==='Essay'?'none':'block';if(t==='True/False'){document.getElementById('opts-grid').innerHTML=`<div class="opt-row"><div class="opt-correct sel" onclick="pickAns(0)"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="True" readonly/></div><div class="opt-row"><div class="opt-correct" onclick="pickAns(1)"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="False" readonly/></div>`;}}
+function addOpt(){const g=document.getElementById('opts-grid');const n=g.children.length;g.insertAdjacentHTML('beforeend',`<div class="opt-row"><div class="opt-correct" onclick="pickAns(${n})"><span class="material-icons-outlined">check</span></div><input class="opt-input" value="" placeholder="Option ${n+1}"/><div class="ib del" onclick="removeOpt(this)"><span class="material-icons-outlined">close</span></div></div>`);}
+function removeOpt(btn){btn.closest('.opt-row').remove();}
+function pickAns(idx){document.querySelectorAll('#opts-grid .opt-correct').forEach((el,i)=>{el.classList.toggle('sel',i===idx);});}
+function updateLessonSubs(){/* could filter subjects by class */}
+function updateExamLessons(){/* could filter lessons by class */}
 
-// ═══════════════════════════════════
-//  SIDEBAR / NAV
-// ═══════════════════════════════════
-function toggleSb() { document.getElementById('sb').classList.toggle('col'); document.getElementById('mw').classList.toggle('col'); }
-function nav(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('act'));
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('act'));
-  document.getElementById('page-' + id).classList.add('act');
-  if (el) el.classList.add('act');
-}
-
-// ═══════════════════════════════════
-//  CSD (Custom Select Dropdown)
-// ═══════════════════════════════════
-function csdFill(id, options, ph) {
-  const el = document.getElementById(id); if (!el) return;
-  el.setAttribute('data-ph', ph || '');
-  let cur = el.getAttribute('data-val') || '';
-  if (cur && !options.find(o => String(o.value) === cur)) cur = '';
-  el.setAttribute('data-val', cur);
-  const found = options.find(o => String(o.value) === cur);
-  const lbl = found ? found.label : (ph || '');
-  if (!el.querySelector('.csd-btn')) {
-    el.innerHTML = `<div class="csd-btn" onclick="csdToggle('${id}')"><span class="csd-label${!cur ? ' ph' : ''}">${lbl}</span><span class="material-icons csd-arr">expand_more</span></div><div class="csd-panel" id="cdp-${id}"></div>`;
-  } else {
-    const l = el.querySelector('.csd-label'); l.textContent = lbl; l.className = 'csd-label' + (!cur ? ' ph' : '');
-  }
-  const panel = document.getElementById('cdp-' + id);
-  if (panel) panel.innerHTML =
-    `<div class="csd-opt${!cur ? ' sel' : ''}" data-val="" onclick="csdSel('${id}',this)">${ph || '—'}</div>` +
-    (options.length ? '<div class="csd-sep"></div>' : '') +
-    options.map(o => `<div class="csd-opt${String(o.value) === cur ? ' sel' : ''}" data-val="${String(o.value)}" onclick="csdSel('${id}',this)">${o.label}</div>`).join('');
-}
-function csdSel(id, optEl) {
-  const el = document.getElementById(id); if (!el) return;
-  const val = optEl.getAttribute('data-val') || '';
-  el.setAttribute('data-val', val);
-  const ph = el.getAttribute('data-ph') || '';
-  const lbl = el.querySelector('.csd-label');
-  if (lbl) { lbl.textContent = val ? optEl.textContent : ph; lbl.className = 'csd-label' + (val ? '' : ' ph'); }
-  document.getElementById('cdp-' + id)?.querySelectorAll('.csd-opt').forEach(o => o.classList.toggle('sel', o === optEl));
-  csdClose(id);
-  const cb = el.getAttribute('data-onchange');
-  if (cb) try { (new Function(cb))(); } catch(e) { console.warn(e); }
-}
-function csdToggle(id) {
-  const el = document.getElementById(id); if (!el) return;
-  const was = el.classList.contains('open'); csdCloseAll();
-  if (!was) { el.classList.add('open'); const p = document.getElementById('cdp-' + id); if (p) p.style.display = 'block'; }
-}
-function csdClose(id) { const el = document.getElementById(id); if (el) el.classList.remove('open'); const p = document.getElementById('cdp-' + id); if (p) p.style.display = 'none'; }
-function csdCloseAll() { document.querySelectorAll('.csd.open').forEach(el => { el.classList.remove('open'); const p = document.getElementById('cdp-' + el.id); if (p) p.style.display = 'none'; }); }
-function csdVal(id) { const el = document.getElementById(id); return el ? (el.getAttribute('data-val') || '') : ''; }
-document.addEventListener('click', e => { if (!e.target.closest('.csd')) csdCloseAll(); });
-
-// ═══════════════════════════════════
-//  FILTERS
-// ═══════════════════════════════════
-async function buildFilters() {
-  const cls = await DB.get('classes');
-  const exams = await DB.get('assessments');
-  csdFill('f-q-exam', exams.map(e => ({ value: e.id, label: e.name })), 'All Exams');
-  csdFill('f-q-class', cls.map(c => ({ value: c.id, label: c.name })), 'All Classes');
-  csdFill('f-l-class', cls.map(c => ({ value: c.id, label: c.name })), 'All Classes');
-  csdFill('f-e-class', cls.map(c => ({ value: c.id, label: c.name })), 'All Classes');
-  csdFill('f-e-status', [{ value: 'Valid', label: 'Valid' }, { value: 'Pending', label: 'Pending' }, { value: 'Invalid', label: 'Invalid' }], 'All Statuses');
-  csdFill('f-s-class', cls.map(c => ({ value: c.id, label: c.name })), 'All Classes');
-}
-
-// ═══════════════════════════════════
-//  OVERVIEW
-// ═══════════════════════════════════
-async function renderOverview() {
-  const subs = await DB.get('exam_submissions');
-  const grades = await DB.get('exam_grades');
-  const pending = subs.filter(s => s.status === 'pending').length;
-  const graded = grades.length;
-  const students = (await DB.get('students')).length;
-  const exams = (await DB.get('assessments')).filter(a => a.validState === 'Valid').length;
-
-  document.getElementById('overview-stats').innerHTML = `
-    <div class="stat-card c-orange"><div class="sc-ic" style="background:#fff7ed"><span class="material-icons" style="color:var(--warn)">pending_actions</span></div><div><div class="sc-num">${pending}</div><div class="sc-lbl">Awaiting Grade</div></div></div>
-    <div class="stat-card c-green"><div class="sc-ic" style="background:var(--gl)"><span class="material-icons" style="color:var(--gm)">verified</span></div><div><div class="sc-num">${graded}</div><div class="sc-lbl">Graded</div></div></div>
-    <div class="stat-card c-blue"><div class="sc-ic" style="background:#dbeafe"><span class="material-icons" style="color:var(--info)">people</span></div><div><div class="sc-num">${students}</div><div class="sc-lbl">Students</div></div></div>
-    <div class="stat-card c-green"><div class="sc-ic" style="background:var(--gl)"><span class="material-icons" style="color:var(--gm)">assignment</span></div><div><div class="sc-num">${exams}</div><div class="sc-lbl">Active Exams</div></div></div>`;
-
-  const recent = subs.slice(-6).reverse();
-  document.getElementById('overview-grids').innerHTML = `
-    <div class="tc">
-      <div class="tt" style="font-size:13px;font-weight:700">📨 Recent Submissions</div>
-      ${recent.length ? recent.map(s => `
-        <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px">
-          <div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(s.studentName || '?')[0]}</div>
-          <div style="flex:1"><div style="font-weight:600">${s.studentName || '—'}</div><div style="font-size:11px;color:var(--muted)">${s.assessmentName || '—'}</div></div>
-          <span class="chip ${s.status === 'graded' ? 'cg' : 'co'}">${s.status === 'graded' ? 'Graded' : 'Pending'}</span>
-        </div>`).join('') : `<div class="nd"><span class="material-icons">inbox</span><p>No submissions yet</p></div>`}
-    </div>
-    <div class="tc">
-      <div class="tt" style="font-size:13px;font-weight:700">🏆 Recent Grades</div>
-      ${grades.slice(-6).reverse().map(g => { const pct = Math.round(g.totalScore / g.maxScore * 100); return `
-        <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px">
-          <div style="width:30px;height:30px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gd);flex-shrink:0">${(g.studentName || '?')[0]}</div>
-          <div style="flex:1"><div style="font-weight:600">${g.studentName || '—'}</div><div style="font-size:11px;color:var(--muted)">${g.assessmentName || '—'}</div></div>
-          <span style="font-size:13px;font-weight:800;color:${pct >= 70 ? 'var(--gd)' : pct >= 50 ? 'var(--warn)' : 'var(--danger)'}">${pct}%</span>
-        </div>`; }).join('') || `<div class="nd"><span class="material-icons">grading</span><p>No grades yet</p></div>`}
-    </div>`;
-}
-
-// ═══════════════════════════════════
-//  QUEUE
-// ═══════════════════════════════════
-function filterQueue(v) { queueFilter = v; renderQueue(); }
-async function renderQueue() {
-  const examF = csdVal('f-q-exam'), classF = csdVal('f-q-class');
-  let subs = await DB.get('exam_submissions');
-  if (examF) subs = subs.filter(s => s.assessmentId === examF);
-  if (classF) subs = subs.filter(s => s.classId === classF);
-  if (queueFilter) subs = subs.filter(s => JSON.stringify(s).toLowerCase().includes(queueFilter.toLowerCase()));
-  subs.sort((a, b) => a.status === 'pending' ? -1 : b.status === 'pending' ? 1 : 0);
-  const allGrades = await DB.get('exam_grades');
-  const tb = document.getElementById('tb-queue');
-  if (!subs.length) { tb.innerHTML = `<tr><td colspan="8"><div class="nd"><span class="material-icons">pending_actions</span><p>No submissions found</p></div></td></tr>`; return; }
-  tb.innerHTML = subs.map((s, i) => {
-    const isGraded = s.status === 'graded';
-    const grade = allGrades.find(g => g.submissionId === s.id);
-    const pct = grade ? Math.round(grade.totalScore / grade.maxScore * 100) : null;
-    return `<tr>
-      <td>${i + 1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0">${(s.studentName || '?')[0]}</div>
-        <strong>${s.studentName || '—'}</strong>
-      </div></td>
-      <td>${s.className || '—'}</td>
-      <td><strong>${s.assessmentName || '—'}</strong></td>
-      <td style="color:var(--muted);font-size:12px">${s.subjectName || '—'}</td>
-      <td style="color:var(--muted);font-size:12px">${new Date(s.submittedAt).toLocaleDateString()} ${new Date(s.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-      <td><span class="chip ${isGraded ? 'cg' : 'co'}">${isGraded ? `✓ ${pct}%` : 'Pending'}</span></td>
-      <td><div class="ab">
-        <div class="ib grade-btn" title="${isGraded ? 'Re-grade' : 'Grade'}" onclick="openGrade('${s.assessmentId}','${s.id}')"><span class="material-icons">${isGraded ? 'edit' : 'grading'}</span></div>
-      </div></td>
-    </tr>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════
-//  LESSONS / STORIES
-// ═══════════════════════════════════
-function filterLessons(v) { lessonFilter = v; renderLessons(); }
-async function renderLessons() {
-  const classF = csdVal('f-l-class');
-  let lessons = await DB.get('lessons');
-  if (classF) lessons = lessons.filter(l => l.classId === classF);
-  if (lessonFilter) lessons = lessons.filter(l => JSON.stringify(l).toLowerCase().includes(lessonFilter.toLowerCase()));
-  const tb = document.getElementById('tb-lessons');
-  if (!lessons.length) { tb.innerHTML = `<tr><td colspan="6"><div class="nd"><span class="material-icons">chrome_reader_mode</span><p>No lessons found</p><small>Create lessons in the Mentor Back Office LMS first.</small></div></td></tr>`; return; }
-  tb.innerHTML = lessons.map((l, i) => `<tr>
-    <td>${i + 1}</td>
-    <td>${l.className || '—'}</td>
-    <td>${l.subjectName || '—'}</td>
-    <td><strong>${l.name}</strong></td>
-    <td>${l.story && l.story.trim() ?
-      `<button class="story-badge" onclick="openStoryModal('${l.id}')"><span class="material-icons" style="font-size:13px">auto_stories</span> View / Edit</button>` :
-      `<button class="story-badge" style="background:#f1f5f9;color:var(--muted)" onclick="openStoryModal('${l.id}')"><span class="material-icons" style="font-size:13px">add</span> Add Story</button>`}
-    </td>
-    <td><div class="ab">
-      <div class="ib" title="Edit Story" onclick="openStoryModal('${l.id}')"><span class="material-icons">edit</span></div>
-    </div></td>
-  </tr>`).join('');
-}
-
-let storyLessonId = null;
-async function openStoryModal(lessonId) {
-  const lessons = await DB.get('lessons');
-  if (lessonId) {
-    const l = lessons.find(x => x.id === lessonId); if (!l) return;
-    storyLessonId = lessonId;
-    document.getElementById('sm-lesson').value = `${l.name} (${l.className || '—'} · ${l.subjectName || '—'})`;
-    document.getElementById('sm-story').value = l.story || '';
-  } else {
-    storyLessonId = null;
-    document.getElementById('sm-lesson').value = '(Select a lesson from the table)';
-    document.getElementById('sm-story').value = '';
-    toast('Open a lesson from the table to add a story.', 'warn'); return;
-  }
-  openOverlay('ov-story');
-}
-async function saveStory() {
-  if (!storyLessonId) { toast('No lesson selected', 'warn'); return; }
-  const text = document.getElementById('sm-story').value.trim();
-  const lessons = await DB.get('lessons');
-  const i = lessons.findIndex(l => l.id === storyLessonId);
-  if (i < 0) { toast('Lesson not found', 'warn'); return; }
-  lessons[i].story = text;
-  await DB.save('lessons', lessons[i]);
-  closeOverlay('ov-story');
-  await renderLessons();
-  toast(text ? 'Story saved!' : 'Story removed.');
-}
-
-// ═══════════════════════════════════
-//  EXAMS TABLE
-// ═══════════════════════════════════
-function filterExams(v) { examFilter = v; renderExams(); }
-async function renderExams() {
-  const classF = csdVal('f-e-class'), statusF = csdVal('f-e-status');
-  let exams = await DB.get('assessments');
-  if (classF) exams = exams.filter(e => e.classId === classF);
-  if (statusF) exams = exams.filter(e => e.validState === statusF);
-  if (examFilter) exams = exams.filter(e => JSON.stringify(e).toLowerCase().includes(examFilter.toLowerCase()));
-  const subs = await DB.get('exam_submissions');
-  const grades = await DB.get('exam_grades');
-  const allQuestions = await DB.get('questions');
-  const tb = document.getElementById('tb-exams');
-  if (!exams.length) { tb.innerHTML = `<tr><td colspan="9"><div class="nd"><span class="material-icons">assignment</span><p>No exams found</p></div></td></tr>`; return; }
-  tb.innerHTML = exams.map((e, i) => {
-    const qs = allQuestions.filter(q => q.assessmentId === e.id).length;
-    const subCount = subs.filter(s => s.assessmentId === e.id).length;
-    const gradedCount = grades.filter(g => g.assessmentId === e.id).length;
-    return `<tr>
-      <td>${i + 1}</td>
-      <td>${e.className || '—'}</td>
-      <td>${e.subjectName || '—'}</td>
-      <td><strong>${e.name}</strong></td>
-      <td><span class="chip cb">${e.config || 'Mixed'}</span></td>
-      <td>${qs}</td>
-      <td><span class="chip ${e.validState === 'Valid' ? 'cg' : e.validState === 'Pending' ? 'co' : 'cr'}">${e.validState || 'Pending'}</span></td>
-      <td><strong>${subCount}</strong></td>
-      <td><strong style="color:var(--gd)">${gradedCount}</strong> / ${subCount}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════
-//  STUDENTS TABLE
-// ═══════════════════════════════════
-function filterStudents(v) { studentFilter = v; renderStudents(); }
-async function renderStudents() {
-  const classF = csdVal('f-s-class');
-  let students = await DB.get('students');
-  if (classF) students = students.filter(s => s.classId === classF);
-  if (studentFilter) students = students.filter(s => JSON.stringify(s).toLowerCase().includes(studentFilter.toLowerCase()));
-  const subs = await DB.get('exam_submissions');
-  const grades = await DB.get('exam_grades');
-  const tb = document.getElementById('tb-students');
-  if (!students.length) { tb.innerHTML = `<tr><td colspan="7"><div class="nd"><span class="material-icons">people</span><p>No students found</p></div></td></tr>`; return; }
-  tb.innerHTML = students.map((st, i) => {
-    const mySubs = subs.filter(s => s.studentId === st.id);
-    const myGrades = grades.filter(g => g.studentId === st.id);
-    const pending = mySubs.filter(s => s.status === 'pending').length;
-    let avgPct = '—';
-    if (myGrades.length) {
-      const avg = myGrades.reduce((s, g) => s + (g.totalScore / g.maxScore * 100), 0) / myGrades.length;
-      avgPct = Math.round(avg) + '%';
+// ── SAVE
+async function saveForm(){
+  const t=editType,cls=await load(C.classes),subs=await load(C.subjects),les=await load(C.lessons),exams=await load(C.exams);
+  const now=new Date().toISOString().slice(0,10);
+  try{
+    if(t==='class'){
+      const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name','wa');return;}
+      const id=editId||uid();
+      await save(C.classes,{id,name,createdAt:editId?(await load(C.classes)).find(c=>c.id===editId)?.createdAt||now:now,createdBy:ME.name,createdByEmail:ME.email});
+    }else if(t==='subject'){
+      const classId=document.getElementById('f-class').value,name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name','wa');return;}
+      const cl=cls.find(c=>c.id===classId)||{};
+      await save(C.subjects,{id:editId||uid(),name,classId,className:cl.name||'',createdAt:now,createdBy:ME.name});
+    }else if(t==='lesson'){
+      const classId=document.getElementById('f-class').value,subjectId=document.getElementById('f-subject').value,name=document.getElementById('f-name').value.trim(),story=document.getElementById('f-story').value.trim();
+      if(!name){toast('Enter a name','wa');return;}
+      const cl=cls.find(c=>c.id===classId)||{},su=subs.find(s=>s.id===subjectId)||{};
+      await save(C.lessons,{id:editId||uid(),name,classId,className:cl.name||'',subjectId,subjectName:su.name||'',story,createdAt:now,createdBy:ME.name});
+    }else if(t==='exam'){
+      const classId=document.getElementById('f-class').value,subjectId=document.getElementById('f-subject').value,lessonId=document.getElementById('f-lesson').value,name=document.getElementById('f-name').value.trim(),maxScore=parseInt(document.getElementById('f-score').value)||0,config=document.getElementById('f-config').value,validState=document.getElementById('f-status').value;
+      if(!name){toast('Enter a name','wa');return;}
+      const cl=cls.find(c=>c.id===classId)||{},su=subs.find(s=>s.id===subjectId)||{},le=les.find(l=>l.id===lessonId)||{};
+      await save(C.exams,{id:editId||uid(),name,classId,className:cl.name||'',subjectId,subjectName:su.name||'',lessonId,lessonName:le.name||'',maxScore,config,validState,createdAt:now,createdBy:ME.name});
+    }else if(t==='question'){
+      const assessmentId=document.getElementById('f-exam').value,type=document.getElementById('f-qtype').value,title=document.getElementById('f-title').value.trim(),points=parseInt(document.getElementById('f-pts').value)||1;
+      if(!title){toast('Enter a question','wa');return;}
+      const ex=exams.find(e=>e.id===assessmentId)||{};
+      let options=null,answer=null;
+      if(type!=='Essay'){
+        options=[...document.querySelectorAll('#opts-grid .opt-input')].map(i=>i.value.trim());
+        answer=[...document.querySelectorAll('#opts-grid .opt-correct')].findIndex(el=>el.classList.contains('sel'));
+        if(answer<0)answer=0;
+      }
+      await save(C.questions,{id:editId||uid(),title,type,points,options,answer,assessmentId,assessmentName:ex.name||'',classId:ex.classId||'',className:ex.className||'',subjectName:ex.subjectName||'',lessonName:ex.lessonName||'',createdAt:now,createdBy:ME.name});
+    }else if(t==='student'){
+      const name=document.getElementById('f-name').value.trim(),username=document.getElementById('f-user').value.trim(),password=document.getElementById('f-pass').value.trim(),classId=document.getElementById('f-class').value,status=document.getElementById('f-sstatus').value;
+      if(!name||!username){toast('Enter name and username','wa');return;}
+      const cl=cls.find(c=>c.id===classId)||{};
+      await save(C.students,{id:editId||uid(),name,username,password,classId,className:cl.name||'',status,createdAt:now,createdBy:ME.name});
     }
-    return `<tr>
-      <td>${i + 1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0">${(st.name || '?')[0]}</div>
-        <strong>${st.name}</strong>
-      </div></td>
-      <td>${st.className || '—'}</td>
-      <td>${mySubs.length}</td>
-      <td><strong style="color:var(--gd)">${myGrades.length}</strong></td>
-      <td>${pending ? `<span class="chip co">${pending} pending</span>` : '<span class="chip cg">All graded</span>'}</td>
-      <td><strong style="color:${avgPct === '—' ? 'var(--muted)' : parseInt(avgPct) >= 70 ? 'var(--gd)' : parseInt(avgPct) >= 50 ? 'var(--warn)' : 'var(--danger)'}">${avgPct}</strong></td>
-    </tr>`;
-  }).join('');
+    clearD();closeModal();await renderCurrent();toast(editId?'Updated!':'Created!');
+  }catch(e){toast('Error: '+e.message,'da');}
 }
 
-// ═══════════════════════════════════
-//  GRADING
-// ═══════════════════════════════════
-async function openGrade(examId, focusSubId) {
-  gradeExamId = examId;
-  const exam = (await DB.get('assessments')).find(a => a.id === examId); if (!exam) return;
-  gradeSubs = (await DB.get('exam_submissions')).filter(s => s.assessmentId === examId);
-  if (!gradeSubs.length) { toast('No submissions for this exam yet.', 'warn'); return; }
-  document.getElementById('gp-title').textContent = 'Grading: ' + exam.name;
-  await renderGradeList();
-  const idx = focusSubId ? gradeSubs.findIndex(s => s.id === focusSubId) : 0;
-  await loadGradeSub(Math.max(0, idx));
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('app-grade').classList.add('on');
-  document.getElementById('s-login').style.display = 'none';
-}
-async function closeGrade() {
-  document.getElementById('app-grade').classList.remove('on');
-  document.getElementById('app').style.display = 'block';
-  gradeCurSubIdx = null; gradeScores = []; gradeFeedbacks = [];
-  await refreshAll();
+// ── DELETE
+async function confirmDel(col,id,name){
+  if(!confirm(`Delete "${name}"? This cannot be undone.`))return;
+  try{await del(col,id);clearD();await renderCurrent();toast('Deleted!');}catch(e){toast('Error: '+e.message,'da');}
 }
 
-async function renderGradeList() {
-  const grades = await DB.get('exam_grades');
-  document.getElementById('gp-list').innerHTML =
-    `<div class="gp-list-hd">${gradeSubs.length} Submission${gradeSubs.length !== 1 ? 's' : ''}</div>` +
-    gradeSubs.map((s, i) => {
-      const done = grades.find(g => g.submissionId === s.id);
-      return `<div class="stu-item${gradeCurSubIdx === i ? ' sel' : ''}" onclick="loadGradeSub(${i})">
-        <div class="stu-av">${(s.studentName || '?')[0]}</div>
-        <div class="stu-info">
-          <div class="stu-name">${s.studentName || '—'}</div>
-          <div class="stu-status">${s.className || '—'} · ${new Date(s.submittedAt).toLocaleDateString()}</div>
-        </div>
-        <span class="stu-tick">${done ? '✅' : '⏳'}</span>
-      </div>`;
-    }).join('');
-}
-
-async function loadGradeSub(idx) {
-  gradeCurSubIdx = idx;
-  const sub = gradeSubs[idx];
-  const exam = (await DB.get('assessments')).find(a => a.id === gradeExamId) || {};
-  const lesson = (await DB.get('lessons')).find(l => l.id === exam.lessonId) || {};
-  const qs = sub.questions || [];
-  const ans = sub.answers || [];
-  const existGrade = (await DB.get('exam_grades')).find(g => g.submissionId === sub.id);
-
-  gradeScores = qs.map((_, i) => {
-    if (existGrade?.questionGrades?.[i]?.score !== undefined) return existGrade.questionGrades[i].score;
-    const q = qs[i];
-    if (q.type === 'MCQ' || q.type === 'True/False') return ans[i] === q.answer ? q.points : 0;
-    return null;
-  });
-  gradeFeedbacks = qs.map((_, i) => existGrade?.questionGrades?.[i]?.feedback || '');
-
-  await renderGradeList();
-  const LETTERS = 'ABCDEFGH';
-  const storySection = lesson.story?.trim() ? `<div class="story-preview"><div class="sp-hd"><span class="material-icons">auto_stories</span>Reading Passage</div><div class="sp-body">${escHtml(lesson.story)}</div></div>` : '';
-
-  const qHtml = qs.map((q, i) => {
-    const isMCQ = q.type === 'MCQ' || q.type === 'True/False';
-    let ansHtml = '';
-    if (isMCQ) {
-      const opts = q.options || [];
-      ansHtml = `<div class="mcq-opts">${opts.map((o, j) => {
-        const isCorrect = j === q.answer;
-        const isStuAns = j === ans[i];
-        let cls = '';
-        if (isCorrect) cls = 'is-correct';
-        else if (isStuAns && !isCorrect) cls = 'is-wrong';
-        return `<div class="mcq-opt ${cls}">
-          <span class="material-icons">${isCorrect ? 'check_circle' : isStuAns ? 'cancel' : 'radio_button_unchecked'}</span>
-          <span>${LETTERS[j]}. ${o}</span>
-          ${isStuAns ? `<span class="mcq-stu-ans">Student's answer</span>` : ''}
-        </div>`;
-      }).join('')}</div>`;
-    } else {
-      const txt = ans[i];
-      ansHtml = `<div class="essay-box${txt ? '' : ' essay-empty'}">${txt ? escHtml(txt) : '(no answer provided)'}</div>`;
-    }
-
-    const curScore = gradeScores[i];
-    const quickBtns = [0, Math.floor(q.points / 2), q.points].filter((v, _, a) => a.indexOf(v) === a.lastIndexOf(v) || v === 0 || v === q.points);
-
-    return `<div class="gq-card" id="gqc-${i}">
-      <div class="gq-meta">
-        <span class="gq-num">Q${i + 1}</span>
-        <span class="chip ${q.type === 'MCQ' ? 'cb' : q.type === 'True/False' ? 'cg' : 'co'}">${q.type}</span>
-        <span class="chip" style="background:#f1f5f9;color:#475569">${q.points} pts</span>
-      </div>
-      <div class="gq-q">${q.title}</div>
-      ${ansHtml}
-      <div class="score-row">
-        <span class="score-lbl">Score</span>
-        <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="${q.points}" value="${curScore ?? ''}" placeholder="—" id="si-${i}" oninput="updateScore(${i},this.value,${q.points})" step="0.5"/>
-          <span class="score-max">/ ${q.points} pts</span>
-          <div class="score-quick">
-            ${quickBtns.map(v => `<button class="sq-btn${curScore === v ? ' active' : ''}" onclick="setScore(${i},${v},${q.points})">${v}</button>`).join('')}
-            <button class="sq-btn${curScore === q.points ? ' active' : ''}" onclick="setScore(${i},${q.points},${q.points})">Full</button>
-          </div>
-        </div>
-      </div>
-      <div class="feedback-row">
-        <label>Teacher Feedback (optional)</label>
-        <textarea id="fb-${i}" placeholder="Add feedback for the student…" rows="2" oninput="gradeFeedbacks[${i}]=this.value">${gradeFeedbacks[i] || ''}</textarea>
-      </div>
-    </div>`;
-  }).join('');
-
-  const total = gradeScores.reduce((s, v) => s + (v ?? 0), 0);
-  document.getElementById('gp-main').innerHTML = `
-    <div class="gp-stu-hd">
-      <div class="gsh-av">${(sub.studentName || '?')[0]}</div>
-      <div><div class="gsh-name">${sub.studentName || '—'}</div><div class="gsh-meta">${sub.className || '—'} · Submitted ${new Date(sub.submittedAt).toLocaleString()}</div></div>
-      <div class="total-score-bar"><div class="tsb-num" id="total-score-disp">${total} / ${exam.maxScore || 0}</div><div class="tsb-lbl">Total Score</div></div>
-    </div>
-    ${storySection}
-    ${qHtml}
-    <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:8px">
-      ${idx > 0 ? `<button class="btn-skip" onclick="saveThenNext(${idx - 1})"><span class="material-icons" style="font-size:16px;vertical-align:middle">arrow_back</span> Previous</button>` : ''}
-      <button class="btn-save-grade" onclick="saveCurrentGrade()"><span class="material-icons">save</span>Save Grade</button>
-      ${idx < gradeSubs.length - 1 ? `<button class="btn-save-grade" onclick="saveThenNext(${idx + 1})" style="background:var(--info)">Save & Next <span class="material-icons">arrow_forward</span></button>` : ''}
-    </div>`;
-}
-
-function updateScore(i, v, max) {
-  const n = Math.min(max, Math.max(0, parseFloat(v) || 0));
-  gradeScores[i] = isNaN(parseFloat(v)) ? null : n;
-  updateTotalDisplay(); updateQuickBtns(i, n);
-}
-function setScore(i, v, max) {
-  gradeScores[i] = v;
-  const el = document.getElementById('si-' + i); if (el) el.value = v;
-  updateTotalDisplay(); updateQuickBtns(i, v);
-}
-function updateQuickBtns(i, v) {
-  const card = document.getElementById('gqc-' + i); if (!card) return;
-  card.querySelectorAll('.sq-btn').forEach(b => b.classList.toggle('active', parseFloat(b.textContent) === v || (b.textContent === 'Full' && v === parseFloat(b.closest('.score-inputs')?.querySelector('.score-max')?.textContent?.replace('/ ', '')))));
-}
-async function updateTotalDisplay() {
-  const exam = (await DB.get('assessments')).find(a => a.id === gradeExamId) || {};
-  const total = gradeScores.reduce((s, v) => s + (v ?? 0), 0);
-  const el = document.getElementById('total-score-disp');
-  if (el) el.textContent = `${total} / ${exam.maxScore || 0}`;
-}
-async function saveThenNext(nextIdx) { await saveCurrentGrade(); setTimeout(() => loadGradeSub(nextIdx), 80); }
-
-async function saveCurrentGrade() {
-  if (gradeCurSubIdx === null) { toast('Select a student first', 'warn'); return; }
-  const sub = gradeSubs[gradeCurSubIdx];
-  const exam = (await DB.get('assessments')).find(a => a.id === gradeExamId) || {};
-  gradeFeedbacks = (sub.questions || []).map((_, i) => { const el = document.getElementById('fb-' + i); return el ? el.value : gradeFeedbacks[i] || ''; });
-
-  const totalScore = gradeScores.reduce((s, v) => s + (v ?? 0), 0);
-  const gradeRec = {
-    id: DB.uid(),
-    submissionId: sub.id,
-    studentId: sub.studentId,
-    studentName: sub.studentName,
-    classId: sub.classId,
-    assessmentId: sub.assessmentId,
-    assessmentName: sub.assessmentName,
-    subjectName: sub.subjectName,
-    totalScore,
-    maxScore: exam.maxScore || 0,
-    questionGrades: gradeScores.map((sc, i) => ({ score: sc ?? 0, feedback: gradeFeedbacks[i] || '' })),
-    gradedAt: new Date().toISOString(),
-    gradedBy: 'Admin K'
-  };
-
-  // Check if grade already exists for this submission
-  const existingGrades = await DB.get('exam_grades');
-  const existing = existingGrades.find(g => g.submissionId === sub.id);
-  if (existing) {
-    gradeRec.id = existing.id; // Keep same ID for update
-  }
-  await DB.save('exam_grades', gradeRec);
-
-  // Mark submission as graded
-  const subs = await DB.get('exam_submissions');
-  const si = subs.findIndex(s => s.id === sub.id);
-  if (si >= 0) { subs[si].status = 'graded'; await DB.save('exam_submissions', subs[si]); }
-
-  await renderGradeList(); await updateQueueBadge();
-  toast('Grade saved for ' + sub.studentName + '!');
-}
-
-// ═══════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════
-function openOverlay(id) { document.getElementById(id).classList.add('on'); }
-function closeOverlay(id) { document.getElementById(id).classList.remove('on'); }
-function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function toast(msg, type = 'ok') {
-  const t = document.getElementById('toast'), i = t.querySelector('.material-icons');
-  i.textContent = type === 'warn' ? 'warning' : 'check_circle';
-  i.style.color = type === 'warn' ? '#f59e0b' : 'var(--ga)';
-  document.getElementById('t-msg').textContent = msg;
-  t.classList.add('on'); clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('on'), 3000);
-}
+// ── HELPERS
+function closeModal(){document.getElementById('ov').classList.remove('on');editId=null;editType=null;}
+function esc(s){return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+function toast(msg,type){const t=document.getElementById('toast'),ic=t.querySelector('.material-icons-outlined');ic.textContent=type==='wa'?'warning':type==='da'?'error':'check_circle';ic.style.color=type==='wa'?'var(--wa)':type==='da'?'var(--da)':'var(--ok)';document.getElementById('t-msg').textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000);}
 </script>
 </body>
 </html>
